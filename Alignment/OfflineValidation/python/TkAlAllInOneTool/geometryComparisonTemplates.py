@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("ValidationIntoNTuples")
 
 # global tag
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.GlobalTag.globaltag = ".oO[GlobalTag]Oo." 
 
 # <<<<<<< HEAD
@@ -52,7 +52,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("validation")
 
 # global tag
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.GlobalTag.globaltag = ".oO[GlobalTag]Oo." 
 # <<<<<<< HEAD
 # process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cff")
