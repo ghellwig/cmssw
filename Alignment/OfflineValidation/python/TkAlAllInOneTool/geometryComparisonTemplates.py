@@ -9,15 +9,13 @@ process = cms.Process("ValidationIntoNTuples")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.GlobalTag.globaltag = ".oO[GlobalTag]Oo." 
 
-# <<<<<<< HEAD
 # process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
 # process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
-# =======
 process.load('Configuration.Geometry.GeometryExtended2015_cff')
 process.TrackerTopologyEP = cms.ESProducer("TrackerTopologyEP")
 
-# >>>>>>> 7d95147... Changes from 75X backported
-process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
+# process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
 
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 
@@ -54,19 +52,15 @@ process = cms.Process("validation")
 # global tag
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.GlobalTag.globaltag = ".oO[GlobalTag]Oo." 
-# <<<<<<< HEAD
 # process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cff")
-
 # process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
+# process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
+
+# process.load('Configuration.Geometry.GeometryExtended2015_cff')
+# process.TrackerTopologyEP = cms.ESProducer("TrackerTopologyEP")
 
 # process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
-# =======
-
-process.load('Configuration.Geometry.GeometryExtended2015_cff')
-process.TrackerTopologyEP = cms.ESProducer("TrackerTopologyEP")
-# >>>>>>> 7d95147... Changes from 75X backported
-
-process.load("Geometry.TrackerGeometryBuilder.trackerGeometry_cfi")
+process.load("Configuration.Geometry.GeometryRecoDB_cff")
 
 process.load("CondCore.DBCommon.CondDBSetup_cfi")
 
