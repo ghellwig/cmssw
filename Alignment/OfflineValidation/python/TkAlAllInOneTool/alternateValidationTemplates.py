@@ -157,7 +157,7 @@ process.load("Configuration.StandardSequences.Geometry_cff")
  ##
  ## Magnetic Field
  ##
-process.load("Configuration/StandardSequences/MagneticField_.oO[magneticField]Oo._cff")
+process.load("Configuration/StandardSequences/.oO[magneticField]Oo._cff")
 
 .oO[condLoad]Oo.
 
@@ -303,7 +303,7 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 ##
 ## Magnetic Field
 ##
-process.load("Configuration/StandardSequences/MagneticField_.oO[magneticField]Oo._cff")
+process.load("Configuration/StandardSequences/.oO[magneticField]Oo._cff")
 
 .oO[LorentzAngleTemplate]Oo.
   
@@ -459,7 +459,7 @@ process.load("Configuration.StandardSequences.Geometry_cff")
  ##
  ## Magnetic Field
  ##
-process.load("Configuration.StandardSequences.MagneticField_.oO[magneticField]Oo._cff")
+process.load("Configuration.StandardSequences..oO[magneticField]Oo._cff")
 
 .oO[condLoad]Oo.
 
@@ -1048,7 +1048,7 @@ process.load("Configuration.StandardSequences.Geometry_cff")
  ##
  ## Magnetic Field
  ##
-process.load("Configuration/StandardSequences/MagneticField_.oO[magneticField]Oo._cff")
+process.load("Configuration/StandardSequences/.oO[magneticField]Oo._cff")
 
 .oO[condLoad]Oo.
 
