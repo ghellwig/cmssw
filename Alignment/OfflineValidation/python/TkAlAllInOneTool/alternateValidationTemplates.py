@@ -77,15 +77,7 @@ process.TrackerTrackHitFilter.src = 'TrackRefitter1'
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -517,15 +509,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -587,15 +571,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -658,15 +634,7 @@ process.AlignmentTrackSelector.minHitsPerSubDet = cms.PSet(
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -729,15 +697,7 @@ process.AlignmentTrackSelector.minHitsPerSubDet = cms.PSet(
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -800,15 +760,7 @@ process.AlignmentTrackSelector.minHitsPerSubDet = cms.PSet(
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -853,16 +805,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -916,15 +859,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -1131,15 +1066,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -1209,15 +1136,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -1290,16 +1209,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 50.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
@@ -1364,15 +1274,7 @@ process.AlignmentTrackSelector.minHitChargeStrip = 30.
 process.TrackerTrackHitFilter.useTrajectories= True  # this is needed only if you require some selections; but it will work even if you don't ask for them
 process.TrackerTrackHitFilter.minimumHits = 8
 process.TrackerTrackHitFilter.commands = cms.vstring("keep PXB","keep PXE","keep TIB","keep TID","keep TOB","keep TEC")
-process.TrackerTrackHitFilter.detsToIgnore = [
-     # see https://hypernews.cern.ch/HyperNews/CMS/get/tracker-performance/484.html
-    # TIB / TID
-    #369136710, 369136714, 402668822,
-    # TOB
-    #436310989, 436310990, 436299301, 436299302,
-    # TEC
-    #470340521, 470063045, 470063046, 470114669, 470114670, 470161093, 470161094, 470164333, 470164334, 470312005, 470312006, 470312009, 470067405, 470067406, 470128813
-]
+process.TrackerTrackHitFilter.detsToIgnore = []
 process.TrackerTrackHitFilter.replaceWithInactiveHits = True
 process.TrackerTrackHitFilter.stripAllInvalidHits = False
 process.TrackerTrackHitFilter.rejectBadStoNHits = True
