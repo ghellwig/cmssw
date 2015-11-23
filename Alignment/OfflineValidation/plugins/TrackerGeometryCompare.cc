@@ -14,6 +14,13 @@
 #include "FWCore/Framework/interface/ESTransientHandle.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+#include "FWCore/Utilities/interface/InputTag.h"
+
+#include "CondFormats/SiPixelObjects/interface/SiPixelQuality.h" 
+#include "CondFormats/DataRecord/interface/SiPixelQualityRcd.h" 
+#include "CalibFormats/SiStripObjects/interface/SiStripQuality.h" 
+#include "CalibTracker/Records/interface/SiStripQualityRcd.h" 
+
 #include "Alignment/CommonAlignment/interface/AlignableObjectId.h"
 #include "Geometry/CommonTopologies/interface/SurfaceDeformationFactory.h"
 #include "Geometry/CommonTopologies/interface/SurfaceDeformation.h"
@@ -60,6 +67,8 @@ TrackerGeometryCompare::TrackerGeometryCompare(const edm::ParameterSet& cfg) :
   theSurveyValues(0),
   theSurveyErrors(0),
   _commonTrackerLevel(align::invalid),
+  _moduleListFile(0),
+  _moduleList(0),
   _inputRootFile1(0),
   _inputRootFile2(0),
   _inputTree01(0),
@@ -72,6 +81,7 @@ TrackerGeometryCompare::TrackerGeometryCompare(const edm::ParameterSet& cfg) :
   firstEvent_(true),
   m_vtkmap(13)	 
 {
+	_moduleListName = cfg.getUntrackedParameter< std::string > ("moduleList");
 	
 	//input is ROOT
 	_inputFilename1 = cfg.getUntrackedParameter< std::string > ("inputROOTFile1");
@@ -139,6 +149,8 @@ TrackerGeometryCompare::TrackerGeometryCompare(const edm::ParameterSet& cfg) :
 	_theFile = new TFile(_filename.c_str(),"RECREATE");
 	_alignTree = new TTree("alignTree","alignTree");//,"id:level:mid:mlevel:sublevel:x:y:z:r:phi:a:b:c:dx:dy:dz:dr:dphi:da:db:dc");
 	_alignTree->Branch("id", &_id, "id/I");
+	_alignTree->Branch("badModuleQuality", &_badModuleQuality, "badModuleQuality/I");
+	_alignTree->Branch("inModuleList", &_inModuleList, "inModuleList/I");
 	_alignTree->Branch("level", &_level, "level/I");
 	_alignTree->Branch("mid", &_mid, "mid/I");
 	_alignTree->Branch("mlevel", &_mlevel, "mlevel/I");
@@ -243,7 +255,7 @@ void TrackerGeometryCompare::analyze(const edm::Event&, const edm::EventSetup& i
 	}
 	
 	//compare the goemetries
-	compareGeometries(referenceTracker,currentTracker,tTopo);
+	compareGeometries(referenceTracker,currentTracker,tTopo,iSetup);
 	compareSurfaceDeformations(_inputTree11, _inputTree12); 
 	
 	//write out ntuple
@@ -279,6 +291,19 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 	iSetup.get<IdealGeometryRecord>().get(tTopoHandle);
 	const TrackerTopology* const tTopo = tTopoHandle.product();
 
+	// Fill module IDs from file into a list
+	_moduleListFile.open(_moduleListName);
+	if (_moduleListFile.is_open()){
+		std::string line;
+		while(!_moduleListFile.eof()){
+			std::getline(_moduleListFile,line);
+			_moduleList.push_back(std::atoi(line.c_str()));	
+		}
+	}
+	else{
+		std::cout << "Error: Module list not found! Please verify that given list exists!" << std::endl;
+	} 
+	
 	//declare alignments
 	Alignments* alignments1 = new Alignments();
 	AlignmentErrors* alignmentErrors1 = new AlignmentErrors();	
@@ -583,7 +608,7 @@ void TrackerGeometryCompare::compareSurfaceDeformations(TTree* refTree, TTree* c
   return ; 	
 }
 
-void TrackerGeometryCompare::compareGeometries(Alignable* refAli, Alignable* curAli, const TrackerTopology* tTopo){
+void TrackerGeometryCompare::compareGeometries(Alignable* refAli, Alignable* curAli, const TrackerTopology* tTopo, const edm::EventSetup& iSetup){
 
 	using namespace align ; 
 	
@@ -647,12 +672,12 @@ void TrackerGeometryCompare::compareGeometries(Alignable* refAli, Alignable* cur
 		TRtot(7) = lRtotal.x(); TRtot(8) = lRtotal.y(); TRtot(9) = lRtotal.z();
 		TRtot(10) = lWtotal.x(); TRtot(11) = lWtotal.y(); TRtot(12) = lWtotal.z();
 
-		fillTree(refAli, TRtot, tTopo);
+		fillTree(refAli, TRtot, tTopo, iSetup);
 	}
 
 	// another added level for difference between det and detunit
 	for (unsigned int i = 0; i < nComp; ++i) 
-	  compareGeometries(refComp[i],curComp[i],tTopo);	
+	  compareGeometries(refComp[i],curComp[i],tTopo,iSetup);	
 
 }
 
@@ -753,9 +778,36 @@ void TrackerGeometryCompare::diffCommonTrackerSystem(Alignable *refAli, Alignabl
 	
 }
 
-void TrackerGeometryCompare::fillTree(Alignable *refAli, const AlgebraicVector& diff, const TrackerTopology* tTopo){
+void TrackerGeometryCompare::fillTree(Alignable *refAli, const AlgebraicVector& diff, const TrackerTopology* tTopo,  const edm::EventSetup& iSetup){
+	
+	//Get bad modules
+	edm::ESHandle<SiPixelQuality> SiPixelModules;
+	iSetup.get<SiPixelQualityRcd>().get(SiPixelModules);
+	edm::ESHandle<SiStripQuality> SiStripModules;
+	iSetup.get<SiStripQualityRcd>().get(SiStripModules);
 	
 	_id = refAli->id();
+	
+	_badModuleQuality = 0;
+	//check if module has a bad quality tag
+	if (SiPixelModules->IsModuleBad(_id)){
+		_badModuleQuality = 1;
+		
+	}
+	if (SiStripModules->IsModuleBad(_id)){
+		_badModuleQuality = 1;		
+	}
+	
+	//check if module is in a given list of bad/untouched etc. modules
+	_inModuleList = 0;
+	for (unsigned int i = 0 ; i< _moduleList.size(); i++){
+		if ( _moduleList[i] == _id)
+		{
+			_inModuleList = 1;
+			break;
+		}
+	}
+	
 	_level = refAli->alignableObjectId();
 	//need if ali has no mother
 	if (refAli->mother()){
