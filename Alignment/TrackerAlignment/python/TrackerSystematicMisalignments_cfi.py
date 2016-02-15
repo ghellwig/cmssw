@@ -13,6 +13,9 @@ TrackerSystematicMisalignments = cms.EDAnalyzer("TrackerSystematicMisalignments"
     ellipticalEpsilon = cms.untracked.double(-999.0), # 5e-4
     skewEpsilon = cms.untracked.double(-999.0), # 5.5e-2                        cm
     sagittaEpsilon = cms.untracked.double(-999.0), #5.0e-4
+    xShift = cms.untracked.double(-999.0),
+    yShift = cms.untracked.double(-999.0),
+    zShift = cms.untracked.double(-999.0),
 
     #misalignment phases
     #0 <= delta < 2pi, epsilon >= 0 for unique results
@@ -24,7 +27,9 @@ TrackerSystematicMisalignments = cms.EDAnalyzer("TrackerSystematicMisalignments"
 
     # suppress blind movements
     suppressBlindMvmts = cms.untracked.bool(False),
-	# compatibility flag for old z convention
-	oldMinusZconvention = cms.untracked.bool(False)
+    # compatibility flag for old z convention
+    oldMinusZconvention = cms.untracked.bool(False),
+    applyToSubdetectors = cms.untracked.vstring("TPB", "TPE", "TIB", "TOB", "TID", "TEC"),
+
 )
 
