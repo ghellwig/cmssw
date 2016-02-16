@@ -10,6 +10,7 @@
  *  \author Chung Khim Lae
  */
 
+#include <unordered_map>
 #include <unordered_set>
 
 // user include files
@@ -42,7 +43,9 @@ private:
   //align::GlobalVector findSystematicMis( align::PositionType );
   align::GlobalVector findSystematicMis( const align::PositionType&, const bool blindToZ, const bool blindToR );
 
-  std::unordered_set<int> convertToSubDetIds(const std::vector<std::string>& detIdStrings);
+  std::unordered_map<int, std::unordered_set<unsigned int> > convertToSubDetIds(const std::vector<std::string>& detIdStrings);
+  bool startsWith(const std::string& haystack, const std::string& needle);
+  bool selectedForMisalignment(const Alignable*);
 
   AlignableTracker* theAlignableTracker;
 
@@ -76,7 +79,7 @@ private:
   bool oldMinusZconvention;
 
   // subdetectors to which the alignment is applied
-  const std::unordered_set<int> applyToSubdetectors_;
+  const std::unordered_map<int, std::unordered_set<unsigned int> > applyToSubdetectors_;
 };
 
 #endif

@@ -7,6 +7,12 @@
 
 #include "Alignment/CommonAlignment/interface/SurveyDet.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
+#include "Alignment/TrackerAlignment/interface/TPBNameSpace.h"
+#include "Alignment/TrackerAlignment/interface/TPENameSpace.h"
+#include "Alignment/TrackerAlignment/interface/TIBNameSpace.h"
+#include "Alignment/TrackerAlignment/interface/TIDNameSpace.h"
+#include "Alignment/TrackerAlignment/interface/TOBNameSpace.h"
+#include "Alignment/TrackerAlignment/interface/TECNameSpace.h"
 
 #include "CondFormats/Alignment/interface/Alignments.h"
 #include "CondFormats/AlignmentRecord/interface/TrackerAlignmentRcd.h"
@@ -135,55 +141,55 @@ void TrackerSystematicMisalignments::beginJob()
 
 void TrackerSystematicMisalignments::analyze(const edm::Event& event, const edm::EventSetup& setup){
 
-	//Retrieve tracker topology from geometry
-	edm::ESHandle<TrackerTopology> tTopoHandle;
-	setup.get<TrackerTopologyRcd>().get(tTopoHandle);
-	const TrackerTopology* const tTopo = tTopoHandle.product();
+        //Retrieve tracker topology from geometry
+        edm::ESHandle<TrackerTopology> tTopoHandle;
+        setup.get<TrackerTopologyRcd>().get(tTopoHandle);
+        const TrackerTopology* const tTopo = tTopoHandle.product();
 
-	edm::ESHandle<GeometricDet> geom;
-	setup.get<IdealGeometryRecord>().get(geom);
-	edm::ESHandle<PTrackerParameters> ptp;
-	setup.get<PTrackerParametersRcd>().get( ptp );
-	TrackerGeometry* tracker = TrackerGeomBuilderFromGeometricDet().build(&*geom, *ptp );
+        edm::ESHandle<GeometricDet> geom;
+        setup.get<IdealGeometryRecord>().get(geom);
+        edm::ESHandle<PTrackerParameters> ptp;
+        setup.get<PTrackerParametersRcd>().get( ptp );
+        TrackerGeometry* tracker = TrackerGeomBuilderFromGeometricDet().build(&*geom, *ptp );
 
-	//take geometry from DB or randomly generate geometry
-	if (m_fromDBGeom){
-		//build the tracker
-		edm::ESHandle<Alignments> alignments;
-		edm::ESHandle<AlignmentErrorsExtended> alignmentErrors;
+        //take geometry from DB or randomly generate geometry
+        if (m_fromDBGeom){
+                //build the tracker
+                edm::ESHandle<Alignments> alignments;
+                edm::ESHandle<AlignmentErrorsExtended> alignmentErrors;
 
-		setup.get<TrackerAlignmentRcd>().get(alignments);
-		setup.get<TrackerAlignmentErrorExtendedRcd>().get(alignmentErrors);
+                setup.get<TrackerAlignmentRcd>().get(alignments);
+                setup.get<TrackerAlignmentErrorExtendedRcd>().get(alignmentErrors);
 
-		edm::ESHandle<Alignments> globalPositionRcd;
-		setup.get<TrackerDigiGeometryRecord>().getRecord<GlobalPositionRcd>().get(globalPositionRcd);
+                edm::ESHandle<Alignments> globalPositionRcd;
+                setup.get<TrackerDigiGeometryRecord>().getRecord<GlobalPositionRcd>().get(globalPositionRcd);
 
-		//apply the latest alignments
-		GeometryAligner aligner;
-		aligner.applyAlignments<TrackerGeometry>( &(*tracker), &(*alignments), &(*alignmentErrors),
-							  align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
+                //apply the latest alignments
+                GeometryAligner aligner;
+                aligner.applyAlignments<TrackerGeometry>( &(*tracker), &(*alignments), &(*alignmentErrors),
+                                                          align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
 
-	}
+        }
 
-	theAlignableTracker = new AlignableTracker(&(*tracker), tTopo);
+        theAlignableTracker = new AlignableTracker(&(*tracker), tTopo);
 
-	applySystematicMisalignment( &(*theAlignableTracker) );
+        applySystematicMisalignment( &(*theAlignableTracker) );
 
-	// -------------- writing out to alignment record --------------
-	Alignments* myAlignments = theAlignableTracker->alignments() ;
-	AlignmentErrorsExtended* myAlignmentErrorsExtended = theAlignableTracker->alignmentErrors() ;
+        // -------------- writing out to alignment record --------------
+        Alignments* myAlignments = theAlignableTracker->alignments() ;
+        AlignmentErrorsExtended* myAlignmentErrorsExtended = theAlignableTracker->alignmentErrors() ;
 
-	// Store alignment[Error]s to DB
-	edm::Service<cond::service::PoolDBOutputService> poolDbService;
-	std::string theAlignRecordName = "TrackerAlignmentRcd";
-	std::string theErrorRecordName = "TrackerAlignmentErrorExtendedRcd";
+        // Store alignment[Error]s to DB
+        edm::Service<cond::service::PoolDBOutputService> poolDbService;
+        std::string theAlignRecordName = "TrackerAlignmentRcd";
+        std::string theErrorRecordName = "TrackerAlignmentErrorExtendedRcd";
 
-	// Call service
-	if( !poolDbService.isAvailable() ) // Die if not available
-		throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
+        // Call service
+        if( !poolDbService.isAvailable() ) // Die if not available
+                throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
 
-	poolDbService->writeOne<Alignments>(&(*myAlignments), poolDbService->beginOfTime(), theAlignRecordName);
-	poolDbService->writeOne<AlignmentErrorsExtended>(&(*myAlignmentErrorsExtended), poolDbService->beginOfTime(), theErrorRecordName);
+        poolDbService->writeOne<Alignments>(&(*myAlignments), poolDbService->beginOfTime(), theAlignRecordName);
+        poolDbService->writeOne<AlignmentErrorsExtended>(&(*myAlignmentErrorsExtended), poolDbService->beginOfTime(), theErrorRecordName);
 }
 
 void TrackerSystematicMisalignments::applySystematicMisalignment(Alignable* ali)
@@ -204,27 +210,25 @@ void TrackerSystematicMisalignments::applySystematicMisalignment(Alignable* ali)
     {
       const int subdetid = ali->geomDetId().subdetId();
       switch(subdetid)
-	{
-	  // TIB/TON blind to z
-	case SiStripDetId::TIB:
-	case SiStripDetId::TOB:
-	  blindToZ = true;
-	  break;
-	  // TID/TEC blind to R
-	case SiStripDetId::TID:
-	case SiStripDetId::TEC:
-	  blindToR = true;
-	  break;
-	default:
-	  break;
-	}
+        {
+          // TIB/TON blind to z
+        case SiStripDetId::TIB:
+        case SiStripDetId::TOB:
+          blindToZ = true;
+          break;
+          // TID/TEC blind to R
+        case SiStripDetId::TID:
+        case SiStripDetId::TEC:
+          blindToR = true;
+          break;
+        default:
+          break;
+        }
     }
 
   const int level = ali->alignableObjectId();
   if ((level == 1)||(level == 2)){
-    if (applyToSubdetectors_.find(ali->geomDetId().subdetId())
-	== applyToSubdetectors_.end())
-      return;
+    if (!selectedForMisalignment(ali)) return;
     const align::PositionType gP = ali->globalPosition();
     const align::GlobalVector gVec = findSystematicMis( gP, blindToZ, blindToR);
     ali->move( gVec );
@@ -233,104 +237,207 @@ void TrackerSystematicMisalignments::applySystematicMisalignment(Alignable* ali)
 
 align::GlobalVector TrackerSystematicMisalignments::findSystematicMis( const align::PositionType& globalPos, const bool blindToZ, const bool blindToR ){
 //align::GlobalVector TrackerSystematicMisalignments::findSystematicMis( align::PositionType globalPos ){
-	// calculates shift for the current alignable
-	// all corrections are calculated w.r.t. the original geometry
-	double deltaX = 0.0;
-	double deltaY = 0.0;
-	double deltaZ = 0.0;
-	const double oldX = globalPos.x();
-	const double oldY = globalPos.y();
-	const double oldZ = globalPos.z();
-	const double oldPhi = globalPos.phi();
-	const double oldR = sqrt(globalPos.x()*globalPos.x() + globalPos.y()*globalPos.y());
+        // calculates shift for the current alignable
+        // all corrections are calculated w.r.t. the original geometry
+        double deltaX = 0.0;
+        double deltaY = 0.0;
+        double deltaZ = 0.0;
+        const double oldX = globalPos.x();
+        const double oldY = globalPos.y();
+        const double oldZ = globalPos.z();
+        const double oldPhi = globalPos.phi();
+        const double oldR = sqrt(globalPos.x()*globalPos.x() + globalPos.y()*globalPos.y());
 
-	if (m_radialEpsilon > -990.0 && !blindToR){
-		deltaX += m_radialEpsilon*oldX;
-		deltaY += m_radialEpsilon*oldY;
-	}
-	if (m_telescopeEpsilon > -990.0 && !blindToZ){
-		deltaZ += m_telescopeEpsilon*oldR;
-	}
-	if (m_layerRotEpsilon > -990.0){
-		// The following number was chosen such that the Layer Rotation systematic
-		// misalignment would not cause an overall rotation of the tracker.
-		const double Roffset = 57.0;
-		const double xP = oldR*cos(oldPhi+m_layerRotEpsilon*(oldR-Roffset));
-		const double yP = oldR*sin(oldPhi+m_layerRotEpsilon*(oldR-Roffset));
-		deltaX += (xP - oldX);
-		deltaY += (yP - oldY);
-	}
-	if (m_bowingEpsilon > -990.0 && !blindToR){
-		const double trackeredgePlusZ=271.846;
-		const double bowfactor=m_bowingEpsilon*(trackeredgePlusZ*trackeredgePlusZ-oldZ*oldZ);
-		deltaX += oldX*bowfactor;
-		deltaY += oldY*bowfactor;
-	}
-	if (m_zExpEpsilon > -990.0 && !blindToZ){
-		deltaZ += oldZ*m_zExpEpsilon;
-	}
-	if (m_twistEpsilon > -990.0){
-		const double xP = oldR*cos(oldPhi+m_twistEpsilon*oldZ);
-		const double yP = oldR*sin(oldPhi+m_twistEpsilon*oldZ);
-		deltaX += (xP - oldX);
-		deltaY += (yP - oldY);
-	}
-	if (m_ellipticalEpsilon > -990.0 && !blindToR){
-		deltaX += oldX*m_ellipticalEpsilon*cos(2.0*oldPhi + m_ellipticalDelta);
-		deltaY += oldY*m_ellipticalEpsilon*cos(2.0*oldPhi + m_ellipticalDelta);
-	}
-	if (m_skewEpsilon > -990.0 && !blindToZ){
-		deltaZ += m_skewEpsilon*cos(oldPhi + m_skewDelta);
-	}
-	if (m_sagittaEpsilon > -990.0){
-		// deltaX += oldX/fabs(oldX)*m_sagittaEpsilon; // old one...
-		deltaX += oldR*m_sagittaEpsilon*sin(m_sagittaDelta);
-		deltaY += oldR*m_sagittaEpsilon*cos(m_sagittaDelta);    //Delta y is cos so that delta=0 reflects the old behavior
-	}
-	if (m_xShift > -990.0){
-		deltaX += m_xShift;
-	}
-	if (m_yShift > -990.0){
-		deltaY += m_yShift;
-	}
-	if (m_zShift > -990.0){
-		deltaZ += m_zShift;
-	}
+        if (m_radialEpsilon > -990.0 && !blindToR){
+                deltaX += m_radialEpsilon*oldX;
+                deltaY += m_radialEpsilon*oldY;
+        }
+        if (m_telescopeEpsilon > -990.0 && !blindToZ){
+                deltaZ += m_telescopeEpsilon*oldR;
+        }
+        if (m_layerRotEpsilon > -990.0){
+                // The following number was chosen such that the Layer Rotation systematic
+                // misalignment would not cause an overall rotation of the tracker.
+                const double Roffset = 57.0;
+                const double xP = oldR*cos(oldPhi+m_layerRotEpsilon*(oldR-Roffset));
+                const double yP = oldR*sin(oldPhi+m_layerRotEpsilon*(oldR-Roffset));
+                deltaX += (xP - oldX);
+                deltaY += (yP - oldY);
+        }
+        if (m_bowingEpsilon > -990.0 && !blindToR){
+                const double trackeredgePlusZ=271.846;
+                const double bowfactor=m_bowingEpsilon*(trackeredgePlusZ*trackeredgePlusZ-oldZ*oldZ);
+                deltaX += oldX*bowfactor;
+                deltaY += oldY*bowfactor;
+        }
+        if (m_zExpEpsilon > -990.0 && !blindToZ){
+                deltaZ += oldZ*m_zExpEpsilon;
+        }
+        if (m_twistEpsilon > -990.0){
+                const double xP = oldR*cos(oldPhi+m_twistEpsilon*oldZ);
+                const double yP = oldR*sin(oldPhi+m_twistEpsilon*oldZ);
+                deltaX += (xP - oldX);
+                deltaY += (yP - oldY);
+        }
+        if (m_ellipticalEpsilon > -990.0 && !blindToR){
+                deltaX += oldX*m_ellipticalEpsilon*cos(2.0*oldPhi + m_ellipticalDelta);
+                deltaY += oldY*m_ellipticalEpsilon*cos(2.0*oldPhi + m_ellipticalDelta);
+        }
+        if (m_skewEpsilon > -990.0 && !blindToZ){
+                deltaZ += m_skewEpsilon*cos(oldPhi + m_skewDelta);
+        }
+        if (m_sagittaEpsilon > -990.0){
+                // deltaX += oldX/fabs(oldX)*m_sagittaEpsilon; // old one...
+                deltaX += oldR*m_sagittaEpsilon*sin(m_sagittaDelta);
+                deltaY += oldR*m_sagittaEpsilon*cos(m_sagittaDelta);    //Delta y is cos so that delta=0 reflects the old behavior
+        }
+        if (m_xShift > -990.0){
+                deltaX += m_xShift;
+        }
+        if (m_yShift > -990.0){
+                deltaY += m_yShift;
+        }
+        if (m_zShift > -990.0){
+                deltaZ += m_zShift;
+        }
 
-	// Compatibility with old version <= 1.5
-	if (oldMinusZconvention) deltaZ = -deltaZ;
+        // Compatibility with old version <= 1.5
+        if (oldMinusZconvention) deltaZ = -deltaZ;
 
-	align::GlobalVector gV( deltaX, deltaY, deltaZ );
-	return gV;
+        align::GlobalVector gV( deltaX, deltaY, deltaZ );
+        return gV;
 }
 
 
-std::unordered_set<int>
+std::unordered_map<int, std::unordered_set<unsigned int> >
 TrackerSystematicMisalignments::convertToSubDetIds(const std::vector<std::string>& detIdStrings) {
-  std::unordered_set<int> result;
+  std::unordered_map<int, std::unordered_set<unsigned int> > result;
   for (const auto& subDetString: detIdStrings) {
-    if (subDetString == "TPB") {
-      result.emplace(PixelSubdetector::PixelBarrel);
-    } else if (subDetString == "TPE") {
-      result.emplace(PixelSubdetector::PixelEndcap);
-    } else if (subDetString == "TIB") {
-      result.emplace(StripSubdetector::TIB);
-    } else if (subDetString == "TID") {
-      result.emplace(StripSubdetector::TID);
-    } else if (subDetString == "TOB") {
-      result.emplace(StripSubdetector::TOB);
-    } else if (subDetString == "TEC") {
-      result.emplace(StripSubdetector::TEC);
+    bool badConfig = false;
+    if (startsWith(subDetString, "TPB")) {
+      if (result.find(PixelSubdetector::PixelBarrel) == result.end())
+        result[PixelSubdetector::PixelBarrel] = std::unordered_set<unsigned int>();
+      if (subDetString == "TPB") {
+        result[PixelSubdetector::PixelBarrel].emplace(1);
+        result[PixelSubdetector::PixelBarrel].emplace(2);
+      } else if (subDetString == "TPB-") {
+        result[PixelSubdetector::PixelBarrel].emplace(1);
+      } else if (subDetString == "TPB+") {
+        result[PixelSubdetector::PixelBarrel].emplace(2);
+      } else {
+        badConfig = true;
+      }
+    } else if (startsWith(subDetString, "TPE")) {
+      if (result.find(PixelSubdetector::PixelEndcap) == result.end())
+        result[PixelSubdetector::PixelEndcap] = std::unordered_set<unsigned int>();
+      if (subDetString == "TPE") {
+        result[PixelSubdetector::PixelEndcap].emplace(1);
+        result[PixelSubdetector::PixelEndcap].emplace(2);
+      } else if (subDetString == "TPE-") {
+        result[PixelSubdetector::PixelEndcap].emplace(1);
+      } else if (subDetString == "TPE+") {
+        result[PixelSubdetector::PixelEndcap].emplace(2);
+      } else {
+        badConfig = true;
+      }
+    } else if (startsWith(subDetString, "TIB")) {
+      if (result.find(StripSubdetector::TIB) == result.end())
+        result[StripSubdetector::TIB] = std::unordered_set<unsigned int>();
+      if (subDetString == "TIB") {
+        result[StripSubdetector::TIB].emplace(1);
+        result[StripSubdetector::TIB].emplace(2);
+      } else if (subDetString == "TIB-") {
+        result[StripSubdetector::TIB].emplace(1);
+      } else if (subDetString == "TIB+") {
+        result[StripSubdetector::TIB].emplace(2);
+      } else {
+        badConfig = true;
+      }
+    } else if (startsWith(subDetString, "TID")) {
+      if (result.find(StripSubdetector::TID) == result.end())
+        result[StripSubdetector::TID] = std::unordered_set<unsigned int>();
+      if (subDetString == "TID") {
+        result[StripSubdetector::TID].emplace(1);
+        result[StripSubdetector::TID].emplace(2);
+      } else if (subDetString == "TID-") {
+        result[StripSubdetector::TID].emplace(1);
+      } else if (subDetString == "TID+") {
+        result[StripSubdetector::TID].emplace(2);
+      } else {
+        badConfig = true;
+      }
+    } else if (startsWith(subDetString, "TOB")) {
+      if (result.find(StripSubdetector::TOB) == result.end())
+        result[StripSubdetector::TOB] = std::unordered_set<unsigned int>();
+      if (subDetString == "TOB") {
+        result[StripSubdetector::TOB].emplace(1);
+        result[StripSubdetector::TOB].emplace(2);
+      } else if (subDetString == "TOB-") {
+        result[StripSubdetector::TOB].emplace(1);
+      } else if (subDetString == "TOB+") {
+        result[StripSubdetector::TOB].emplace(2);
+      } else {
+        badConfig = true;
+      }
+    } else if (startsWith(subDetString, "TEC")) {
+      if (result.find(StripSubdetector::TEC) == result.end())
+        result[StripSubdetector::TEC] = std::unordered_set<unsigned int>();
+      if (subDetString == "TEC") {
+        result[StripSubdetector::TEC].emplace(1);
+        result[StripSubdetector::TEC].emplace(2);
+      } else if (subDetString == "TEC-") {
+        result[StripSubdetector::TEC].emplace(1);
+      } else if (subDetString == "TEC+") {
+        result[StripSubdetector::TEC].emplace(2);
+      } else {
+        badConfig = true;
+      }
     } else {
+      badConfig = true;
+    }
+
+    if (badConfig) {
       throw cms::Exception("BadConfig")
-	<< "[MisalignedTracker] Unsupported subdetector string provided "
-	<< "in 'applyToSubdetectors': " << subDetString;
+        << "[MisalignedTracker] Unsupported subdetector string provided "
+        << "in 'applyToSubdetectors': " << subDetString;
     }
     edm::LogPrint("MisalignedTracker")
       << "Applying misalignment to: " << subDetString << ", ";
   }
   return result;
 }
+
+
+bool
+TrackerSystematicMisalignments::startsWith(const std::string& haystack,
+                                           const std::string& needle) {
+  return haystack.compare(0, needle.length(), needle) == 0;
+}
+
+bool
+TrackerSystematicMisalignments::selectedForMisalignment(const Alignable* ali) {
+  auto subDetIter = applyToSubdetectors_.find(ali->geomDetId().subdetId());
+  if (subDetIter == applyToSubdetectors_.end()) return false;
+  auto tTopo = theAlignableTracker->trackerTopology();
+  unsigned int side;
+  switch (subDetIter->first) {
+  case PixelSubdetector::PixelBarrel:
+    side = align::tpb::halfBarrelNumber(ali->id(), tTopo); break;
+  case PixelSubdetector::PixelEndcap:
+    side = align::tpe::endcapNumber(ali->id(), tTopo); break;
+  case StripSubdetector::TIB:
+    side = align::tib::halfBarrelNumber(ali->id(), tTopo); break;
+  case StripSubdetector::TID:
+    side = align::tid::endcapNumber(ali->id(), tTopo); break;
+  case StripSubdetector::TOB:
+    side = align::tob::halfBarrelNumber(ali->id(), tTopo); break;
+  case StripSubdetector::TEC:
+    side = align::tec::endcapNumber(ali->id(), tTopo); break;
+  default: return false;
+  }
+  return subDetIter->second.find(side) != subDetIter->second.end();
+}
+
 
 
 // Plug in to framework
