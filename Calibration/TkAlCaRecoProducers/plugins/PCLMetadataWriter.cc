@@ -18,85 +18,78 @@
 #include "CondFormats/Common/interface/DropBoxMetadata.h"
 
 
-using namespace std;
-using namespace edm;
-
-PCLMetadataWriter::PCLMetadataWriter(const edm::ParameterSet& pSet){
-  
-  readFromDB = pSet.getParameter<bool>("readFromDB");
-  
-
-  vector<ParameterSet> recordsToMap = pSet.getParameter<vector<ParameterSet> >("recordsToMap");
-  for(vector<ParameterSet>::const_iterator recordPset = recordsToMap.begin();
-      recordPset != recordsToMap.end();
-      ++recordPset) {
-    
-    string record = (*recordPset).getUntrackedParameter<string>("record");
-    map<string, string> jrInfo;
-    if(!readFromDB) {
-      vector<string> paramKeys = (*recordPset).getParameterNames();
-      for(vector<string>::const_iterator key = paramKeys.begin();
-	  key != paramKeys.end();
-	  ++key) {
-	jrInfo["Source"] = "AlcaHarvesting";
-	jrInfo["FileClass"] = "ALCA";
-	if(*key != "record") {
-	  jrInfo[*key] = (*recordPset).getUntrackedParameter<string>(*key);
-	}
+PCLMetadataWriter::PCLMetadataWriter(const edm::ParameterSet& pSet) :
+  readFromDB_(pSet.getParameter<bool>("readFromDB"))
+{
+  auto recordsToMap =
+    pSet.getParameter<std::vector<edm::ParameterSet> >("recordsToMap");
+  for(const auto& recordPset: recordsToMap) {
+    auto record = recordPset.getUntrackedParameter<std::string>("record");
+    std::map<std::string, std::string> jrInfo;
+    if(!readFromDB_) {
+      auto paramKeys = recordPset.getParameterNames();
+      for(const auto& key: paramKeys) {
+        jrInfo["Source"] = "AlcaHarvesting";
+        jrInfo["FileClass"] = "ALCA";
+        if(key != "record") {
+          jrInfo[key] = recordPset.getUntrackedParameter<std::string>(key);
+        }
       }
     }
-    recordMap[record] = jrInfo;
-
+    recordMap_[record] = jrInfo;
   }
-
 }
 
-PCLMetadataWriter::~PCLMetadataWriter(){}
+
+PCLMetadataWriter::~PCLMetadataWriter()
+{
+}
 
 
-void PCLMetadataWriter::analyze(const edm::Event& event, const edm::EventSetup& eSetup) {}
+void PCLMetadataWriter::analyze(const edm::Event&, const edm::EventSetup&)
+{
+}
 
 
-void PCLMetadataWriter::beginRun(const edm::Run& run, const edm::EventSetup& eSetup) {} 
+void PCLMetadataWriter::beginRun(const edm::Run&, const edm::EventSetup&)
+{
+}
 
-void PCLMetadataWriter::endRun(const edm::Run& run, const edm::EventSetup& eSetup) {
 
-  const DropBoxMetadata *metadata = 0;
+void PCLMetadataWriter::endRun(const edm::Run&, const edm::EventSetup& iSetup)
+{
+  const DropBoxMetadata* metadata{nullptr};
 
-  if(readFromDB) {
+  if(readFromDB_) {
     // Read the objects
     edm::ESHandle<DropBoxMetadata> mdPayload;
-    eSetup.get<DropBoxMetadataRcd>().get(mdPayload);
-    
+    iSetup.get<DropBoxMetadataRcd>().get(mdPayload);
+
     metadata = mdPayload.product();
   }
 
   // get the PoolDBOutputService
-  Service<cond::service::PoolDBOutputService> poolDbService;
+  edm::Service<cond::service::PoolDBOutputService> poolDbService;
   if(poolDbService.isAvailable() ) {
     edm::Service<edm::JobReport> jr;
     if (jr.isAvailable()) {
       // the filename is unique for all records
-      string filename = poolDbService->session().connectionString();
+      auto filename = poolDbService->session().connectionString();
 
       // loop over all records
-      for(map<string,  map<string, string> >::const_iterator recordAndMap = recordMap.begin();
-	  recordAndMap != recordMap.end();
-	  ++recordAndMap) {
+      for(const auto& recordAndMap: recordMap_) {
+        auto record = recordAndMap.first;
+        // this is the map of metadata that we write in the JR
+        auto jrInfo = recordAndMap.second;
+        if(readFromDB_) {
+          if(metadata->knowsRecord(record)) {
+            jrInfo = metadata->getRecordParameters(record).getParameterMap();
+          }
+        }
+        jrInfo["inputtag"] = poolDbService->tag(record);
 
-	string record = (*recordAndMap).first;
-	// this is the map of metadata that we write in the JR
-	map<string, string> jrInfo = (*recordAndMap).second;
-	if(readFromDB) {
-	  if(metadata->knowsRecord(record)) {
-	    jrInfo = metadata->getRecordParameters(record).getParameterMap();
-	  }
-	}
-	jrInfo["inputtag"] = poolDbService->tag(record);
-	
-	
-	// actually write in the job report
-	jr->reportAnalysisFile(filename, jrInfo);
+        // actually write in the job report
+        jr->reportAnalysisFile(filename, jrInfo);
       }
     }
   }
