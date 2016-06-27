@@ -241,7 +241,7 @@ bool MillePedeAlignmentAlgorithm::supportsCalibrations() {
 }
 
 //____________________________________________________
-bool MillePedeAlignmentAlgorithm::addCalibrations(const std::vector<IntegratedCalibrationBase*> &iCals)
+bool MillePedeAlignmentAlgorithm::addCalibrations(const Calibrations& iCals)
 {
   theCalibrations.insert(theCalibrations.end(), iCals.begin(), iCals.end());
   thePedeLabels->addCalibrations(iCals);
@@ -617,16 +617,16 @@ int MillePedeAlignmentAlgorithm::addGlobalData(const edm::EventSetup &setup, con
   //calibration parameters
   int globalLabel;
   std::vector<IntegratedCalibrationBase::ValuesIndexPair> derivs;
-  for (auto iCalib = theCalibrations.begin(); iCalib != theCalibrations.end(); ++iCalib) {
+  for (const auto& iCalib: theCalibrations) {
     // get all derivatives of this calibration // const unsigned int num =
-    (*iCalib)->derivatives(derivs, *recHitPtr, tsos, setup, eventInfo);
-    for (auto iValuesInd = derivs.begin(); iValuesInd != derivs.end(); ++iValuesInd) {
+    iCalib->derivatives(derivs, *recHitPtr, tsos, setup, eventInfo);
+    for (const auto& iValuesInd: derivs) {
       // transfer label and x/y derivatives
-      globalLabel = thePedeLabels->calibrationLabel(*iCalib, iValuesInd->second);
+      globalLabel = thePedeLabels->calibrationLabel(iCalib, iValuesInd.second);
       if (globalLabel > 0 && globalLabel <= 2147483647) {
         theIntBuffer.push_back(globalLabel);
-        theDoubleBufferX.push_back(iValuesInd->first.first);
-        theDoubleBufferY.push_back(iValuesInd->first.second);
+        theDoubleBufferX.push_back(iValuesInd.first.first);
+        theDoubleBufferY.push_back(iValuesInd.first.second);
       } else {
         std::cerr << "MillePedeAlignmentAlgorithm::addGlobalData: Invalid label " << globalLabel << " <= 0 or > 2147483647" << std::endl;
       }
@@ -772,14 +772,14 @@ globalDerivativesCalibration(const TransientTrackingRecHit::ConstRecHitPointer &
                              std::vector<int> &globalLabels) const
 {
   std::vector<IntegratedCalibrationBase::ValuesIndexPair> derivs;
-  for (auto iCalib = theCalibrations.begin(); iCalib != theCalibrations.end(); ++iCalib) {
+  for (const auto& iCalib: theCalibrations) {
     // get all derivatives of this calibration // const unsigned int num =
-    (*iCalib)->derivatives(derivs, *recHit, tsos, setup, eventInfo);
-    for (auto iValuesInd = derivs.begin(); iValuesInd != derivs.end(); ++iValuesInd) {
+    iCalib->derivatives(derivs, *recHit, tsos, setup, eventInfo);
+    for (const auto iValuesInd: derivs) {
       // transfer label and x/y derivatives 
-      globalLabels.push_back(thePedeLabels->calibrationLabel(*iCalib, iValuesInd->second));
-      globalDerivativesX.push_back(iValuesInd->first.first);
-      globalDerivativesY.push_back(iValuesInd->first.second);
+      globalLabels.push_back(thePedeLabels->calibrationLabel(iCalib, iValuesInd.second));
+      globalDerivativesX.push_back(iValuesInd.first.first);
+      globalDerivativesY.push_back(iValuesInd.first.second);
     }
   }
 }

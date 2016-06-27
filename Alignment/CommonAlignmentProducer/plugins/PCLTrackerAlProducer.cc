@@ -113,12 +113,6 @@ PCLTrackerAlProducer
 {
   delete theAlignmentAlgo;
 
-  for (auto iCal  = theCalibrations.begin();
-            iCal != theCalibrations.end();
-          ++iCal) {
-    delete *iCal;
-  }
-
   // TODO: Delete monitors as well?
 
   delete theAlignmentParameterStore;
@@ -140,12 +134,8 @@ void PCLTrackerAlProducer
 {
   nevent_ = 0;
 
-  for (auto iCal  = theCalibrations.begin();
-            iCal != theCalibrations.end();
-          ++iCal) {
-    (*iCal)->beginOfJob(theTrackerAlignables,
-                        theMuonAlignables,
-                        theExtraAlignables);
+  for (const auto& iCal: theCalibrations) {
+    iCal->beginOfJob(theTrackerAlignables, theMuonAlignables, theExtraAlignables);
   }
 
   for (auto monitor  = theMonitors.begin();
@@ -169,11 +159,7 @@ void PCLTrackerAlProducer
     (*monitor)->endOfJob();
   }
 
-  for (auto iCal  = theCalibrations.begin();
-            iCal != theCalibrations.end();
-          ++iCal) {
-    (*iCal)->endOfJob();
-  }
+  for (const auto& iCal: theCalibrations) iCal->endOfJob();
 }
 
 //_____________________________________________________________________________
@@ -362,16 +348,10 @@ void PCLTrackerAlProducer
 void PCLTrackerAlProducer
 ::createCalibrations(const edm::ParameterSet& config)
 {
-  edm::VParameterSet calibrations = config.getParameter<edm::VParameterSet>("calibrations");
-
-  for (auto iCalib  = calibrations.begin();
-            iCalib != calibrations.end();
-          ++iCalib) {
-    theCalibrations.push_back(
-      IntegratedCalibrationPluginFactory::get()->create(
-        iCalib->getParameter<std::string>("calibrationName"), *iCalib
-      )
-    );
+  for (const auto& iCalib: config.getParameter<edm::VParameterSet>("calibrations")) {
+    const auto name = iCalib.getParameter<std::string>("calibrationName");
+    theCalibrations.push_back(std::shared_ptr<IntegratedCalibrationBase>
+			      (IntegratedCalibrationPluginFactory::get()->create(name, iCalib)));
   }
 
   // Not all algorithms support calibrations - so do not pass empty vector

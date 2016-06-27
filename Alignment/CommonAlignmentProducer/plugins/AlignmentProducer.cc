@@ -135,10 +135,10 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
   }
 
   // Finally create integrated calibrations:
-  edm::VParameterSet calibrations = iConfig.getParameter<edm::VParameterSet>("calibrations");
-  for (auto iCalib = calibrations.begin(); iCalib != calibrations.end(); ++iCalib) {
-    const std::string name(iCalib->getParameter<std::string>("calibrationName"));
-    theCalibrations.push_back(IntegratedCalibrationPluginFactory::get()->create(name, *iCalib));
+  for (const auto& iCalib: iConfig.getParameter<edm::VParameterSet>("calibrations")) {
+    const auto name = iCalib.getParameter<std::string>("calibrationName");
+    theCalibrations.push_back(std::shared_ptr<IntegratedCalibrationBase>
+			      (IntegratedCalibrationPluginFactory::get()->create(name, iCalib)));
     // exception comes from line before: if (!theCalibrations.back()) throw cms::Exception(..) << ..;
   }
 
@@ -152,10 +152,6 @@ AlignmentProducer::~AlignmentProducer()
   delete theAlignmentAlgo;
 
   // Delete monitors as well??
-
-  for (auto iCal = theCalibrations.begin(); iCal != theCalibrations.end(); ++iCal) {
-    delete *iCal; // delete integrated calibration pointed to by (*iCal)
-  }
 
   delete theAlignmentParameterStore;
   delete theAlignableExtras;
@@ -302,8 +298,8 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
   theAlignmentAlgo->initialize( iSetup, 
 				theAlignableTracker, theAlignableMuon, theAlignableExtras,
 				theAlignmentParameterStore );
-  for (auto iCal = theCalibrations.begin(); iCal != theCalibrations.end(); ++iCal) {
-    (*iCal)->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignableExtras);
+  for (const auto& iCal: theCalibrations) {
+    iCal->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignableExtras);
   }
   // Not all algorithms support calibrations - so do not pass empty vector
   // and throw if non-empty and not supported:
@@ -382,9 +378,7 @@ void AlignmentProducer::endOfJob()
 				<< bsOutput.str();
     }
 
-    for (auto iCal = theCalibrations.begin(); iCal != theCalibrations.end(); ++iCal) {
-      (*iCal)->endOfJob();
-    }
+    for (const auto iCal: theCalibrations) iCal->endOfJob();
 
   }
 }
@@ -400,9 +394,7 @@ void AlignmentProducer::startingNewLoop(unsigned int iLoop )
 
   theAlignmentAlgo->startNewLoop();
   // FIXME: Should this be done in algorithm::startNewLoop()??
-  for (auto iCal = theCalibrations.begin(); iCal != theCalibrations.end(); ++iCal) {
-    (*iCal)->startNewLoop();
-  }
+  for (const auto& iCal: theCalibrations) iCal->startNewLoop();
 
   for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();  monitor != theMonitors.end();  ++monitor) {
      (*monitor)->startingNewLoop();
@@ -457,9 +449,7 @@ AlignmentProducer::endOfLoop(const edm::EventSetup& iSetup, unsigned int iLoop)
 
   theAlignmentAlgo->terminate(iSetup);
   // FIXME: Should this be done in algorithm::terminate(const edm::EventSetup& iSetup)??
-  for (auto iCal = theCalibrations.begin(); iCal != theCalibrations.end(); ++iCal) {
-    (*iCal)->endOfLoop();
-  }
+  for (const auto& iCal: theCalibrations) iCal->endOfLoop();
 
   for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();  monitor != theMonitors.end();  ++monitor) {
      (*monitor)->endOfLoop(iSetup);

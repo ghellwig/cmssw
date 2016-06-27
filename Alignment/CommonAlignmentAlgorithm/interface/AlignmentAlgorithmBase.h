@@ -19,6 +19,7 @@
 
 
 #include <vector>
+#include <memory>
 #include <utility>
 
 class AlignableTracker;
@@ -46,7 +47,7 @@ namespace reco { class Track; class BeamSpot; }
 typedef std::pair<const Trajectory*, const reco::Track*> ConstTrajTrackPair;
 typedef std::vector< ConstTrajTrackPair >                ConstTrajTrackPairs;
 
-typedef std::vector<IntegratedCalibrationBase*> Calibrations;
+using Calibrations = std::vector<std::shared_ptr<IntegratedCalibrationBase> >;
 
 typedef cond::RealTimeType<cond::runnumber>::type RunNumber;
 typedef std::pair<RunNumber,RunNumber>            RunRange;
@@ -125,7 +126,6 @@ public:
   /// default implementation returns false.
   virtual bool supportsCalibrations() { return false; }
   /// Pass integrated calibrations to algorithm, to be called after initialize()
-  /// Calibrations' ownership is NOT passed to algorithm
   virtual bool addCalibrations(const Calibrations&) { return false; }
 
   /// Returns whether algorithm proccesses events in current configuration

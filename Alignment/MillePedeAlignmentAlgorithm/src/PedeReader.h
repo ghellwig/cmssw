@@ -17,12 +17,12 @@
 #include <vector>
 
 #include <Alignment/MillePedeAlignmentAlgorithm/interface/PedeLabelerBase.h>
+#include "Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationBase.h"
 
 class PedeSteerer;
 class PedeLabelerBase;
 class Alignable;
 class AlignmentParameters;
-class IntegratedCalibrationBase;
 
 namespace edm {
   class ParameterSet;
@@ -55,7 +55,7 @@ class PedeReader
   Alignable* setParameter(unsigned int paramLabel, unsigned int bufLength, const float *buf,
 			  bool setUserVars) const;
   /// Set pede results stored in 'buf' to parameter 'paramNum' of IntegratedCalibrationBase.
-  bool setCalibrationParameter(IntegratedCalibrationBase* calib, unsigned int paramNum,
+  bool setCalibrationParameter(std::shared_ptr<IntegratedCalibrationBase> calib, unsigned int paramNum,
                                unsigned int bufLength, const float *buf) const;
 
   /// returns parameters of alignable (creates if not yet existing, but MillePedeVariables

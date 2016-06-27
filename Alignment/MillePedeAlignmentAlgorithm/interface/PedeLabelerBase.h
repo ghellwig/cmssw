@@ -15,6 +15,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
+#include "Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationBase.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
 
 #include "CondFormats/Common/interface/Time.h"
@@ -25,7 +26,6 @@ class Alignable;
 class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
-class IntegratedCalibrationBase;
 
 /***************************************
 ****************************************/
@@ -54,7 +54,7 @@ class PedeLabelerBase
 		  const edm::ParameterSet & config);
   virtual ~PedeLabelerBase() {}
   /// tell labeler to treat also integrated calibrations 
-  virtual void addCalibrations(const std::vector<IntegratedCalibrationBase*> &iCals);
+  virtual void addCalibrations(const Calibrations& iCals);
 
   /// uniqueId of Alignable, 0 if alignable not known
   /// between this ID and the next there is enough 'space' to add parameter
@@ -97,7 +97,7 @@ class PedeLabelerBase
   virtual unsigned int lasBeamIdFromLabel(unsigned int label) const = 0;
   /// calibration and its parameter number from label,
   /// if label does not belong to any calibration return nullptr as pair.first
-  virtual std::pair<IntegratedCalibrationBase*, unsigned int>
+  virtual std::pair<std::shared_ptr<IntegratedCalibrationBase>, unsigned int>
     calibrationParamFromLabel(unsigned int label) const;
 
   virtual const RunRange& runRangeFromLabel(unsigned int label) const {
@@ -108,7 +108,7 @@ class PedeLabelerBase
   virtual unsigned int firstFreeLabel() const;
 
   /// label for parameter 'paramNum' (counted from 0) of an integrated calibration
-  virtual unsigned int calibrationLabel(const IntegratedCalibrationBase* calib,
+  virtual unsigned int calibrationLabel(std::shared_ptr<const IntegratedCalibrationBase> calib,
                                         unsigned int paramNum) const;
 
   static const unsigned int theMaxNumParam;
@@ -124,7 +124,7 @@ class PedeLabelerBase
 
  private:
   /// pairs of calibrations and their first label
-  std::vector<std::pair<IntegratedCalibrationBase*, unsigned int> > theCalibrationLabels;
+  std::vector<std::pair<std::shared_ptr<IntegratedCalibrationBase>, unsigned int> > theCalibrationLabels;
 
 };
 

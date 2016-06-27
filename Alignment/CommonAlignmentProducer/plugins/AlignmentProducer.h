@@ -158,7 +158,7 @@ class AlignmentProducer : public edm::ESProducerLooper
   AlignmentAlgorithmBase* theAlignmentAlgo;
   AlignmentParameterStore* theAlignmentParameterStore;
   std::vector<AlignmentMonitorBase*> theMonitors;
-  std::vector<IntegratedCalibrationBase*> theCalibrations;
+  Calibrations theCalibrations;
 
   AlignableExtras* theAlignableExtras;
   AlignableTracker* theAlignableTracker;

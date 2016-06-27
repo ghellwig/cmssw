@@ -78,8 +78,7 @@ bool PedeReader::read(std::vector<Alignable*> &alignables, bool setUserVars)
     // First check whether parameter is from any calibration (to be done before RunRange check:
     // run dependence for them is not handled here, but probably inside the calibration).
     // Double setting by calling read(..) twice for different RunRanges shouldn't harm.
-    std::pair<IntegratedCalibrationBase*, unsigned int> calibParam
-      = myLabels.calibrationParamFromLabel(paramLabel);
+    const auto calibParam = myLabels.calibrationParamFromLabel(paramLabel);
     if (calibParam.first) { // label belongs to a calibration
       if (this->setCalibrationParameter(calibParam.first, calibParam.second, bufferPos, buffer)) {
         ++nParamCalib;
@@ -228,8 +227,9 @@ Alignable* PedeReader::setParameter(unsigned int paramLabel,
 }
 
 //__________________________________________________________________________________________________
-bool PedeReader::setCalibrationParameter(IntegratedCalibrationBase* calib, unsigned int paramNum,
-                                         unsigned int bufLength, const float *buf) const
+bool PedeReader::setCalibrationParameter(std::shared_ptr<IntegratedCalibrationBase> calib,
+					 unsigned int paramNum, unsigned int bufLength,
+					 const float *buf) const
 {
   if (!calib || !buf) return false;
 
