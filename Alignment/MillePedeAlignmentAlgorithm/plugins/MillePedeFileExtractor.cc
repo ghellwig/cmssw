@@ -1,14 +1,16 @@
 // Original Author:  Broen van Besien
 //         Created:  Mon, 23 Mar 2015 14:56:15 GMT
 
-#include "Alignment/MillePedeAlignmentAlgorithm/plugins/MillePedeFileExtractor.h"
+#include "MillePedeFileExtractor.h"
 
+#include <cstdio>
 #include <zlib.h>
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CondFormats/Common/interface/FileBlob.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Utilities/interface/EDGetToken.h"
+
 
 MillePedeFileExtractor::MillePedeFileExtractor(const edm::ParameterSet& iConfig)
     : outputDir_(iConfig.getParameter<std::string>("fileDir")),
@@ -24,7 +26,9 @@ MillePedeFileExtractor::MillePedeFileExtractor(const edm::ParameterSet& iConfig)
   }
 }
 
+
 MillePedeFileExtractor::~MillePedeFileExtractor() {}
+
 
 void MillePedeFileExtractor::endLuminosityBlock(const edm::LuminosityBlock& iLumi,
                                                 const edm::EventSetup&)
@@ -41,12 +45,13 @@ void MillePedeFileExtractor::endLuminosityBlock(const edm::LuminosityBlock& iLum
     // Loop over the FileBlobs in the vector, and write them to files:
     for (const auto& blob: *fileBlobCollection) {
       if (enoughBinaries()) break;
-      // We format the filename with a number, starting from 0 to the size of
-      // our vector.
+      // We format the filename with a number.
       // For this to work, the outputBinaryFile config parameter must contain a
       // formatting directive for a number, like %04d.
-      char theNumberedOutputFileName[200];
-      sprintf(theNumberedOutputFileName, outputFileName_.c_str(), nBinaries_);
+      const auto finalNameLength = // add 1 to leave room for trailing '\0':
+        std::snprintf(nullptr, 0, outputFileName_.c_str(), nBinaries_) + 1;
+      char theNumberedOutputFileName[finalNameLength];
+      std::sprintf(theNumberedOutputFileName, outputFileName_.c_str(), nBinaries_);
 
       // Log the filename to which we will write...
       edm::LogInfo("MillePedeFileActions")
@@ -66,7 +71,7 @@ void MillePedeFileExtractor::endLuminosityBlock(const edm::LuminosityBlock& iLum
 
 
 void MillePedeFileExtractor::writeGzipped(const FileBlob& blob,
-					  const std::string& fileName) {
+                                          const std::string& fileName) {
   // - use zlib directly to avoid boost dependencies for this simple task
   // - zlib and gzip compression differ -> get uncompressed blob first
   auto uncompressedBlob = blob.getUncompressedBlob();

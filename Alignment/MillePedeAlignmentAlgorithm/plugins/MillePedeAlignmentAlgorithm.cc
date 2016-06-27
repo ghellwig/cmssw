@@ -59,6 +59,7 @@
 #include <sstream>
 #include <algorithm>
 #include <sys/stat.h>
+#include <cstdio>
 
 #include <TMath.h>
 #include <TMatrixDSymEigen.h>
@@ -330,9 +331,11 @@ std::vector<std::string> MillePedeAlignmentAlgorithm::getExistingFormattedFiles(
     while (true) {
       // Create a formatted version of the filename, with growing numbers
       // If the parameter doesn't contain a formatting directive, it just stays unchanged
-      char theNumberedInputFileName[200];
-      sprintf(theNumberedInputFileName, theInputFileName.c_str(), theNumber);
-      std::string theCompleteInputFileName = theDir + theNumberedInputFileName;
+      const auto finalNameLength = // add 1 to leave room for trailing '\0':
+        std::snprintf(nullptr, 0, theInputFileName.c_str(), theNumber) + 1;
+      char theNumberedInputFileName[finalNameLength];
+      std::sprintf(theNumberedInputFileName, theInputFileName.c_str(), theNumber);
+      const auto theCompleteInputFileName = theDir + theNumberedInputFileName;
       const auto endOfStrippedFileName = theCompleteInputFileName.rfind(" --");
       const auto strippedInputFileName = theCompleteInputFileName.substr(0, endOfStrippedFileName);
       // Check if the file exists
