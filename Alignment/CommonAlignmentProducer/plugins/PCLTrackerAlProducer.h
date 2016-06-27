@@ -29,7 +29,7 @@
 #include <iostream>
 
 /*** Core framework functionality ***/
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/ESWatcher.h"
 
@@ -81,7 +81,10 @@
 
 
 
-class PCLTrackerAlProducer : public edm::EDAnalyzer {
+class PCLTrackerAlProducer :
+  public edm::one::EDAnalyzer<edm::one::WatchRuns,
+                              edm::one::WatchLuminosityBlocks,
+                              edm::one::SharedResources> {
   //========================== PUBLIC METHODS ==================================
   public: //====================================================================
 
