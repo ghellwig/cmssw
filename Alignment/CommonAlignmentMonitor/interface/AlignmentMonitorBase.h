@@ -112,6 +112,6 @@ class AlignmentMonitorBase
 };
 
 /*** Global typedefs ***/
-typedef std::vector<AlignmentMonitorBase*> AlignmentMonitors;
+using AlignmentMonitors = std::vector<std::unique_ptr<AlignmentMonitorBase> >;
 
 #endif

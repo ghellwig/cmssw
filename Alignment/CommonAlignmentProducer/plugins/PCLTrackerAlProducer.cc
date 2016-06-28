@@ -109,8 +109,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  // TODO: Delete monitors as well?
-
   delete theTrackerAlignables;
   delete theMuonAlignables;
   delete theExtraAlignables;
@@ -133,12 +131,10 @@ void PCLTrackerAlProducer
     iCal->beginOfJob(theTrackerAlignables, theMuonAlignables, theExtraAlignables);
   }
 
-  for (auto monitor  = theMonitors.begin();
-            monitor != theMonitors.end();
-          ++monitor) {
-     (*monitor)->beginOfJob(theTrackerAlignables,
-                            theMuonAlignables,
-                            theAlignmentParameterStore);
+  for (const auto& monitor: theMonitors) {
+     monitor->beginOfJob(theTrackerAlignables,
+                         theMuonAlignables,
+                         theAlignmentParameterStore);
   }
 }
 
@@ -147,13 +143,7 @@ void PCLTrackerAlProducer
 ::endJob()
 {
   finish();
-
-  for (auto monitor  = theMonitors.begin();
-            monitor != theMonitors.end();
-          ++monitor) {
-    (*monitor)->endOfJob();
-  }
-
+  for (const auto& monitor: theMonitors) monitor->endOfJob();
   for (const auto& iCal: theCalibrations) iCal->endOfJob();
 }
 
@@ -278,10 +268,8 @@ void PCLTrackerAlProducer
     // Run the alignment algorithm with its input
     theAlignmentAlgo->run(setup, eventInfo);
 
-    for (auto monitor  = theMonitors.begin();
-              monitor != theMonitors.end();
-            ++monitor) {
-      (*monitor)->duringLoop(event, setup, trajTracks); // forward eventInfo?
+    for (const auto& monitor: theMonitors) {
+      monitor->duringLoop(event, setup, trajTracks); // forward eventInfo?
     }
 
   } else {
@@ -321,22 +309,21 @@ void PCLTrackerAlProducer
 void PCLTrackerAlProducer
 ::createMonitors(const edm::ParameterSet& config)
 {
-  edm::ParameterSet monitorConfig   = config.getParameter<edm::ParameterSet>("monitorConfig");
-  std::vector<std::string> monitors = monitorConfig.getUntrackedParameter<std::vector<std::string>>("monitors");
+  const auto monitorConfig = config.getParameter<edm::ParameterSet>("monitorConfig");
+  const auto monitors =
+    monitorConfig.getUntrackedParameter<std::vector<std::string>>("monitors");
 
-  for (auto miter  = monitors.begin();
-            miter != monitors.end();
-          ++miter) {
-    AlignmentMonitorBase* newMonitor = AlignmentMonitorPluginFactory::get()->create(
-      *miter, monitorConfig.getUntrackedParameter<edm::ParameterSet>(*miter)
-    );
+  for (const auto& miter: monitors) {
+    std::unique_ptr<AlignmentMonitorBase> newMonitor
+      (AlignmentMonitorPluginFactory::get()
+       ->create(miter, monitorConfig.getUntrackedParameter<edm::ParameterSet>(miter)));
 
     if (!newMonitor) {
-      throw cms::Exception("BadConfig") << "Couldn't find monitor named "
-                                        << *miter;
+      throw cms::Exception("BadConfig")
+	<< "Couldn't find monitor named " << miter;
     }
 
-    theMonitors.push_back(newMonitor);
+    theMonitors.emplace_back(std::move(newMonitor));
   }
 }
 

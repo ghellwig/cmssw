@@ -126,14 +126,21 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
   }
 
   // Now create monitors:
-  edm::ParameterSet monitorConfig = iConfig.getParameter<edm::ParameterSet>( "monitorConfig" );
-  std::vector<std::string> monitors = monitorConfig.getUntrackedParameter<std::vector<std::string> >( "monitors" );
-  for (std::vector<std::string>::const_iterator miter = monitors.begin();  miter != monitors.end();  ++miter) {
-    AlignmentMonitorBase* newMonitor = AlignmentMonitorPluginFactory::get()->create(*miter, monitorConfig.getUntrackedParameter<edm::ParameterSet>(*miter));
+  const auto monitorConfig =
+    iConfig.getParameter<edm::ParameterSet>( "monitorConfig" );
+  const auto monitors =
+    monitorConfig.getUntrackedParameter<std::vector<std::string> >("monitors");
+  for (const auto& miter: monitors) {
+    std::unique_ptr<AlignmentMonitorBase> newMonitor
+      (AlignmentMonitorPluginFactory::get()
+       ->create(miter, monitorConfig.getUntrackedParameter<edm::ParameterSet>(miter)));
 
-    if (!newMonitor) throw cms::Exception("BadConfig") << "Couldn't find monitor named " << *miter;
+    if (!newMonitor) {
+      throw cms::Exception("BadConfig")
+	<< "Couldn't find monitor named " << miter;
+    }
 
-    theMonitors.push_back(newMonitor);
+    theMonitors.emplace_back(std::move(newMonitor));
   }
 
   // Finally create integrated calibrations:
@@ -151,8 +158,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 // Delete new objects
 AlignmentProducer::~AlignmentProducer()
 {
-  // Delete monitors as well??
-
   delete theAlignableExtras;
   delete theAlignableTracker;
   delete theAlignableMuon;
@@ -320,9 +325,7 @@ void AlignmentProducer::endOfJob()
 {
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::endOfJob";
 
-  for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();  monitor != theMonitors.end();  ++monitor) {
-     (*monitor)->endOfJob();
-  }
+  for (const auto& monitor: theMonitors) monitor->endOfJob();
 
   if (0 == nevent_) {
     edm::LogError("Alignment") << "@SUB=AlignmentProducer::endOfJob" << "Did not process any "
@@ -395,9 +398,7 @@ void AlignmentProducer::startingNewLoop(unsigned int iLoop )
   // FIXME: Should this be done in algorithm::startNewLoop()??
   for (const auto& iCal: theCalibrations) iCal->startNewLoop();
 
-  for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();  monitor != theMonitors.end();  ++monitor) {
-     (*monitor)->startingNewLoop();
-  }
+  for (const auto& monitor: theMonitors) monitor->startingNewLoop();
 
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::startingNewLoop" 
                             << "Now physically apply alignments to  geometry...";
@@ -450,9 +451,7 @@ AlignmentProducer::endOfLoop(const edm::EventSetup& iSetup, unsigned int iLoop)
   // FIXME: Should this be done in algorithm::terminate(const edm::EventSetup& iSetup)??
   for (const auto& iCal: theCalibrations) iCal->endOfLoop();
 
-  for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();  monitor != theMonitors.end();  ++monitor) {
-     (*monitor)->endOfLoop(iSetup);
-  }
+  for (const auto& monitor: theMonitors) monitor->endOfLoop(iSetup);
 
   if ( iLoop == theMaxLoops-1 || iLoop >= theMaxLoops ) return kStop;
   else return kContinue;
@@ -509,9 +508,8 @@ AlignmentProducer::duringLoop( const edm::Event& event,
     theAlignmentAlgo->run(setup, eventInfo);
 
 
-    for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();
-	 monitor != theMonitors.end();  ++monitor) {
-      (*monitor)->duringLoop(event, setup, trajTracks); // forward eventInfo?
+    for (const auto& monitor: theMonitors) {
+      monitor->duringLoop(event, setup, trajTracks); // forward eventInfo?
     }
   } else {
     edm::LogError("Alignment") << "@SUB=AlignmentProducer::duringLoop" 
