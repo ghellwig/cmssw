@@ -82,7 +82,9 @@
 
 
 class PCLTrackerAlProducer :
-  public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::WatchLuminosityBlocks> {
+  public edm::one::EDAnalyzer<edm::one::WatchRuns,
+			      edm::one::WatchLuminosityBlocks,
+			      edm::one::SharedResources> {
   //========================== PUBLIC METHODS ==================================
   public: //====================================================================
 

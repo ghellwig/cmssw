@@ -55,6 +55,7 @@
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/Records/interface/MuonGeometryRecord.h"
 #include "Geometry/Records/interface/MuonNumberingRecord.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 
 
@@ -102,6 +103,8 @@ PCLTrackerAlProducer
   createAlignmentAlgorithm(config);
   createCalibrations      (config);
   createMonitors          (config);
+
+  usesResource(TFileService::kSharedResource); // 'theMonitors' use it
 }
 
 //_____________________________________________________________________________
