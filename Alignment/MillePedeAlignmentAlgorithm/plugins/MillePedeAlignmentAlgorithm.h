@@ -65,7 +65,7 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
   /// Called at beginning of job
   virtual void initialize(const edm::EventSetup &setup,
 			  AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-			  AlignmentParameterStore *store) override;
+			  std::shared_ptr<AlignmentParameterStore> store) override;
 
   /// Returns whether MP supports calibrations
   virtual bool supportsCalibrations() override;
@@ -241,7 +241,7 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
   edm::ParameterSet         theConfig;
   unsigned int              theMode;
   std::string               theDir; /// directory for all kind of files
-  AlignmentParameterStore  *theAlignmentParameterStore;
+  std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
   std::vector<Alignable*>   theAlignables;
   std::unique_ptr<AlignableNavigator>    theAlignableNavigator;
   std::unique_ptr<MillePedeMonitor>      theMonitor;

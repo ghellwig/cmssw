@@ -52,7 +52,8 @@ class AlignmentMonitorBase
       virtual ~AlignmentMonitorBase() {}
 
       /// Called at beginning of job: don't reimplement
-      void beginOfJob(AlignableTracker *pTracker, AlignableMuon *pMuon, AlignmentParameterStore *pStore);
+      void beginOfJob(AlignableTracker *pTracker, AlignableMuon *pMuon,
+                      std::shared_ptr<AlignmentParameterStore> pStore);
 
       /// Called at beginning of loop: don't reimplement
       void startingNewLoop();
@@ -90,7 +91,7 @@ class AlignmentMonitorBase
       int                     iteration()    { return m_iteration; }
       AlignableTracker        *pTracker()    { return mp_tracker; }
       AlignableMuon           *pMuon()       { return mp_muon; }
-      AlignmentParameterStore *pStore()      { return mp_store; }
+      std::shared_ptr<AlignmentParameterStore> pStore() { return mp_store; }
       AlignableNavigator      *pNavigator()  { return mp_navigator; }
 
       const edm::InputTag m_beamSpotTag;
@@ -104,7 +105,7 @@ class AlignmentMonitorBase
       int m_iteration;
       AlignableTracker         *mp_tracker;
       AlignableMuon            *mp_muon;
-      AlignmentParameterStore  *mp_store;
+      std::shared_ptr<AlignmentParameterStore> mp_store;
       AlignableNavigator       *mp_navigator;
 
       std::map<std::vector<std::string>, TFileDirectory*> m_baseDirMap, m_iterDirMap;

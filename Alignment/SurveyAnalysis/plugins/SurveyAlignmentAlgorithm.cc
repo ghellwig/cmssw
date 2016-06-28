@@ -1,9 +1,8 @@
 #include "Alignment/CommonAlignment/interface/AlignableObjectId.h"
-#include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentParameterStore.h"
 #include "Alignment/SurveyAnalysis/interface/SurveyAlignmentSensor.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "Alignment/SurveyAnalysis/plugins/SurveyAlignmentAlgorithm.h"
+#include "SurveyAlignmentAlgorithm.h"
 
 SurveyAlignmentAlgorithm::SurveyAlignmentAlgorithm(const edm::ParameterSet& cfg):
   AlignmentAlgorithmBase(cfg),
@@ -17,7 +16,7 @@ void SurveyAlignmentAlgorithm::initialize(const edm::EventSetup&,
 					  AlignableTracker*,
 					  AlignableMuon*,
 					  AlignableExtras*,
-					  AlignmentParameterStore* store)
+					  std::shared_ptr<AlignmentParameterStore> store)
 {
   std::vector<align::StructureType> levels;
 

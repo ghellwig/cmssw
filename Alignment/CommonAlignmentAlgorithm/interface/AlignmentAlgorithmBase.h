@@ -120,7 +120,7 @@ public:
                            AlignableTracker* tracker,
                            AlignableMuon* muon,
                            AlignableExtras* extras,
-                           AlignmentParameterStore* store ) = 0;
+                           std::shared_ptr<AlignmentParameterStore> store) = 0;
 
   /// Returns whether calibrations is supported by algorithm,
   /// default implementation returns false.

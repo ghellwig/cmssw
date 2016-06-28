@@ -52,9 +52,10 @@
 
 //_________________________________________________________________________
 PedeSteerer::PedeSteerer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras,
-			 AlignmentParameterStore *store, const PedeLabelerBase *labels,
+                         std::shared_ptr<const AlignmentParameterStore> store,
+                         const PedeLabelerBase *labels,
                          const edm::ParameterSet &config, const std::string &defaultDir,
-			 bool noSteerFiles) :
+                         bool noSteerFiles) :
   myParameterStore(store), myLabels(labels), myConfig(config),
   myDirectory(myConfig.getUntrackedParameter<std::string>("fileDir")),
   myNoSteerFiles(noSteerFiles),

@@ -78,7 +78,6 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  theAlignmentParameterStore(0),
   theAlignableExtras(0), theAlignableTracker(0), theAlignableMuon(0), 
   globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
@@ -154,7 +153,6 @@ AlignmentProducer::~AlignmentProducer()
 {
   // Delete monitors as well??
 
-  delete theAlignmentParameterStore;
   delete theAlignableExtras;
   delete theAlignableTracker;
   delete theAlignableMuon;
@@ -265,7 +263,8 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
   // Create AlignmentParameterStore 
   edm::ParameterSet aliParamStoreCfg = 
     theParameterSet.getParameter<edm::ParameterSet>("ParameterStore");
-  theAlignmentParameterStore = new AlignmentParameterStore(theAlignables, aliParamStoreCfg);
+  theAlignmentParameterStore =
+    std::make_shared<AlignmentParameterStore>(theAlignables, aliParamStoreCfg);
   edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::beginOfJob" 
                             << "AlignmentParameterStore created!";
 
@@ -296,9 +295,9 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
   this->simpleMisalignment_(theAlignables, sParSel, stRandomShift_, stRandomRotation_, true);
 
   // Initialize alignment algorithm and integrated calibration and pass the latter to algorithm
-  theAlignmentAlgo->initialize( iSetup, 
-				theAlignableTracker, theAlignableMuon, theAlignableExtras,
-				theAlignmentParameterStore );
+  theAlignmentAlgo->initialize(iSetup,
+                               theAlignableTracker, theAlignableMuon, theAlignableExtras,
+                               theAlignmentParameterStore);
   for (const auto& iCal: theCalibrations) {
     iCal->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignableExtras);
   }
@@ -310,9 +309,8 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
 				      << "for algorithm not supporting it.";
   }
 
-  for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = theMonitors.begin();
-       monitor != theMonitors.end();  ++monitor) {
-     (*monitor)->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignmentParameterStore);
+  for (const auto& monitor: theMonitors) {
+     monitor->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignmentParameterStore);
   }
 }
 

@@ -38,7 +38,7 @@ class PedeSteerer
   /// constructor from AlignableTracker/AlignableMuon, their AlignmentParameterStore and the labeler
   /// (NOTE: The latter two must live longer than the constructed PedeSteerer!)
   PedeSteerer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras,
-	      AlignmentParameterStore *store,
+	      std::shared_ptr<const AlignmentParameterStore> store,
 	      const PedeLabelerBase *labels, const edm::ParameterSet &config,
 	      const std::string &defaultDir, bool noSteerFiles);
   /** non-virtual destructor: do not inherit from this class **/
@@ -112,7 +112,7 @@ class PedeSteerer
   std::ofstream* createSteerFile(const std::string &name, bool addToList);
 
   // data members
-  const AlignmentParameterStore *myParameterStore; /// not the owner!
+  std::shared_ptr<const AlignmentParameterStore> myParameterStore;
   const PedeLabelerBase         *myLabels; /// pointer to labeler (not the owner)
 
   edm::ParameterSet myConfig;

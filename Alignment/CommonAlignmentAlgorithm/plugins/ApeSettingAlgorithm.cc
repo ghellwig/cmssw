@@ -69,7 +69,7 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
   /// Call at beginning of job
   virtual void initialize(const edm::EventSetup &setup, 
 			  AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-			  AlignmentParameterStore *store) override;
+			  std::shared_ptr<AlignmentParameterStore> store) override;
 
   /// Call at end of job
   virtual void terminate(const edm::EventSetup& iSetup) override;
@@ -120,7 +120,7 @@ ApeSettingAlgorithm::~ApeSettingAlgorithm()
 //____________________________________________________
 void ApeSettingAlgorithm::initialize(const edm::EventSetup &setup, 
 				     AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-				     AlignmentParameterStore *store)
+				     std::shared_ptr<AlignmentParameterStore> store)
 {
  theAlignableNavigator = new AlignableNavigator(tracker, muon);
  theTracker = tracker;

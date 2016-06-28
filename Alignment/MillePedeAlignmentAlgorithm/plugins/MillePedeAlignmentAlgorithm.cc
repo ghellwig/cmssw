@@ -118,7 +118,7 @@ MillePedeAlignmentAlgorithm::~MillePedeAlignmentAlgorithm()
 //____________________________________________________
 void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup, 
                                              AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-                                             AlignmentParameterStore *store)
+                                             std::shared_ptr<AlignmentParameterStore> store)
 {
   if (muon) {
     edm::LogWarning("Alignment") << "@SUB=MillePedeAlignmentAlgorithm::initialize"

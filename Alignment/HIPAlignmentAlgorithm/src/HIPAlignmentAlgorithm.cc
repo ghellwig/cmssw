@@ -118,7 +118,7 @@ HIPAlignmentAlgorithm::HIPAlignmentAlgorithm(const edm::ParameterSet& cfg):
 void 
 HIPAlignmentAlgorithm::initialize( const edm::EventSetup& setup, 
 				   AlignableTracker* tracker, AlignableMuon* muon, AlignableExtras* extras,
-				   AlignmentParameterStore* store )
+				   std::shared_ptr<AlignmentParameterStore> store )
 {
   edm::LogWarning("Alignment") << "[HIPAlignmentAlgorithm] Initializing...";
 

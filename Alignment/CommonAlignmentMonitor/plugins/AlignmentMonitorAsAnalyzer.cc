@@ -82,7 +82,7 @@ class AlignmentMonitorAsAnalyzer : public edm::EDAnalyzer {
 
       AlignableTracker *m_alignableTracker;
       AlignableMuon *m_alignableMuon;
-      AlignmentParameterStore *m_alignmentParameterStore;
+      std::shared_ptr<AlignmentParameterStore> m_alignmentParameterStore;
 
       std::vector<AlignmentMonitorBase*> m_monitors;
       const edm::EventSetup *m_lastSetup;
@@ -106,7 +106,6 @@ AlignmentMonitorAsAnalyzer::AlignmentMonitorAsAnalyzer(const edm::ParameterSet& 
    , m_aliParamStoreCfg(iConfig.getParameter<edm::ParameterSet>("ParameterStore"))
    , m_alignableTracker(NULL)
    , m_alignableMuon(NULL)
-   , m_alignmentParameterStore(NULL)
 {
    std::vector<std::string> monitors = iConfig.getUntrackedParameter<std::vector<std::string> >( "monitors" );
 
@@ -124,7 +123,6 @@ AlignmentMonitorAsAnalyzer::~AlignmentMonitorAsAnalyzer()
 {
    delete m_alignableTracker;
    delete m_alignableMuon;
-   delete m_alignmentParameterStore;
 }
 
 
@@ -192,7 +190,8 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       
       m_alignableTracker = new AlignableTracker( &(*theTracker), tTopo );
       m_alignableMuon = new AlignableMuon( &(*theMuonDT), &(*theMuonCSC) );
-      m_alignmentParameterStore = new AlignmentParameterStore(empty_alignables, m_aliParamStoreCfg);
+      m_alignmentParameterStore =
+	std::make_shared<AlignmentParameterStore>(empty_alignables, m_aliParamStoreCfg);
       
       for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = m_monitors.begin();  monitor != m_monitors.end();  ++monitor) {
 	(*monitor)->beginOfJob(m_alignableTracker, m_alignableMuon, m_alignmentParameterStore);

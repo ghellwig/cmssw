@@ -62,7 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  theAlignmentParameterStore(0),
   theTrackerAlignables(0),
   theMuonAlignables(0),
   theExtraAlignables(0),
@@ -112,7 +111,6 @@ PCLTrackerAlProducer
 {
   // TODO: Delete monitors as well?
 
-  delete theAlignmentParameterStore;
   delete theTrackerAlignables;
   delete theMuonAlignables;
   delete theExtraAlignables;
@@ -584,8 +582,8 @@ void PCLTrackerAlProducer
   edm::LogInfo("Alignment") << "@SUB=PCLTrackerAlProducer::buildParameterStore"
                             << "Creating AlignmentParameterBuilder";
 
-  edm::ParameterSet alParamBuildCfg = theParameterSet.getParameter<edm::ParameterSet>("ParameterBuilder");
-  edm::ParameterSet alParamStoreCfg = theParameterSet.getParameter<edm::ParameterSet>("ParameterStore");
+  const auto alParamBuildCfg = theParameterSet.getParameter<edm::ParameterSet>("ParameterBuilder");
+  const auto alParamStoreCfg = theParameterSet.getParameter<edm::ParameterSet>("ParameterStore");
 
   AlignmentParameterBuilder alignmentParameterBuilder(theTrackerAlignables,
                                                       theMuonAlignables,
@@ -603,7 +601,8 @@ void PCLTrackerAlProducer
                             << "got " << theAlignables.size() << " alignables";
 
   // Create AlignmentParameterStore
-  theAlignmentParameterStore = new AlignmentParameterStore(theAlignables, alParamStoreCfg);
+  theAlignmentParameterStore =
+    std::make_shared<AlignmentParameterStore>(theAlignables, alParamStoreCfg);
   edm::LogInfo("Alignment") << "@SUB=PCLTrackerAlProducer::buildParameterStore"
                             << "AlignmentParameterStore created!";
 }

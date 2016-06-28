@@ -32,7 +32,7 @@ class HIPAlignmentAlgorithm : public AlignmentAlgorithmBase
   /// Call at beginning of job
   void initialize( const edm::EventSetup& setup, 
                    AlignableTracker* tracker, AlignableMuon* muon, AlignableExtras* extras, 
-                   AlignmentParameterStore* store);
+                   std::shared_ptr<AlignmentParameterStore> store);
 
   /// Call at end of job
   void terminate(const edm::EventSetup& setup);
@@ -70,7 +70,7 @@ class HIPAlignmentAlgorithm : public AlignmentAlgorithmBase
   int  fillEventwiseTree(const char *filename, int iter, int ierr);
   // private data members
 
-  AlignmentParameterStore* theAlignmentParameterStore;
+  std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
   std::vector<Alignable*> theAlignables;
   AlignableNavigator* theAlignableDetAccessor;
 
