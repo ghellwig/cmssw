@@ -48,7 +48,8 @@ class PedeSteerer
   bool isNoHiera(const Alignable* ali) const;
 
   /// construct steering files about hierarchy, fixing etc. an keep track of their names
-  void buildSubSteer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras);
+  void buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
+                     AlignableMuon *aliMuon, AlignableExtras *aliExtras);
   /// construct (and return name of) master steering file from config, binaryFiles etc.
   std::string buildMasterSteer(const std::vector<std::string> &binaryFiles);
   /// run pede, masterSteer should be as returned from buildMasterSteer(...)
@@ -101,8 +102,9 @@ class PedeSteerer
 
   /// interprete content of presigma VPSet 'cffPresi' and call presigmasFile
   unsigned int presigmas(const std::vector<edm::ParameterSet> &cffPresi,
-			 const std::string &fileName, const std::vector<Alignable*> &alis,
-			 AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras);
+                         const std::string &fileName, const std::vector<Alignable*> &alis,
+                         std::shared_ptr<AlignableTracker> aliTracker,
+                         AlignableMuon *aliMuon, AlignableExtras *aliExtras);
   /// look for active 'alis' in map of presigma values and create steering file 
   unsigned int presigmasFile(const std::string &fileName, const std::vector<Alignable*> &alis,
 			     const AlignablePresigmasMap &aliPresisMap); 

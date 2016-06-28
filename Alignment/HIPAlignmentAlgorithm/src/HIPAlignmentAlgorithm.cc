@@ -116,9 +116,10 @@ HIPAlignmentAlgorithm::HIPAlignmentAlgorithm(const edm::ParameterSet& cfg):
 // Call at beginning of job ---------------------------------------------------
 
 void 
-HIPAlignmentAlgorithm::initialize( const edm::EventSetup& setup, 
-				   AlignableTracker* tracker, AlignableMuon* muon, AlignableExtras* extras,
-				   std::shared_ptr<AlignmentParameterStore> store )
+HIPAlignmentAlgorithm::initialize(const edm::EventSetup& setup,
+                                  std::shared_ptr<AlignableTracker> tracker,
+                                  AlignableMuon* muon, AlignableExtras* extras,
+                                  std::shared_ptr<AlignmentParameterStore> store)
 {
   edm::LogWarning("Alignment") << "[HIPAlignmentAlgorithm] Initializing...";
 
@@ -163,11 +164,11 @@ HIPAlignmentAlgorithm::initialize( const edm::EventSetup& setup,
 	
   // accessor Det->AlignableDet
   if ( !muon )
-    theAlignableDetAccessor = new AlignableNavigator(tracker);
+    theAlignableDetAccessor = new AlignableNavigator(tracker.get());
   else if ( !tracker )
     theAlignableDetAccessor = new AlignableNavigator(muon);
   else 
-    theAlignableDetAccessor = new AlignableNavigator(tracker, muon);
+    theAlignableDetAccessor = new AlignableNavigator(tracker.get(), muon);
   
   // set alignmentParameterStore
   theAlignmentParameterStore=store;

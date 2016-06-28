@@ -68,8 +68,9 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
 
   /// Call at beginning of job
   virtual void initialize(const edm::EventSetup &setup, 
-			  AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-			  std::shared_ptr<AlignmentParameterStore> store) override;
+                          std::shared_ptr<AlignableTracker> tracker,
+                          AlignableMuon *muon, AlignableExtras *extras,
+                          std::shared_ptr<AlignmentParameterStore> store) override;
 
   /// Call at end of job
   virtual void terminate(const edm::EventSetup& iSetup) override;
@@ -80,7 +81,7 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
  private:
   edm::ParameterSet         theConfig;
   AlignableNavigator       *theAlignableNavigator;
-  AlignableTracker         *theTracker;
+  std::shared_ptr<AlignableTracker> theTracker;
   bool                     saveApeToAscii_,readApeFromAscii_,readFullLocalMatrix_;
   bool                     readLocalNotGlobal_,saveLocalNotGlobal_;
   bool                     setComposites_,saveComposites_;
@@ -119,10 +120,11 @@ ApeSettingAlgorithm::~ApeSettingAlgorithm()
 // Call at beginning of job ---------------------------------------------------
 //____________________________________________________
 void ApeSettingAlgorithm::initialize(const edm::EventSetup &setup, 
-				     AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-				     std::shared_ptr<AlignmentParameterStore> store)
+                                     std::shared_ptr<AlignableTracker> tracker,
+                                     AlignableMuon *muon, AlignableExtras *extras,
+                                     std::shared_ptr<AlignmentParameterStore> store)
 {
- theAlignableNavigator = new AlignableNavigator(tracker, muon);
+ theAlignableNavigator = new AlignableNavigator(tracker.get(), muon);
  theTracker = tracker;
  
  if (readApeFromAscii_)

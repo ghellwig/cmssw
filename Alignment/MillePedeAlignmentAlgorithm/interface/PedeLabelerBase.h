@@ -16,6 +16,7 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationBase.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
 
 #include "CondFormats/Common/interface/Time.h"
@@ -23,7 +24,6 @@
 #include <vector>
 
 class Alignable;
-class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
 
@@ -40,11 +40,11 @@ class PedeLabelerBase
   class TopLevelAlignables
   {
   public:
-    TopLevelAlignables(AlignableTracker *aliTracker,
+    TopLevelAlignables(std::shared_ptr<AlignableTracker> aliTracker,
 		       AlignableMuon *aliMuon,
 		       AlignableExtras *extras)
       :aliTracker_(aliTracker), aliMuon_(aliMuon), aliExtras_(extras) {}
-    AlignableTracker *aliTracker_;
+    std::shared_ptr<AlignableTracker> aliTracker_;
     AlignableMuon *aliMuon_;
     AlignableExtras *aliExtras_;
   };

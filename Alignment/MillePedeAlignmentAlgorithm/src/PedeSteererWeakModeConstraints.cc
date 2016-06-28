@@ -73,7 +73,7 @@ GeometryConstraintConfigData::GeometryConstraintConfigData(const std::vector<dou
 }
 
 //_________________________________________________________________________
-PedeSteererWeakModeConstraints::PedeSteererWeakModeConstraints(AlignableTracker *aliTracker,
+PedeSteererWeakModeConstraints::PedeSteererWeakModeConstraints(std::shared_ptr<AlignableTracker> aliTracker,
                                                                const PedeLabelerBase *labels,
                                                                const std::vector<edm::ParameterSet> &config,
                                                                std::string sf

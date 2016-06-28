@@ -21,8 +21,9 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 //________________________________________________________________________________
-AlignmentParameterSelector::AlignmentParameterSelector(AlignableTracker *aliTracker, AlignableMuon* aliMuon,
-						       AlignableExtras *aliExtras) :
+AlignmentParameterSelector::AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
+                                                       AlignableMuon* aliMuon,
+                                                       AlignableExtras *aliExtras) :
   theTracker(aliTracker), theMuon(aliMuon), theExtras(aliExtras), theSelectedAlignables(), 
   theRangesEta(), theRangesPhi(), theRangesR(), theRangesX(), theRangesY(), theRangesZ()
 {
@@ -55,7 +56,7 @@ void AlignmentParameterSelector::clearGeometryCuts()
   theTECDetIdRanges.clear();
 }
 
-const AlignableTracker* AlignmentParameterSelector::alignableTracker() const
+std::shared_ptr<const AlignableTracker> AlignmentParameterSelector::alignableTracker() const
 {
   return theTracker;
 }

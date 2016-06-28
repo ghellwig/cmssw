@@ -18,13 +18,13 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "Alignment/CommonAlignment/interface/Alignable.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 #include <vector>
 #include <map>
 #include <list>
 
 
-class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
 
@@ -34,7 +34,7 @@ class TkModuleGroupSelector
 {
 public:
   /// Constructor
-  explicit TkModuleGroupSelector(AlignableTracker *aliTracker,
+  explicit TkModuleGroupSelector(std::shared_ptr<AlignableTracker> aliTracker,
                                  const edm::ParameterSet &cfg,
                                  const std::vector<int> &sdets);
   
@@ -56,7 +56,7 @@ public:
   
  private:
   // Constructs the run-dependent module groups from configuration parameters.
-  void createModuleGroups(AlignableTracker *aliTracker,
+  void createModuleGroups(std::shared_ptr<AlignableTracker> aliTracker,
                           const edm::VParameterSet &granularityConfig,
                           const std::vector<edm::RunNumber_t> &defaultRunRange,
                           edm::RunNumber_t defaultReferenceRun);

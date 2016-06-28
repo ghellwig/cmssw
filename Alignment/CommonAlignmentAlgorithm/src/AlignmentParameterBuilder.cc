@@ -25,7 +25,7 @@
 using namespace AlignmentParametersFactory;
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignableTracker,
+AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
 						     AlignableExtras* alignableExtras) :
   theAlignables(),
   theAlignableTracker(alignableTracker),
@@ -35,7 +35,7 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignable
 }
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignableTracker, 
+AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
                                                      AlignableMuon* alignableMuon,
 						     AlignableExtras* alignableExtras) :
   theAlignables(), 
@@ -47,7 +47,7 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignable
 
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignableTracker,
+AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
 						     AlignableExtras* alignableExtras,
                                                      const edm::ParameterSet &pSet) :
   theAlignables(), 
@@ -59,7 +59,7 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignable
 }
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignableTracker,
+AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
                                                      AlignableMuon* alignableMuon,
 						     AlignableExtras* alignableExtras,
                                                      const edm::ParameterSet &pSet) :
@@ -71,7 +71,7 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(AlignableTracker* alignable
   this->addAllSelections(pSet);
 }
 
-const AlignableTracker* AlignmentParameterBuilder::alignableTracker() const
+std::shared_ptr<const AlignableTracker> AlignmentParameterBuilder::alignableTracker() const
 {
   return theAlignableTracker;
 }

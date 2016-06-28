@@ -62,7 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  theTrackerAlignables(0),
   theMuonAlignables(0),
   theExtraAlignables(0),
   globalPositions_(0),
@@ -109,7 +108,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  delete theTrackerAlignables;
   delete theMuonAlignables;
   delete theExtraAlignables;
   delete globalPositions_;
@@ -549,7 +547,8 @@ void PCLTrackerAlProducer
 ::createAlignables(const TrackerTopology* const tTopo)
 {
   if (doTracker_) {
-    theTrackerAlignables = new AlignableTracker(&(*theTrackerGeometry), tTopo);
+    theTrackerAlignables =
+      std::make_shared<AlignableTracker>(&(*theTrackerGeometry), tTopo);
   }
 
   if (doMuon_) {
@@ -848,7 +847,7 @@ void PCLTrackerAlProducer
       theSurveyValues = &(*surveys);
       theSurveyErrors = &(*surveyErrors);
 
-      addSurveyInfo(theTrackerAlignables);
+      addSurveyInfo(theTrackerAlignables.get());
     }
   }
 

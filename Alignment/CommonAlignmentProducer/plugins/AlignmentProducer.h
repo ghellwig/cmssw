@@ -161,7 +161,7 @@ class AlignmentProducer : public edm::ESProducerLooper
   Calibrations theCalibrations;
 
   AlignableExtras* theAlignableExtras;
-  AlignableTracker* theAlignableTracker;
+  std::shared_ptr<AlignableTracker> theAlignableTracker;
   AlignableMuon* theAlignableMuon;
 
   std::shared_ptr<TrackerGeometry> theTracker;

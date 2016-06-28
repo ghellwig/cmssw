@@ -90,9 +90,10 @@ class RunRangeDependentPedeLabeler : public PedeLabelerBase
 
   std::vector<std::string> decompose(const std::string &s, std::string::value_type delimiter) const;
   std::vector<unsigned int> convertParamSel(const std::string &selString) const;
-  unsigned int buildRunRangeDependencyMap(AlignableTracker *aliTracker, AlignableMuon* aliMuon,
-				     AlignableExtras *extras,
-				     const edm::ParameterSet &config);
+  unsigned int buildRunRangeDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
+                                          AlignableMuon* aliMuon,
+                                          AlignableExtras *extras,
+                                          const edm::ParameterSet &config);
 
   /// returns size of map
   unsigned int buildMap(const std::vector<Alignable*> &alis);

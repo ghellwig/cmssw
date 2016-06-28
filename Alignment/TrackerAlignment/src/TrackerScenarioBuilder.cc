@@ -17,11 +17,10 @@
 // Alignment
 
 #include "Alignment/TrackerAlignment/interface/TrackerScenarioBuilder.h"
-#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 
 //__________________________________________________________________________________________________
-TrackerScenarioBuilder::TrackerScenarioBuilder(AlignableTracker* alignable) 
+TrackerScenarioBuilder::TrackerScenarioBuilder(std::shared_ptr<AlignableTracker> alignable)
   : theAlignableTracker(alignable)
 {
 

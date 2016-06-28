@@ -21,12 +21,12 @@
 
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 #include <vector>
 #include <utility>
 #include <string>
 
-class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
 
@@ -88,7 +88,7 @@ public:
 
   /// Call at beginning of job:
   /// default implementation is dummy, to be overwritten in derived class if useful.
-  virtual void beginOfJob(AlignableTracker *tracker,
+  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
 			  AlignableMuon *muon,
 			  AlignableExtras *extras) {};
 

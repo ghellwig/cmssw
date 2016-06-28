@@ -78,7 +78,7 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  theAlignableExtras(0), theAlignableTracker(0), theAlignableMuon(0), 
+  theAlignableExtras(0), theAlignableMuon(0),
   globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
   theMaxLoops( iConfig.getUntrackedParameter<unsigned int>("maxLoops") ),
@@ -159,7 +159,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 AlignmentProducer::~AlignmentProducer()
 {
   delete theAlignableExtras;
-  delete theAlignableTracker;
   delete theAlignableMuon;
 
   delete globalPositions_;
@@ -218,9 +217,9 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
 
     if ( doTracker_ ) {     // apply to tracker
       this->applyDB<TrackerGeometry,TrackerAlignmentRcd,TrackerAlignmentErrorExtendedRcd>
-	(&(*theTracker), iSetup,  
+	(theTracker.get(), iSetup,
 	 align::DetectorGlobalPosition(*globalPositions_, DetId(DetId::Tracker)));
-      this->applyDB<TrackerGeometry,TrackerSurfaceDeformationRcd>(&(*theTracker), iSetup);
+      this->applyDB<TrackerGeometry,TrackerSurfaceDeformationRcd>(theTracker.get(), iSetup);
     }
     
     if ( doMuon_ ) { // apply to tracker
@@ -235,7 +234,7 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
 
   // Create alignable tracker and muon 
   if (doTracker_) {
-    theAlignableTracker = new AlignableTracker( &(*theTracker), tTopo );
+    theAlignableTracker = std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
   }
 
   if (doMuon_) {
@@ -283,7 +282,7 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
     edm::ParameterSet scenarioConfig 
       = theParameterSet.getParameter<edm::ParameterSet>( "MisalignmentScenario" );
     if (doTracker_) {
-      TrackerScenarioBuilder scenarioBuilder( theAlignableTracker );
+      TrackerScenarioBuilder scenarioBuilder(theAlignableTracker);
       scenarioBuilder.applyScenario( scenarioConfig );
     }
     if (doMuon_) {
@@ -407,11 +406,11 @@ void AlignmentProducer::startingNewLoop(unsigned int iLoop )
   // Propagate changes to reconstruction geometry (from initialisation or iteration)
   GeometryAligner aligner;
   if ( doTracker_ ) {
-    std::auto_ptr<Alignments> alignments(theAlignableTracker->alignments());
-    std::auto_ptr<AlignmentErrorsExtended> alignmentErrors(theAlignableTracker->alignmentErrors());
-    aligner.applyAlignments<TrackerGeometry>( &(*theTracker),&(*alignments),&(*alignmentErrors), AlignTransform() ); // don't apply global a second time!
-    std::auto_ptr<AlignmentSurfaceDeformations> aliDeforms(theAlignableTracker->surfaceDeformations());
-    aligner.attachSurfaceDeformations<TrackerGeometry>(&(*theTracker), &(*aliDeforms));
+    std::unique_ptr<Alignments> alignments(theAlignableTracker->alignments());
+    std::unique_ptr<AlignmentErrorsExtended> alignmentErrors(theAlignableTracker->alignmentErrors());
+    aligner.applyAlignments<TrackerGeometry>(theTracker.get(), alignments.get(), alignmentErrors.get(), AlignTransform()); // don't apply global a second time!
+    std::unique_ptr<AlignmentSurfaceDeformations> aliDeforms(theAlignableTracker->surfaceDeformations());
+    aligner.attachSurfaceDeformations<TrackerGeometry>(theTracker.get(), aliDeforms.get());
 
   }
   if ( doMuon_ ) {
@@ -715,7 +714,7 @@ void AlignmentProducer::readInSurveyRcds( const edm::EventSetup& iSetup ){
       theSurveyIndex  = 0;
       theSurveyValues = &*surveys;
       theSurveyErrors = &*surveyErrors;
-      addSurveyInfo_(theAlignableTracker);
+      addSurveyInfo_(theAlignableTracker.get());
     }
   }
   

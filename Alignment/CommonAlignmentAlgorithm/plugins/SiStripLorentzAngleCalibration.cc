@@ -95,7 +95,7 @@ public:
   virtual double getParameterError(unsigned int index) const override;
 
   // /// Call at beginning of job:
-  virtual void beginOfJob(AlignableTracker *tracker,
+  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
   			  AlignableMuon *muon,
   			  AlignableExtras *extras) override;
   
@@ -279,12 +279,13 @@ double SiStripLorentzAngleCalibration::getParameterError(unsigned int index) con
 }
 
 //======================================================================
-void SiStripLorentzAngleCalibration::beginOfJob(AlignableTracker *aliTracker,
+void SiStripLorentzAngleCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
                                                 AlignableMuon * /*aliMuon*/,
                                                 AlignableExtras * /*aliExtras*/)
 {
   //specify the sub-detectors for which the LA is determined
-  const std::vector<int> sdets = boost::assign::list_of(SiStripDetId::TIB)(SiStripDetId::TOB); //no TEC,TID
+  const std::vector<int> sdets = {SiStripDetId::TIB,
+				  SiStripDetId::TOB}; //no TEC,TID
   moduleGroupSelector_ = new TkModuleGroupSelector(aliTracker, moduleGroupSelCfg_, sdets);
  
   parameters_.resize(moduleGroupSelector_->getNumberOfParameters(), 0.);

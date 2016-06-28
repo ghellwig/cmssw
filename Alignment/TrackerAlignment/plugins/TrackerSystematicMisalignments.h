@@ -42,7 +42,7 @@ private:
 	//align::GlobalVector findSystematicMis( align::PositionType );
 	align::GlobalVector findSystematicMis( const align::PositionType&, const bool blindToZ, const bool blindToR );
 	
-	AlignableTracker* theAlignableTracker;
+        std::unique_ptr<AlignableTracker> theAlignableTracker;
 	
 	
 	

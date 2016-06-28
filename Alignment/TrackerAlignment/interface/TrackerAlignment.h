@@ -8,6 +8,7 @@
  *  \author Nhan Tran
  */
 
+#include <memory>
 #include "FWCore/Framework/interface/EventSetup.h"
 
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
@@ -20,7 +21,7 @@ public:
 
   ~TrackerAlignment();
   
-  AlignableTracker* getAlignableTracker() { return theAlignableTracker; }
+  std::shared_ptr<AlignableTracker> getAlignableTracker() { return theAlignableTracker; }
    
   void moveAlignablePixelEndCaps( int rawId, const align::Scalars& localDisplacements, 
                                   const align::Scalars& localRotations  );
@@ -34,7 +35,7 @@ public:
   void saveToDB();
   
 private:  
-  AlignableTracker* theAlignableTracker;
+  std::shared_ptr<AlignableTracker> theAlignableTracker;
 
   std::string theAlignRecordName, theErrorRecordName;
   

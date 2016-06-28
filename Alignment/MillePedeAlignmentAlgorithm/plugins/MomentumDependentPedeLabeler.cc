@@ -31,7 +31,7 @@ MomentumDependentPedeLabeler::MomentumDependentPedeLabeler(const PedeLabelerBase
     theMaxNumberOfParameterInstances(0)
 {
   std::vector<Alignable*> alis;
-  alis.push_back(alignables.aliTracker_);
+  alis.push_back(alignables.aliTracker_.get());
   alis.push_back(alignables.aliMuon_);
   
   if (alignables.aliExtras_) {
@@ -314,7 +314,7 @@ std::vector<unsigned int> MomentumDependentPedeLabeler::convertParamSel(const st
   return result;
 }
 
-unsigned int MomentumDependentPedeLabeler::buildMomentumDependencyMap(AlignableTracker *aliTracker,
+unsigned int MomentumDependentPedeLabeler::buildMomentumDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
 								      AlignableMuon* aliMuon,
 								      AlignableExtras *aliExtras,
 								      const edm::ParameterSet &config)

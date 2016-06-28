@@ -549,7 +549,8 @@ void PedeSteerer::hierarchyConstraint(const Alignable *ali,
 unsigned int PedeSteerer::presigmas(const std::vector<edm::ParameterSet> &cffPresi,
                                     const std::string &fileName,
                                     const std::vector<Alignable*> &alis,
-                                    AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras)
+                                    std::shared_ptr<AlignableTracker> aliTracker,
+                                    AlignableMuon *aliMuon, AlignableExtras *aliExtras)
 {
   // We loop on given PSet's, each containing a parameter selection and the presigma value
   // The resulting presigmas are stored in a map with Alignable* as key.
@@ -671,7 +672,8 @@ std::string PedeSteerer::fileName(const std::string &addendum) const
 }
 
 //___________________________________________________________________________
-void PedeSteerer::buildSubSteer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras)
+void PedeSteerer::buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
+                                AlignableMuon *aliMuon, AlignableExtras *aliExtras)
 {
   const std::vector<Alignable*> &alis = myParameterStore->alignables();
 

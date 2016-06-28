@@ -24,7 +24,7 @@ PedeLabeler::PedeLabeler(const PedeLabelerBase::TopLevelAlignables& alignables,
   :PedeLabelerBase(alignables, config)
 {
   std::vector<Alignable*> alis;
-  alis.push_back(alignables.aliTracker_);
+  alis.push_back(alignables.aliTracker_.get());
   alis.push_back(alignables.aliMuon_);
 
   if (alignables.aliExtras_) {

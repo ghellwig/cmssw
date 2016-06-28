@@ -120,7 +120,7 @@ void SurveyDataConverter::applyAPEs( TrackerAlignment& tr_align ) {
   }
          
   AlignableModifier* theModifier = new AlignableModifier();
-  AlignableTracker* theAlignableTracker = tr_align.getAlignableTracker() ; 
+  auto theAlignableTracker = tr_align.getAlignableTracker();
   align::Alignables::const_iterator iter;
 
   // TIB

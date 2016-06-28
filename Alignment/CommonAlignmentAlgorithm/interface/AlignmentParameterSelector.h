@@ -13,10 +13,12 @@
  *  (last update by $Author: mussgill $)
  */
 
+#include <memory>
+
 #include "Alignment/CommonAlignment/interface/Utilities.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 class AlignableExtras;
-class AlignableTracker;
 class AlignableMuon;
 
 namespace edm {
@@ -26,8 +28,9 @@ namespace edm {
 class AlignmentParameterSelector {
  public:
   /// Constructor from tracker only or from tracker and muon
-  explicit AlignmentParameterSelector(AlignableTracker *aliTracker, AlignableMuon *aliMuon = 0,
-				      AlignableExtras *aliExtras = 0);
+  explicit AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
+                                      AlignableMuon *aliMuon = 0,
+                                      AlignableExtras *aliExtras = 0);
 
   /// Destructor
   virtual ~AlignmentParameterSelector() {}
@@ -97,10 +100,10 @@ class AlignmentParameterSelector {
   void setTOBDetIdCuts(const edm::ParameterSet &pSet);
   void setTECDetIdCuts(const edm::ParameterSet &pSet);
 
-  const AlignableTracker* alignableTracker() const;
+  std::shared_ptr<const AlignableTracker> alignableTracker() const;
   
  private:
-  AlignableTracker* theTracker;
+  std::shared_ptr<AlignableTracker> theTracker;
   AlignableMuon*    theMuon;
   AlignableExtras*  theExtras;
   align::Alignables theSelectedAlignables;

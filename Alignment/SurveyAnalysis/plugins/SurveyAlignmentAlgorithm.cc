@@ -13,7 +13,7 @@ SurveyAlignmentAlgorithm::SurveyAlignmentAlgorithm(const edm::ParameterSet& cfg)
 }
 
 void SurveyAlignmentAlgorithm::initialize(const edm::EventSetup&,
-					  AlignableTracker*,
+					  std::shared_ptr<AlignableTracker>,
 					  AlignableMuon*,
 					  AlignableExtras*,
 					  std::shared_ptr<AlignmentParameterStore> store)

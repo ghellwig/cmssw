@@ -223,7 +223,7 @@ class PCLTrackerAlProducer :
     AlignmentMonitors       theMonitors;
 
     std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
-    AlignableTracker*        theTrackerAlignables;
+    std::shared_ptr<AlignableTracker>        theTrackerAlignables;
     AlignableMuon*           theMuonAlignables;
     AlignableExtras*         theExtraAlignables;
 

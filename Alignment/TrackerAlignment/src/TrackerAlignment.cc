@@ -29,7 +29,7 @@ TrackerAlignment::TrackerAlignment( const edm::EventSetup& setup ):
 
   edm::ESHandle<TrackerGeometry> trackerGeometry;
   setup.get<TrackerDigiGeometryRecord>().get( trackerGeometry );
-  theAlignableTracker = new AlignableTracker( &(*trackerGeometry), tTopo );
+  theAlignableTracker = std::make_shared<AlignableTracker>(&(*trackerGeometry), tTopo);
 
 }
 
@@ -38,9 +38,6 @@ TrackerAlignment::TrackerAlignment( const edm::EventSetup& setup ):
 //
 TrackerAlignment::~TrackerAlignment( void )
 {
-
-  delete theAlignableTracker;
-
 }
 
 

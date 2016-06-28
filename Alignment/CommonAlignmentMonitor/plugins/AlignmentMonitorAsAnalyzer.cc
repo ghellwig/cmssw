@@ -80,7 +80,7 @@ class AlignmentMonitorAsAnalyzer : public edm::EDAnalyzer {
       edm::InputTag m_tjTag;
       edm::ParameterSet m_aliParamStoreCfg;
 
-      AlignableTracker *m_alignableTracker;
+      std::shared_ptr<AlignableTracker> m_alignableTracker;
       AlignableMuon *m_alignableMuon;
       std::shared_ptr<AlignmentParameterStore> m_alignmentParameterStore;
 
@@ -104,7 +104,6 @@ class AlignmentMonitorAsAnalyzer : public edm::EDAnalyzer {
 AlignmentMonitorAsAnalyzer::AlignmentMonitorAsAnalyzer(const edm::ParameterSet& iConfig)
    : m_tjTag(iConfig.getParameter<edm::InputTag>("tjTkAssociationMapTag"))
    , m_aliParamStoreCfg(iConfig.getParameter<edm::ParameterSet>("ParameterStore"))
-   , m_alignableTracker(NULL)
    , m_alignableMuon(NULL)
 {
    std::vector<std::string> monitors = iConfig.getUntrackedParameter<std::vector<std::string> >( "monitors" );
@@ -121,7 +120,6 @@ AlignmentMonitorAsAnalyzer::AlignmentMonitorAsAnalyzer(const edm::ParameterSet& 
 
 AlignmentMonitorAsAnalyzer::~AlignmentMonitorAsAnalyzer()
 {
-   delete m_alignableTracker;
    delete m_alignableMuon;
 }
 
@@ -168,8 +166,8 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       iSetup.get<TrackerAlignmentRcd>().get( alignments );
       edm::ESHandle<AlignmentErrorsExtended> alignmentErrors;
       iSetup.get<TrackerAlignmentErrorExtendedRcd>().get( alignmentErrors );
-      aligner.applyAlignments<TrackerGeometry>( &(*theTracker), &(*alignments), &(*alignmentErrors),
-						align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)) );
+      aligner.applyAlignments<TrackerGeometry>(theTracker.get(), &(*alignments), &(*alignmentErrors),
+                                               align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)) );
       
       edm::ESHandle<Alignments> dtAlignments;
       iSetup.get<DTAlignmentRcd>().get( dtAlignments );
@@ -188,17 +186,15 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       // within an analyzer, modules can't expect to see any selected alignables!
       std::vector<Alignable*> empty_alignables;
       
-      m_alignableTracker = new AlignableTracker( &(*theTracker), tTopo );
+      m_alignableTracker = std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
       m_alignableMuon = new AlignableMuon( &(*theMuonDT), &(*theMuonCSC) );
       m_alignmentParameterStore =
 	std::make_shared<AlignmentParameterStore>(empty_alignables, m_aliParamStoreCfg);
       
-      for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = m_monitors.begin();  monitor != m_monitors.end();  ++monitor) {
-	(*monitor)->beginOfJob(m_alignableTracker, m_alignableMuon, m_alignmentParameterStore);
+      for (const auto& monitor: m_monitors) {
+	monitor->beginOfJob(m_alignableTracker, m_alignableMuon, m_alignmentParameterStore);
       }
-      for (std::vector<AlignmentMonitorBase*>::const_iterator monitor = m_monitors.begin();  monitor != m_monitors.end();  ++monitor) {
-	(*monitor)->startingNewLoop();
-      }
+      for (const auto& monitor: m_monitors) monitor->startingNewLoop();
       
       m_firstEvent = false;
    }

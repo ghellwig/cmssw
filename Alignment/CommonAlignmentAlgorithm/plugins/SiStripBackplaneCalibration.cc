@@ -97,7 +97,7 @@ public:
   virtual double getParameterError(unsigned int index) const;
 
   // /// Call at beginning of job:
-  virtual void beginOfJob(AlignableTracker *tracker,
+  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
   			  AlignableMuon *muon,
   			  AlignableExtras *extras);
 
@@ -292,13 +292,15 @@ double SiStripBackplaneCalibration::getParameterError(unsigned int index) const
 }
 
 //======================================================================
-void SiStripBackplaneCalibration::beginOfJob(AlignableTracker *aliTracker,
+void SiStripBackplaneCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
                                              AlignableMuon * /*aliMuon*/,
                                              AlignableExtras */*aliExtras*/)
 {
   //specify the sub-detectors for which the back plane correction is determined: all strips
-  const std::vector<int> sdets = boost::assign::list_of(SiStripDetId::TIB)(SiStripDetId::TID)
-    (SiStripDetId::TOB)(SiStripDetId::TEC);
+  const std::vector<int> sdets = {SiStripDetId::TIB,
+				  SiStripDetId::TID,
+				  SiStripDetId::TOB,
+				  SiStripDetId::TEC};
   
   moduleGroupSelector_ = new TkModuleGroupSelector(aliTracker, moduleGroupSelCfg_, sdets);
   

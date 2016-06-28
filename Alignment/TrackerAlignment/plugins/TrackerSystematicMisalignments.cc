@@ -140,14 +140,14 @@ void TrackerSystematicMisalignments::analyze(const edm::Event& event, const edm:
 
 		//apply the latest alignments
 		GeometryAligner aligner;
-		aligner.applyAlignments<TrackerGeometry>( &(*tracker), &(*alignments), &(*alignmentErrors),
-							  align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
+                aligner.applyAlignments<TrackerGeometry>(tracker.get(), &(*alignments), &(*alignmentErrors),
+                                                         align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
 
 	}
 
-	theAlignableTracker = new AlignableTracker(&(*tracker), tTopo);
+	theAlignableTracker = std::make_unique<AlignableTracker>(tracker.get(), tTopo);
 
-	applySystematicMisalignment( &(*theAlignableTracker) );
+	applySystematicMisalignment(theAlignableTracker.get());
 
 	// -------------- writing out to alignment record --------------
 	Alignments* myAlignments = theAlignableTracker->alignments() ;

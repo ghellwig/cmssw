@@ -96,7 +96,7 @@ public:
   virtual double getParameterError(unsigned int index) const override;
 
   // /// Call at beginning of job:
-  virtual void beginOfJob(AlignableTracker *tracker,
+  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
   			  AlignableMuon *muon,
   			  AlignableExtras *extras) override;
 
@@ -130,7 +130,6 @@ private:
 
   edm::ESWatcher<SiPixelLorentzAngleRcd> watchLorentzAngleRcd_;
 
-  // const AlignableTracker *alignableTracker_;
   SiPixelLorentzAngle *siPixelLorentzAngleInput_;
   std::vector<double> parameters_;
   std::vector<double> paramUncertainties_;
@@ -249,12 +248,13 @@ double SiPixelLorentzAngleCalibration::getParameterError(unsigned int index) con
 
 
 //======================================================================
-void SiPixelLorentzAngleCalibration::beginOfJob(AlignableTracker *aliTracker,
+void SiPixelLorentzAngleCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
                                                 AlignableMuon * /*aliMuon*/,
                                                 AlignableExtras * /*aliExtras*/)
 {
   //specify the sub-detectors for which the LA is determined
-  const std::vector<int> sdets = boost::assign::list_of(PixelSubdetector::PixelBarrel)(PixelSubdetector::PixelEndcap);
+  const std::vector<int> sdets = {PixelSubdetector::PixelBarrel,
+				  PixelSubdetector::PixelEndcap};
   
   moduleGroupSelector_ = new TkModuleGroupSelector(aliTracker, moduleGroupSelCfg_, sdets);
 

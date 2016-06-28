@@ -55,7 +55,7 @@ class GeometryConstraintConfigData {
 class PedeSteererWeakModeConstraints {
  public:
   ~PedeSteererWeakModeConstraints();
-  PedeSteererWeakModeConstraints(AlignableTracker *aliTracker,
+  PedeSteererWeakModeConstraints(std::shared_ptr<AlignableTracker> aliTracker,
                                  const PedeLabelerBase *labels,
                                  const std::vector<edm::ParameterSet> &config,
                                  std::string sf

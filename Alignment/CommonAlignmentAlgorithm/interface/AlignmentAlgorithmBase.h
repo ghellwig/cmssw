@@ -22,7 +22,8 @@
 #include <memory>
 #include <utility>
 
-class AlignableTracker;
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
+
 class AlignableMuon;
 class AlignableExtras;
 class AlignmentParameterStore;
@@ -116,11 +117,11 @@ public:
   virtual ~AlignmentAlgorithmBase() {};
 
   /// Call at beginning of job (must be implemented in derived class)
-  virtual void initialize( const edm::EventSetup& setup, 
-                           AlignableTracker* tracker,
-                           AlignableMuon* muon,
-                           AlignableExtras* extras,
-                           std::shared_ptr<AlignmentParameterStore> store) = 0;
+  virtual void initialize(const edm::EventSetup& setup,
+                          std::shared_ptr<AlignableTracker> tracker,
+                          AlignableMuon* muon,
+                          AlignableExtras* extras,
+                          std::shared_ptr<AlignmentParameterStore> store) = 0;
 
   /// Returns whether calibrations is supported by algorithm,
   /// default implementation returns false.

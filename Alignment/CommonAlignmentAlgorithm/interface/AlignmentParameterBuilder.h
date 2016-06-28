@@ -10,14 +10,16 @@
  *  (last update by $Author: flucke $)
  */
 
+#include <memory>
+
 #include "Alignment/CommonAlignment/interface/Utilities.h"
 #include "Alignment/CommonAlignmentParametrization/interface/AlignmentParametersFactory.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 namespace edm {
   class ParameterSet;
 }
 class AlignableExtras;
-class AlignableTracker;
 class AlignableMuon;
 class AlignmentParameters;
 class TrackerTopology;
@@ -26,23 +28,25 @@ class AlignmentParameterBuilder
 {
 public:
   /// Constructor from tracker only
-  explicit AlignmentParameterBuilder( AlignableTracker *alignableTracker,
-				      AlignableExtras *alignableExtras );
+  explicit AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
+                                     AlignableExtras *alignableExtras );
 
   /// Constructor from tracker and muon
-  AlignmentParameterBuilder( AlignableTracker *alignableTracker, AlignableMuon *alignableMuon,
-			     AlignableExtras *alignableExtras );
+  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
+                            AlignableMuon *alignableMuon,
+                            AlignableExtras *alignableExtras );
 
   /// Constructor adding selections by passing the ParameterSet named 'AlignmentParameterSelector'
   /// (expected in pSet) to addSelections(..)
-  AlignmentParameterBuilder( AlignableTracker *alignableTracker,
-			     AlignableExtras *alignableExtras,
-			     const edm::ParameterSet &pSet );
+  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
+                            AlignableExtras *alignableExtras,
+                            const edm::ParameterSet &pSet );
 
   /// Constructor from tracker and muon, plus selection
-  AlignmentParameterBuilder( AlignableTracker *alignableTracker, AlignableMuon *alignableMuon,
-			     AlignableExtras *alignableExtras,
-                             const edm::ParameterSet &pSet);
+  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
+                            AlignableMuon *alignableMuon,
+                            AlignableExtras *alignableExtras,
+                            const edm::ParameterSet &pSet);
 
 
   /// destructor 
@@ -74,7 +78,7 @@ public:
   void fixAlignables( int n );
 
   /// Alignable tracker   
-  const AlignableTracker* alignableTracker() const;
+  std::shared_ptr<const AlignableTracker> alignableTracker() const;
 
 private:
   /// First remove all spaces (' ') from char selection 'paramSelChar' (coming
@@ -90,7 +94,7 @@ private:
   align::Alignables theAlignables;
 
   /// Alignable tracker   
-  AlignableTracker* theAlignableTracker;
+  std::shared_ptr<AlignableTracker> theAlignableTracker;
 
   /// Alignable muon
   AlignableMuon* theAlignableMuon;

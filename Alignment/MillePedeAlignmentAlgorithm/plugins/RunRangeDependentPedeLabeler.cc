@@ -30,7 +30,7 @@ RunRangeDependentPedeLabeler::RunRangeDependentPedeLabeler(const PedeLabelerBase
     theMaxNumberOfParameterInstances(0)
 {
   std::vector<Alignable*> alis;
-  alis.push_back(alignables.aliTracker_);
+  alis.push_back(alignables.aliTracker_.get());
   alis.push_back(alignables.aliMuon_);
 
   if (alignables.aliExtras_) {
@@ -341,7 +341,7 @@ std::vector<unsigned int> RunRangeDependentPedeLabeler::convertParamSel(const st
   return result;
 }
 
-unsigned int RunRangeDependentPedeLabeler::buildRunRangeDependencyMap(AlignableTracker *aliTracker,
+unsigned int RunRangeDependentPedeLabeler::buildRunRangeDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
 								      AlignableMuon* aliMuon,
 								      AlignableExtras *aliExtras,
 								      const edm::ParameterSet &config)

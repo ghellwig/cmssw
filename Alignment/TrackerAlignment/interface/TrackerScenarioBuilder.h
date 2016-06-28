@@ -15,6 +15,7 @@
 #include <string>
 
 #include "Alignment/CommonAlignment/interface/MisalignmentScenarioBuilder.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 class AlignableTracker;
 
@@ -26,7 +27,7 @@ class TrackerScenarioBuilder : public MisalignmentScenarioBuilder
 public:
  
   /// Constructor
-  explicit TrackerScenarioBuilder( AlignableTracker* alignable );
+  explicit TrackerScenarioBuilder(std::shared_ptr<AlignableTracker> alignable);
 
   /// Destructor
   ~TrackerScenarioBuilder() {};
@@ -40,7 +41,7 @@ public:
 
 private: // Members
 
-  AlignableTracker* theAlignableTracker;   ///< Pointer to mother alignable object
+  std::shared_ptr<AlignableTracker> theAlignableTracker;   ///< Pointer to mother alignable object
   /// following things are needed in possiblyPartOf:
   std::vector<std::string> theSubdets; ///< sub-detector acronyms appearing in StructureType.h (TPE)
   unsigned int theFirstStripIndex;     ///< index of first strip subdet in 'theSubdets' (pixel<strip)  

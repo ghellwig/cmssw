@@ -13,6 +13,7 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -30,7 +31,6 @@
 #include <TMatrixF.h>
 
 class Alignable;
-class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
 
@@ -64,8 +64,9 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
 
   /// Called at beginning of job
   virtual void initialize(const edm::EventSetup &setup,
-			  AlignableTracker *tracker, AlignableMuon *muon, AlignableExtras *extras,
-			  std::shared_ptr<AlignmentParameterStore> store) override;
+                          std::shared_ptr<AlignableTracker> tracker,
+                          AlignableMuon *muon, AlignableExtras *extras,
+                          std::shared_ptr<AlignmentParameterStore> store) override;
 
   /// Returns whether MP supports calibrations
   virtual bool supportsCalibrations() override;
