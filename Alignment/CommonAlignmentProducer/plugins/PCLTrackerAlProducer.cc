@@ -62,7 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  theAlignmentAlgo(0),
   theAlignmentParameterStore(0),
   theTrackerAlignables(0),
   theMuonAlignables(0),
@@ -111,8 +110,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  delete theAlignmentAlgo;
-
   // TODO: Delete monitors as well?
 
   delete theAlignmentParameterStore;
@@ -308,12 +305,13 @@ void PCLTrackerAlProducer
 void PCLTrackerAlProducer
 ::createAlignmentAlgorithm(const edm::ParameterSet& config)
 {
-  edm::ParameterSet algoConfig    = config.getParameter<edm::ParameterSet>("algoConfig");
-  edm::VParameterSet iovSelection = config.getParameter<edm::VParameterSet>("RunRangeSelection");
-  algoConfig.addUntrackedParameter<edm::VParameterSet>("RunRangeSelection", iovSelection);
+  auto algoConfig = config.getParameter<edm::ParameterSet>("algoConfig");
+  auto iovSelection = config.getParameter<edm::VParameterSet>("RunRangeSelection");
+  algoConfig.addUntrackedParameter("RunRangeSelection", iovSelection);
 
-  std::string algoName = algoConfig.getParameter<std::string>("algoName");
-  theAlignmentAlgo = AlignmentAlgorithmPluginFactory::get()->create(algoName, algoConfig);
+  const auto algoName = algoConfig.getParameter<std::string>("algoName");
+  theAlignmentAlgo = std::unique_ptr<AlignmentAlgorithmBase>
+    (AlignmentAlgorithmPluginFactory::get()->create(algoName, algoConfig));
 
   if (!theAlignmentAlgo) {
     throw cms::Exception("BadConfig")

@@ -218,7 +218,7 @@ class PCLTrackerAlProducer :
 
     /*** Alignment data ***/
 
-    AlignmentAlgorithmBase* theAlignmentAlgo;
+    std::unique_ptr<AlignmentAlgorithmBase> theAlignmentAlgo;
     Calibrations            theCalibrations;
     AlignmentMonitors       theMonitors;
 

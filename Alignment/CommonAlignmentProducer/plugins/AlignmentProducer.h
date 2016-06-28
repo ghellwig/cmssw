@@ -155,7 +155,7 @@ class AlignmentProducer : public edm::ESProducerLooper
   const Alignments*   theSurveyValues;
   const SurveyErrors* theSurveyErrors;
 
-  AlignmentAlgorithmBase* theAlignmentAlgo;
+  std::unique_ptr<AlignmentAlgorithmBase> theAlignmentAlgo;
   AlignmentParameterStore* theAlignmentParameterStore;
   std::vector<AlignmentMonitorBase*> theMonitors;
   Calibrations theCalibrations;

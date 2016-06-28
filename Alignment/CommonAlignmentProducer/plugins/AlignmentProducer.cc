@@ -78,7 +78,7 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  theAlignmentAlgo(0), theAlignmentParameterStore(0),
+  theAlignmentParameterStore(0),
   theAlignableExtras(0), theAlignableTracker(0), theAlignableMuon(0), 
   globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
@@ -113,15 +113,18 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
   }
 
   // Create the alignment algorithm
-  edm::ParameterSet algoConfig = iConfig.getParameter<edm::ParameterSet>( "algoConfig" );
-  edm::VParameterSet iovSelection = iConfig.getParameter<edm::VParameterSet>( "RunRangeSelection" );
-  algoConfig.addUntrackedParameter<edm::VParameterSet>( "RunRangeSelection", iovSelection );
-  std::string algoName = algoConfig.getParameter<std::string>( "algoName" );
-  theAlignmentAlgo = AlignmentAlgorithmPluginFactory::get( )->create( algoName, algoConfig  );
+  auto algoConfig = iConfig.getParameter<edm::ParameterSet>("algoConfig");
+  auto iovSelection = iConfig.getParameter<edm::VParameterSet>("RunRangeSelection");
+  algoConfig.addUntrackedParameter("RunRangeSelection", iovSelection);
+  const auto algoName = algoConfig.getParameter<std::string>("algoName");
+  theAlignmentAlgo = std::unique_ptr<AlignmentAlgorithmBase>
+    (AlignmentAlgorithmPluginFactory::get()->create(algoName, algoConfig));
 
   // Check if found
-  if ( !theAlignmentAlgo )
-	throw cms::Exception("BadConfig") << "Couldn't find algorithm called " << algoName;
+  if (!theAlignmentAlgo) {
+    throw cms::Exception("BadConfig")
+      << "Couldn't find algorithm called " << algoName;
+  }
 
   // Now create monitors:
   edm::ParameterSet monitorConfig = iConfig.getParameter<edm::ParameterSet>( "monitorConfig" );
@@ -149,8 +152,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 // Delete new objects
 AlignmentProducer::~AlignmentProducer()
 {
-  delete theAlignmentAlgo;
-
   // Delete monitors as well??
 
   delete theAlignmentParameterStore;
