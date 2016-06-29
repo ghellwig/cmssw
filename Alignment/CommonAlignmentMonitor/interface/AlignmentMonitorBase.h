@@ -20,6 +20,7 @@
 //
 
 // system include files
+#include <memory>
 
 #include "TrackingTools/PatternTools/interface/Trajectory.h"
 #include "Alignment/CommonAlignment/interface/AlignableNavigator.h"
@@ -47,6 +48,8 @@ class AlignmentMonitorBase
 
       /// Constructor
       AlignmentMonitorBase(const edm::ParameterSet &cfg, std::string name);
+      AlignmentMonitorBase(const AlignmentMonitorBase&) = delete; // stop default
+      const AlignmentMonitorBase& operator=(const AlignmentMonitorBase&) = delete; // stop default
       
       /// Destructor
       virtual ~AlignmentMonitorBase() {}
@@ -97,9 +100,6 @@ class AlignmentMonitorBase
       const edm::InputTag m_beamSpotTag;
 
    private:
-      AlignmentMonitorBase(const AlignmentMonitorBase&); // stop default
-      const AlignmentMonitorBase& operator=(const AlignmentMonitorBase&); // stop default
-
       // ---------- member data --------------------------------
 
       int m_iteration;

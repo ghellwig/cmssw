@@ -38,27 +38,31 @@
 // Changed sign of z-correction, i.e. z-expansion is now an expansion
 // made some variables constant, removed obviously dead code and comments
 
-TrackerSystematicMisalignments::TrackerSystematicMisalignments(const edm::ParameterSet& cfg)
-  : theAlignableTracker(0)
+TrackerSystematicMisalignments::TrackerSystematicMisalignments(const edm::ParameterSet& cfg) :
+  // use existing geometry
+  m_fromDBGeom(cfg.getUntrackedParameter< bool >("fromDBGeom")),
+
+  // constants
+  m_radialEpsilon(cfg.getUntrackedParameter< double >("radialEpsilon")),
+  m_telescopeEpsilon(cfg.getUntrackedParameter< double >("telescopeEpsilon")),
+  m_layerRotEpsilon(cfg.getUntrackedParameter< double >("layerRotEpsilon")),
+  m_bowingEpsilon(cfg.getUntrackedParameter< double >("bowingEpsilon")),
+  m_zExpEpsilon(cfg.getUntrackedParameter< double >("zExpEpsilon")),
+  m_twistEpsilon(cfg.getUntrackedParameter< double >("twistEpsilon")),
+  m_ellipticalEpsilon(cfg.getUntrackedParameter< double >("ellipticalEpsilon")),
+  m_skewEpsilon(cfg.getUntrackedParameter< double >("skewEpsilon")),
+  m_sagittaEpsilon(cfg.getUntrackedParameter< double >("sagittaEpsilon")),
+
+  m_ellipticalDelta(cfg.getUntrackedParameter< double >("ellipticalDelta")),
+  m_skewDelta(cfg.getUntrackedParameter< double >("skewDelta")),
+  m_sagittaDelta(cfg.getUntrackedParameter< double >("sagittaDelta")),
+
+  // get flag for suppression of blind movements
+  suppressBlindMvmts(cfg.getUntrackedParameter< bool >("suppressBlindMvmts")),
+
+  // compatibility with old (weird) z convention
+  oldMinusZconvention(cfg.getUntrackedParameter< bool >("oldMinusZconvention"))
 {
-	// use existing geometry
-	m_fromDBGeom = cfg.getUntrackedParameter< bool > ("fromDBGeom");
-
-	// constants
-	m_radialEpsilon = cfg.getUntrackedParameter< double > ("radialEpsilon");
-	m_telescopeEpsilon = cfg.getUntrackedParameter< double > ("telescopeEpsilon");
-	m_layerRotEpsilon = cfg.getUntrackedParameter< double > ("layerRotEpsilon");
-	m_bowingEpsilon = cfg.getUntrackedParameter< double > ("bowingEpsilon");
-	m_zExpEpsilon = cfg.getUntrackedParameter< double > ("zExpEpsilon");
-	m_twistEpsilon = cfg.getUntrackedParameter< double > ("twistEpsilon");
-	m_ellipticalEpsilon = cfg.getUntrackedParameter< double > ("ellipticalEpsilon");
-	m_skewEpsilon = cfg.getUntrackedParameter< double > ("skewEpsilon");
-	m_sagittaEpsilon = cfg.getUntrackedParameter< double > ("sagittaEpsilon");
-
-	m_ellipticalDelta = cfg.getUntrackedParameter< double > ("ellipticalDelta");
-	m_skewDelta = cfg.getUntrackedParameter< double > ("skewDelta");
-	m_sagittaDelta = cfg.getUntrackedParameter< double > ("sagittaDelta");
-
 	if (m_radialEpsilon > -990.0){
 		edm::LogWarning("MisalignedTracker") << "Applying radial ...";
 	}
@@ -87,15 +91,11 @@ TrackerSystematicMisalignments::TrackerSystematicMisalignments(const edm::Parame
 		edm::LogWarning("MisalignedTracker") << "Applying sagitta ...";
 	}
 
-	// get flag for suppression of blind movements
-	suppressBlindMvmts = cfg.getUntrackedParameter< bool > ("suppressBlindMvmts");
 	if (suppressBlindMvmts)
 	{
 		edm::LogWarning("MisalignedTracker") << "Blind movements suppressed (TIB/TOB in z, TID/TEC in r)";
 	}
 
-	// compatibility with old (weird) z convention
-	oldMinusZconvention = cfg.getUntrackedParameter< bool > ("oldMinusZconvention");
 	if (oldMinusZconvention)
 	{
 		edm::LogWarning("MisalignedTracker") << "Old z convention: dz --> -dz";
@@ -124,7 +124,8 @@ void TrackerSystematicMisalignments::analyze(const edm::Event& event, const edm:
 	setup.get<IdealGeometryRecord>().get(geom);
 	edm::ESHandle<PTrackerParameters> ptp;
 	setup.get<PTrackerParametersRcd>().get( ptp );
-	TrackerGeometry* tracker = TrackerGeomBuilderFromGeometricDet().build(&*geom, *ptp, tTopo );
+        std::unique_ptr<TrackerGeometry> tracker
+          (TrackerGeomBuilderFromGeometricDet().build(&*geom, *ptp, tTopo));
 
 	//take geometry from DB or randomly generate geometry
 	if (m_fromDBGeom){
@@ -150,8 +151,10 @@ void TrackerSystematicMisalignments::analyze(const edm::Event& event, const edm:
 	applySystematicMisalignment(theAlignableTracker.get());
 
 	// -------------- writing out to alignment record --------------
-	Alignments* myAlignments = theAlignableTracker->alignments() ;
-	AlignmentErrorsExtended* myAlignmentErrorsExtended = theAlignableTracker->alignmentErrors() ;
+	std::unique_ptr<Alignments>
+	  myAlignments(theAlignableTracker->alignments());
+	std::unique_ptr<AlignmentErrorsExtended>
+	  myAlignmentErrorsExtended(theAlignableTracker->alignmentErrors());
 
 	// Store alignment[Error]s to DB
 	edm::Service<cond::service::PoolDBOutputService> poolDbService;
@@ -162,8 +165,8 @@ void TrackerSystematicMisalignments::analyze(const edm::Event& event, const edm:
 	if( !poolDbService.isAvailable() ) // Die if not available
 		throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
 
-	poolDbService->writeOne<Alignments>(&(*myAlignments), poolDbService->beginOfTime(), theAlignRecordName);
-	poolDbService->writeOne<AlignmentErrorsExtended>(&(*myAlignmentErrorsExtended), poolDbService->beginOfTime(), theErrorRecordName);
+	poolDbService->writeOne(myAlignments.get(), poolDbService->beginOfTime(), theAlignRecordName);
+	poolDbService->writeOne(myAlignmentErrorsExtended.get(), poolDbService->beginOfTime(), theErrorRecordName);
 }
 
 void TrackerSystematicMisalignments::applySystematicMisalignment(Alignable* ali)

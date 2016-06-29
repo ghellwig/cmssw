@@ -16,7 +16,6 @@
 namespace edm { class ParameterSet; class EventSetup; }
 
 class AlignableMuon;
-class AlignableTracker;
 class AlignableExtras;
 
 class SurveyAlignmentAlgorithm : public AlignmentAlgorithmBase

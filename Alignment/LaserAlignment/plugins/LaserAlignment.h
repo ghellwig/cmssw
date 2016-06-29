@@ -239,7 +239,7 @@ class LaserAlignment : public edm::one::EDProducer<edm::EndRunProducer> {
   edm::ESHandle<Alignments> theGlobalPositionRcd;
 
 
-  AlignableTracker* theAlignableTracker;
+  std::unique_ptr<AlignableTracker> theAlignableTracker;
 
   std::string theAlignRecordName, theErrorRecordName;
 

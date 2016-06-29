@@ -36,7 +36,6 @@ LaserAlignment::LaserAlignment( edm::ParameterSet const& theConf ) :
   theSetNominalStrips( theConf.getUntrackedParameter<bool>( "ForceFitterToNominalStrips", false ) ),
   theLasConstants( theConf.getUntrackedParameter<std::vector<edm::ParameterSet> >( "LaserAlignmentConstants" ) ),
   theFile(),
-  theAlignableTracker(),
   theAlignRecordName( "TrackerAlignmentRcd" ),
   theErrorRecordName( "TrackerAlignmentErrorExtendedRcd" ),
   firstEvent_(true)
@@ -112,7 +111,6 @@ LaserAlignment::~LaserAlignment() {
 
   if ( theSaveHistograms ) theFile->Write();
   if ( theFile ) { delete theFile; }
-  if ( theAlignableTracker ) { delete theAlignableTracker; }
 
 }
 
@@ -292,13 +290,16 @@ void LaserAlignment::produce(edm::Event& theEvent, edm::EventSetup const& theSet
       edm::ESHandle<PTrackerParameters> ptp;
       theSetup.get<PTrackerParametersRcd>().get( ptp );
       TrackerGeomBuilderFromGeometricDet trackerBuilder;
-      TrackerGeometry* theRefTracker = trackerBuilder.build(&*theGeometricDet, *ptp, tTopo );
+      std::unique_ptr<TrackerGeometry> theRefTracker
+	(trackerBuilder.build(&*theGeometricDet, *ptp, tTopo));
       
-      theAlignableTracker = new AlignableTracker(&(*theRefTracker), tTopo);
+      theAlignableTracker =
+        std::make_unique<AlignableTracker>(theRefTracker.get(), tTopo);
     }
     else {
       // the AlignableTracker object is initialized with the input geometry from DB
-      theAlignableTracker = new AlignableTracker( &(*theTrackerGeometry), tTopo );
+      theAlignableTracker =
+	std::make_unique<AlignableTracker>( &(*theTrackerGeometry), tTopo );
     }
     
     firstEvent_ = false;

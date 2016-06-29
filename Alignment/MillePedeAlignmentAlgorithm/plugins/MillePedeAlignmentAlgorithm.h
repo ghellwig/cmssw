@@ -13,7 +13,6 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmPluginFactory.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
-#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 

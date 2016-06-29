@@ -224,21 +224,22 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
     
     if ( doMuon_ ) { // apply to tracker
       this->applyDB<DTGeometry,DTAlignmentRcd,DTAlignmentErrorExtendedRcd>
-	(&(*theMuonDT), iSetup,
+	(theMuonDT.get(), iSetup,
 	 align::DetectorGlobalPosition(*globalPositions_, DetId(DetId::Muon)));
       this->applyDB<CSCGeometry,CSCAlignmentRcd,CSCAlignmentErrorExtendedRcd>
-	(&(*theMuonCSC), iSetup,
+	(theMuonCSC.get(), iSetup,
 	 align::DetectorGlobalPosition(*globalPositions_, DetId(DetId::Muon)));
     }
   }
 
   // Create alignable tracker and muon 
   if (doTracker_) {
-    theAlignableTracker = std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
+    theAlignableTracker =
+      std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
   }
 
   if (doMuon_) {
-     theAlignableMuon = new AlignableMuon( &(*theMuonDT), &(*theMuonCSC) );
+    theAlignableMuon = new AlignableMuon(theMuonDT.get(), theMuonCSC.get());
   }
 
   if (useExtras_) {
@@ -414,13 +415,13 @@ void AlignmentProducer::startingNewLoop(unsigned int iLoop )
 
   }
   if ( doMuon_ ) {
-    std::auto_ptr<Alignments>      dtAlignments(       theAlignableMuon->dtAlignments());
-    std::auto_ptr<AlignmentErrorsExtended> dtAlignmentErrorsExtended(  theAlignableMuon->dtAlignmentErrorsExtended());
-    std::auto_ptr<Alignments>      cscAlignments(      theAlignableMuon->cscAlignments());
-    std::auto_ptr<AlignmentErrorsExtended> cscAlignmentErrorsExtended( theAlignableMuon->cscAlignmentErrorsExtended());
+    std::unique_ptr<Alignments> dtAlignments(theAlignableMuon->dtAlignments());
+    std::unique_ptr<AlignmentErrorsExtended> dtAlignmentErrorsExtended(theAlignableMuon->dtAlignmentErrorsExtended());
+    std::unique_ptr<Alignments> cscAlignments(theAlignableMuon->cscAlignments());
+    std::unique_ptr<AlignmentErrorsExtended> cscAlignmentErrorsExtended(theAlignableMuon->cscAlignmentErrorsExtended());
 
-    aligner.applyAlignments<DTGeometry>( &(*theMuonDT), &(*dtAlignments), &(*dtAlignmentErrorsExtended), AlignTransform() ); // don't apply global a second time!
-    aligner.applyAlignments<CSCGeometry>( &(*theMuonCSC), &(*cscAlignments), &(*cscAlignmentErrorsExtended), AlignTransform() ); // nope!
+    aligner.applyAlignments<DTGeometry>(theMuonDT.get(), dtAlignments.get(), dtAlignmentErrorsExtended.get(), AlignTransform() ); // don't apply global a second time!
+    aligner.applyAlignments<CSCGeometry>(theMuonCSC.get(), cscAlignments.get(), cscAlignmentErrorsExtended.get(), AlignTransform() ); // nope!
   }
 }
 

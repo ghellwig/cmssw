@@ -314,7 +314,7 @@ void AlignmentStats::endJob(){
   lastSetup_->get<TrackerTopologyRcd>().get(tTopoHandle);
   const TrackerTopology* const tTopo = tTopoHandle.product();
 
-  AlignableTracker* theAliTracker=new AlignableTracker(&(*trackerGeometry_), tTopo);
+  AlignableTracker* theAliTracker=new AlignableTracker(trackerGeometry_, tTopo);
   const std::vector<Alignable*>& Detunitslist=theAliTracker->deepComponents();
   int ndetunits=Detunitslist.size();
   edm::LogInfo("AlignmentStats")<<"Number of DetUnits in the AlignableTracker: "<< ndetunits<<std::endl;

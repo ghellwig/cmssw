@@ -148,7 +148,7 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       edm::ESHandle<PTrackerParameters> ptp;
       iSetup.get<PTrackerParametersRcd>().get( ptp );
       TrackerGeomBuilderFromGeometricDet trackerBuilder;
-      boost::shared_ptr<TrackerGeometry> theTracker(trackerBuilder.build(&(*theGeometricDet), *ptp, tTopo ));
+      std::shared_ptr<TrackerGeometry> theTracker(trackerBuilder.build(&(*theGeometricDet), *ptp, tTopo ));
       
       edm::ESHandle<MuonDDDConstants> mdc;
       iSetup.get<MuonNumberingRecord>().get(mdc);
@@ -173,21 +173,21 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       iSetup.get<DTAlignmentRcd>().get( dtAlignments );
       edm::ESHandle<AlignmentErrorsExtended> dtAlignmentErrorsExtended;
       iSetup.get<DTAlignmentErrorExtendedRcd>().get( dtAlignmentErrorsExtended );
-      aligner.applyAlignments<DTGeometry>( &(*theMuonDT), &(*dtAlignments), &(*dtAlignmentErrorsExtended),
-					   align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Muon)) );
+      aligner.applyAlignments<DTGeometry>(theMuonDT.get(), &(*dtAlignments), &(*dtAlignmentErrorsExtended),
+                                          align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Muon)) );
       
       edm::ESHandle<Alignments> cscAlignments;
       iSetup.get<CSCAlignmentRcd>().get( cscAlignments );
       edm::ESHandle<AlignmentErrorsExtended> cscAlignmentErrorsExtended;
       iSetup.get<CSCAlignmentErrorExtendedRcd>().get( cscAlignmentErrorsExtended );
-      aligner.applyAlignments<CSCGeometry>( &(*theMuonCSC), &(*cscAlignments), &(*cscAlignmentErrorsExtended),
-					    align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Muon)) );
+      aligner.applyAlignments<CSCGeometry>(theMuonCSC.get(), &(*cscAlignments), &(*cscAlignmentErrorsExtended),
+                                           align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Muon)) );
       
       // within an analyzer, modules can't expect to see any selected alignables!
       std::vector<Alignable*> empty_alignables;
       
       m_alignableTracker = std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
-      m_alignableMuon = new AlignableMuon( &(*theMuonDT), &(*theMuonCSC) );
+      m_alignableMuon = new AlignableMuon(theMuonDT.get(), theMuonCSC.get());
       m_alignmentParameterStore =
 	std::make_shared<AlignmentParameterStore>(empty_alignables, m_aliParamStoreCfg);
       

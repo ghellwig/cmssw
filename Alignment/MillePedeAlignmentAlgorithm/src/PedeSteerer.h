@@ -21,9 +21,9 @@
 #include <iosfwd> 
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 class Alignable;
-class AlignableTracker;
 class AlignableMuon;
 class AlignableExtras;
 class AlignmentParameterStore;

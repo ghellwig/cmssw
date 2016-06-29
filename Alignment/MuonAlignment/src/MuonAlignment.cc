@@ -198,7 +198,7 @@ void MuonAlignment::fillGapsInSurvey(double shiftErr, double angleErr) {
 //____________________________________________________________________________________
 //
 void MuonAlignment::recursiveCopySurveyToAlignment(Alignable *alignable) {
-   if (alignable->survey() != NULL) {
+   if (alignable->survey() != nullptr) {
       const SurveyDet *survey = alignable->survey();
 
       align::PositionType pos = survey->position();
