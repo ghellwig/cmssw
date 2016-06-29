@@ -25,9 +25,9 @@ class MuonAlignment {
 
       MuonAlignment( const edm::EventSetup& iSetup, const MuonAlignmentInputMethod& input );
 
-     ~MuonAlignment() { delete theAlignableMuon; delete theAlignableNavigator; }
+     ~MuonAlignment() { delete theAlignableNavigator; }
       
-      AlignableMuon* getAlignableMuon() { return theAlignableMuon; }
+      std::shared_ptr<AlignableMuon> getAlignableMuon() { return theAlignableMuon; }
 
       AlignableNavigator* getAlignableNavigator() { return theAlignableNavigator; }
 
@@ -67,7 +67,7 @@ class MuonAlignment {
 
       align::Scalars rotations;
 
-      AlignableMuon* theAlignableMuon;
+      std::shared_ptr<AlignableMuon> theAlignableMuon;
 
       AlignableNavigator* theAlignableNavigator;
 };

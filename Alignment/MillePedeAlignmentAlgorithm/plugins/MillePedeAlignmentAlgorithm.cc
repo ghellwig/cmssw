@@ -118,7 +118,8 @@ MillePedeAlignmentAlgorithm::~MillePedeAlignmentAlgorithm()
 //____________________________________________________
 void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup, 
                                              std::shared_ptr<AlignableTracker> tracker,
-                                             AlignableMuon *muon, AlignableExtras *extras,
+                                             std::shared_ptr<AlignableMuon> muon,
+                                             AlignableExtras *extras,
                                              std::shared_ptr<AlignmentParameterStore> store)
 {
   if (muon) {
@@ -131,7 +132,7 @@ void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup,
   setup.get<TrackerTopologyRcd>().get(tTopoHandle);
   const TrackerTopology* const tTopo = tTopoHandle.product();
 
-  theAlignableNavigator = std::make_unique<AlignableNavigator>(extras, tracker.get(), muon);
+  theAlignableNavigator = std::make_unique<AlignableNavigator>(extras, tracker.get(), muon.get());
   theAlignmentParameterStore = store;
   theAlignables = theAlignmentParameterStore->alignables();
 
@@ -173,7 +174,7 @@ void MillePedeAlignmentAlgorithm::initialize(const edm::EventSetup &setup,
   
   // 1) Create PedeSteerer: correct alignable positions for coordinate system selection
   edm::ParameterSet pedeSteerCfg(theConfig.getParameter<edm::ParameterSet>("pedeSteerer"));
-  thePedeSteer = std::make_unique<PedeSteerer>(tracker.get(), muon, extras,
+  thePedeSteer = std::make_unique<PedeSteerer>(tracker.get(), muon.get(), extras,
                                                theAlignmentParameterStore, thePedeLabels.get(),
                                                pedeSteerCfg, theDir, !this->isMode(myPedeSteerBit));
   

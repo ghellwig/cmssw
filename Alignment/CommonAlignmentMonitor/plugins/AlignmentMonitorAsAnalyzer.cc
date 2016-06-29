@@ -81,7 +81,7 @@ class AlignmentMonitorAsAnalyzer : public edm::EDAnalyzer {
       edm::ParameterSet m_aliParamStoreCfg;
 
       std::shared_ptr<AlignableTracker> m_alignableTracker;
-      AlignableMuon *m_alignableMuon;
+      std::shared_ptr<AlignableMuon> m_alignableMuon;
       std::shared_ptr<AlignmentParameterStore> m_alignmentParameterStore;
 
       std::vector<AlignmentMonitorBase*> m_monitors;
@@ -104,7 +104,6 @@ class AlignmentMonitorAsAnalyzer : public edm::EDAnalyzer {
 AlignmentMonitorAsAnalyzer::AlignmentMonitorAsAnalyzer(const edm::ParameterSet& iConfig)
    : m_tjTag(iConfig.getParameter<edm::InputTag>("tjTkAssociationMapTag"))
    , m_aliParamStoreCfg(iConfig.getParameter<edm::ParameterSet>("ParameterStore"))
-   , m_alignableMuon(NULL)
 {
    std::vector<std::string> monitors = iConfig.getUntrackedParameter<std::vector<std::string> >( "monitors" );
 
@@ -120,7 +119,6 @@ AlignmentMonitorAsAnalyzer::AlignmentMonitorAsAnalyzer(const edm::ParameterSet& 
 
 AlignmentMonitorAsAnalyzer::~AlignmentMonitorAsAnalyzer()
 {
-   delete m_alignableMuon;
 }
 
 
@@ -187,7 +185,8 @@ AlignmentMonitorAsAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       std::vector<Alignable*> empty_alignables;
       
       m_alignableTracker = std::make_shared<AlignableTracker>(theTracker.get(), tTopo);
-      m_alignableMuon = new AlignableMuon(theMuonDT.get(), theMuonCSC.get());
+      m_alignableMuon =
+        std::make_shared<AlignableMuon>(theMuonDT.get(), theMuonCSC.get());
       m_alignmentParameterStore =
 	std::make_shared<AlignmentParameterStore>(empty_alignables, m_aliParamStoreCfg);
       

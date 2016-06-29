@@ -29,14 +29,13 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
 						     AlignableExtras* alignableExtras) :
   theAlignables(),
   theAlignableTracker(alignableTracker),
-  theAlignableMuon(0),
   theAlignableExtras(alignableExtras)
 {
 }
 
 //__________________________________________________________________________________________________
 AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     AlignableMuon* alignableMuon,
+                                                     std::shared_ptr<AlignableMuon> alignableMuon,
 						     AlignableExtras* alignableExtras) :
   theAlignables(), 
   theAlignableTracker(alignableTracker),
@@ -52,7 +51,6 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
                                                      const edm::ParameterSet &pSet) :
   theAlignables(), 
   theAlignableTracker(alignableTracker),
-  theAlignableMuon(0),
   theAlignableExtras(alignableExtras)
 {
   this->addAllSelections(pSet);
@@ -60,7 +58,7 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
 
 //__________________________________________________________________________________________________
 AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     AlignableMuon* alignableMuon,
+                                                     std::shared_ptr<AlignableMuon> alignableMuon,
 						     AlignableExtras* alignableExtras,
                                                      const edm::ParameterSet &pSet) :
   theAlignables(), 

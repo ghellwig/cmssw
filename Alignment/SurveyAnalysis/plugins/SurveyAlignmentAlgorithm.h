@@ -15,7 +15,6 @@
 
 namespace edm { class ParameterSet; class EventSetup; }
 
-class AlignableMuon;
 class AlignableExtras;
 
 class SurveyAlignmentAlgorithm : public AlignmentAlgorithmBase
@@ -27,7 +26,7 @@ class SurveyAlignmentAlgorithm : public AlignmentAlgorithmBase
   /// call at start of job
   virtual void initialize(const edm::EventSetup&,
                           std::shared_ptr<AlignableTracker>,
-                          AlignableMuon*,
+                          std::shared_ptr<AlignableMuon>,
                           AlignableExtras*,
                           std::shared_ptr<AlignmentParameterStore>) override;
 

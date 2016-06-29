@@ -89,8 +89,6 @@ private:
 	AlignableMuon* referenceMuon;
 	AlignableMuon* dummyMuon;
 	AlignableMuon* currentMuon;
-	Alignable* inputGeometry1;
-	Alignable* inputGeometry2;
 
 	unsigned int theSurveyIndex;
 	const Alignments* theSurveyValues;

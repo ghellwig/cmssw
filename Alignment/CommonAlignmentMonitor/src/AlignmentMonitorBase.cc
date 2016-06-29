@@ -20,7 +20,7 @@
 
 AlignmentMonitorBase::AlignmentMonitorBase(const edm::ParameterSet& cfg, std::string name)
    : m_beamSpotTag(cfg.getUntrackedParameter<edm::InputTag>("beamSpotTag",edm::InputTag("offlineBeamSpot")))
-   , m_iteration(0), mp_muon(0)
+   , m_iteration(0)
 {
    edm::Service<TFileService> tFileService;
    m_baseDirMap[std::vector<std::string>()] = new TFileDirectory(tFileService->mkdir(name));
@@ -28,16 +28,16 @@ AlignmentMonitorBase::AlignmentMonitorBase(const edm::ParameterSet& cfg, std::st
 
 
 void AlignmentMonitorBase::beginOfJob(std::shared_ptr<AlignableTracker> pTracker,
-                                      AlignableMuon *pMuon,
+                                      std::shared_ptr<AlignableMuon> pMuon,
                                       std::shared_ptr<AlignmentParameterStore> pStore)
 {
    mp_tracker = pTracker;
    mp_muon = pMuon;
    mp_store = pStore;
 
-   if (!pMuon)          mp_navigator = new AlignableNavigator(&(*pTracker));
-   else if (!pTracker)  mp_navigator = new AlignableNavigator(pMuon);
-   else                 mp_navigator = new AlignableNavigator(&(*pTracker), pMuon);
+   if (!pMuon)          mp_navigator = new AlignableNavigator(pTracker.get());
+   else if (!pTracker)  mp_navigator = new AlignableNavigator(pMuon.get());
+   else                 mp_navigator = new AlignableNavigator(pTracker.get(), pMuon.get());
 }
 
 

@@ -64,7 +64,8 @@ MuonAlignmentInputDB::~MuonAlignmentInputDB() {}
 // member functions
 //
 
-AlignableMuon *MuonAlignmentInputDB::newAlignableMuon(const edm::EventSetup& iSetup) const {
+std::shared_ptr<AlignableMuon>
+MuonAlignmentInputDB::newAlignableMuon(const edm::EventSetup& iSetup) const {
    std::shared_ptr<DTGeometry> dtGeometry = idealDTGeometry(iSetup);
    std::shared_ptr<CSCGeometry> cscGeometry = idealCSCGeometry(iSetup);
 
@@ -109,7 +110,7 @@ AlignableMuon *MuonAlignmentInputDB::newAlignableMuon(const edm::EventSetup& iSe
 					   align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Muon)));
    }
 
-   return new AlignableMuon(&(*dtGeometry), &(*cscGeometry));
+   return std::make_shared<AlignableMuon>(dtGeometry.get(), cscGeometry.get());
 }
 
 //

@@ -59,11 +59,12 @@ MuonAlignmentInputMethod::~MuonAlignmentInputMethod() {}
 // member functions
 //
 
-AlignableMuon *MuonAlignmentInputMethod::newAlignableMuon(const edm::EventSetup& iSetup) const {
+std::shared_ptr<AlignableMuon>
+MuonAlignmentInputMethod::newAlignableMuon(const edm::EventSetup& iSetup) const {
    std::shared_ptr<DTGeometry> dtGeometry = idealDTGeometry(iSetup);
    std::shared_ptr<CSCGeometry> cscGeometry = idealCSCGeometry(iSetup);
 
-   return new AlignableMuon(&(*dtGeometry), &(*cscGeometry));
+   return std::make_shared<AlignableMuon>(dtGeometry.get(), cscGeometry.get());
 }
 
 std::shared_ptr<DTGeometry> MuonAlignmentInputMethod::idealDTGeometry(const edm::EventSetup& iSetup) const {

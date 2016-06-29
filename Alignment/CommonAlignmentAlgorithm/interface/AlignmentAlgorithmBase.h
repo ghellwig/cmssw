@@ -23,8 +23,8 @@
 #include <utility>
 
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
+#include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
-class AlignableMuon;
 class AlignableExtras;
 class AlignmentParameterStore;
 class IntegratedCalibrationBase;
@@ -119,7 +119,7 @@ public:
   /// Call at beginning of job (must be implemented in derived class)
   virtual void initialize(const edm::EventSetup& setup,
                           std::shared_ptr<AlignableTracker> tracker,
-                          AlignableMuon* muon,
+                          std::shared_ptr<AlignableMuon> muon,
                           AlignableExtras* extras,
                           std::shared_ptr<AlignmentParameterStore> store) = 0;
 

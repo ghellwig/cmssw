@@ -121,10 +121,11 @@ MisalignedMuonESProducer::produce( const MuonGeometryRecord& iRecord )
 
 
   // Create the alignable hierarchy
-  AlignableMuon* theAlignableMuon = new AlignableMuon( &(*theDTGeometry) , &(*theCSCGeometry) );
+  auto theAlignableMuon =
+    std::make_shared<AlignableMuon>(theDTGeometry.get(), theCSCGeometry.get());
 
   // Create misalignment scenario
-  MuonScenarioBuilder scenarioBuilder( theAlignableMuon );
+  MuonScenarioBuilder scenarioBuilder(theAlignableMuon);
   scenarioBuilder.applyScenario( theScenario );
   
   // Get alignments and errors

@@ -11,7 +11,7 @@
 
 
 #include <vector>
-
+#include <memory>
 
 #include "Alignment/CommonAlignment/interface/AlignableModifier.h"
 #include "Alignment/CommonAlignment/interface/MisalignmentScenarioBuilder.h"
@@ -24,7 +24,7 @@ class MuonScenarioBuilder : public MisalignmentScenarioBuilder
 public:
 
   /// Constructor
-  explicit MuonScenarioBuilder( Alignable* alignable );
+  explicit MuonScenarioBuilder(std::shared_ptr<AlignableMuon> alignable);
 
   /// Destructor
   ~MuonScenarioBuilder() {};
@@ -46,7 +46,7 @@ public:
   void moveChamberInSector( Alignable *, const align::Scalars&, const align::Scalars&, const align::Scalars&, const align::Scalars& );
 private: // Members
 
-  AlignableMuon* theAlignableMuon;   ///< Pointer to alignable Muon object
+  std::shared_ptr<AlignableMuon> theAlignableMuon;   ///< Pointer to alignable Muon object
   
   AlignableModifier theMuonModifier; 
 };

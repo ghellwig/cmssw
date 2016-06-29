@@ -78,7 +78,7 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  theAlignableExtras(0), theAlignableMuon(0),
+  theAlignableExtras(0),
   globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
   theMaxLoops( iConfig.getUntrackedParameter<unsigned int>("maxLoops") ),
@@ -159,7 +159,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 AlignmentProducer::~AlignmentProducer()
 {
   delete theAlignableExtras;
-  delete theAlignableMuon;
 
   delete globalPositions_;
 }
@@ -239,7 +238,8 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
   }
 
   if (doMuon_) {
-    theAlignableMuon = new AlignableMuon(theMuonDT.get(), theMuonCSC.get());
+    theAlignableMuon =
+      std::make_shared<AlignableMuon>(theMuonDT.get(), theMuonCSC.get());
   }
 
   if (useExtras_) {
@@ -287,7 +287,7 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
       scenarioBuilder.applyScenario( scenarioConfig );
     }
     if (doMuon_) {
-      MuonScenarioBuilder muonScenarioBuilder( theAlignableMuon );
+      MuonScenarioBuilder muonScenarioBuilder(theAlignableMuon);
       muonScenarioBuilder.applyScenario( scenarioConfig );
     }
   } else {

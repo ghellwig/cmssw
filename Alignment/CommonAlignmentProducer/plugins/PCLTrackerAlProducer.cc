@@ -62,7 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  theMuonAlignables(0),
   theExtraAlignables(0),
   globalPositions_(0),
 
@@ -108,7 +107,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  delete theMuonAlignables;
   delete theExtraAlignables;
   delete globalPositions_;
 }
@@ -543,7 +541,9 @@ void PCLTrackerAlProducer
   }
 
   if (doMuon_) {
-    theMuonAlignables = new AlignableMuon(theMuonDTGeometry.get(), theMuonCSCGeometry.get());
+    theMuonAlignables =
+      std::make_shared<AlignableMuon>(theMuonDTGeometry.get(),
+                                      theMuonCSCGeometry.get());
   }
 
   if (useExtras_) {

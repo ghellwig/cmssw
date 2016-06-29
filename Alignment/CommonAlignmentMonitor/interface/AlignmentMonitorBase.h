@@ -55,7 +55,8 @@ class AlignmentMonitorBase
       virtual ~AlignmentMonitorBase() {}
 
       /// Called at beginning of job: don't reimplement
-      void beginOfJob(std::shared_ptr<AlignableTracker> pTracker, AlignableMuon *pMuon,
+      void beginOfJob(std::shared_ptr<AlignableTracker> pTracker,
+                      std::shared_ptr<AlignableMuon> pMuon,
                       std::shared_ptr<AlignmentParameterStore> pStore);
 
       /// Called at beginning of loop: don't reimplement
@@ -93,7 +94,7 @@ class AlignmentMonitorBase
       
       int                     iteration()    { return m_iteration; }
       std::shared_ptr<AlignableTracker>        pTracker()    { return mp_tracker; }
-      AlignableMuon           *pMuon()       { return mp_muon; }
+      std::shared_ptr<AlignableMuon>           pMuon()       { return mp_muon; }
       std::shared_ptr<AlignmentParameterStore> pStore() { return mp_store; }
       AlignableNavigator      *pNavigator()  { return mp_navigator; }
 
@@ -104,7 +105,7 @@ class AlignmentMonitorBase
 
       int m_iteration;
       std::shared_ptr<AlignableTracker>        mp_tracker;
-      AlignableMuon            *mp_muon;
+      std::shared_ptr<AlignableMuon>           mp_muon;
       std::shared_ptr<AlignmentParameterStore> mp_store;
       AlignableNavigator       *mp_navigator;
 

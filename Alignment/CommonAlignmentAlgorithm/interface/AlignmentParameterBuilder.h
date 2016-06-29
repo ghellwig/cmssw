@@ -15,6 +15,7 @@
 #include "Alignment/CommonAlignment/interface/Utilities.h"
 #include "Alignment/CommonAlignmentParametrization/interface/AlignmentParametersFactory.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
+#include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
 namespace edm {
   class ParameterSet;
@@ -33,7 +34,7 @@ public:
 
   /// Constructor from tracker and muon
   AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            AlignableMuon *alignableMuon,
+                            std::shared_ptr<AlignableMuon> alignableMuon,
                             AlignableExtras *alignableExtras );
 
   /// Constructor adding selections by passing the ParameterSet named 'AlignmentParameterSelector'
@@ -44,7 +45,7 @@ public:
 
   /// Constructor from tracker and muon, plus selection
   AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            AlignableMuon *alignableMuon,
+                            std::shared_ptr<AlignableMuon> alignableMuon,
                             AlignableExtras *alignableExtras,
                             const edm::ParameterSet &pSet);
 
@@ -97,7 +98,7 @@ private:
   std::shared_ptr<AlignableTracker> theAlignableTracker;
 
   /// Alignable muon
-  AlignableMuon* theAlignableMuon;
+  std::shared_ptr<AlignableMuon> theAlignableMuon;
   
   /// extra Alignables
   AlignableExtras* theAlignableExtras;

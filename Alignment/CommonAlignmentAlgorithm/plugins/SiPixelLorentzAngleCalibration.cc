@@ -97,7 +97,7 @@ public:
 
   // /// Call at beginning of job:
   virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
-  			  AlignableMuon *muon,
+  			  std::shared_ptr<AlignableMuon> muon,
   			  AlignableExtras *extras) override;
 
 
@@ -249,7 +249,7 @@ double SiPixelLorentzAngleCalibration::getParameterError(unsigned int index) con
 
 //======================================================================
 void SiPixelLorentzAngleCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
-                                                AlignableMuon * /*aliMuon*/,
+                                                std::shared_ptr<AlignableMuon> /*aliMuon*/,
                                                 AlignableExtras * /*aliExtras*/)
 {
   //specify the sub-detectors for which the LA is determined

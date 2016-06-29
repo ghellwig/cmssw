@@ -224,7 +224,7 @@ class PCLTrackerAlProducer :
 
     std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
     std::shared_ptr<AlignableTracker>        theTrackerAlignables;
-    AlignableMuon*           theMuonAlignables;
+    std::shared_ptr<AlignableMuon>           theMuonAlignables;
     AlignableExtras*         theExtraAlignables;
 
     edm::Handle<reco::BeamSpot> theBeamSpot;

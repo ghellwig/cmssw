@@ -468,13 +468,12 @@ void MuonGeometryArrange::analyze(const edm::Event&,
     inputAlign2a = new MuonAlignment(iSetup, inputMethod3);
     inputAlign2a->fillGapsInSurvey(0, 0);
     
-    inputGeometry1 = static_cast<Alignable*> (inputAlign1->getAlignableMuon());
-    inputGeometry2 = static_cast<Alignable*> (inputAlign2->getAlignableMuon());
-    Alignable* inputGeometry2Copy2 = 
-      static_cast<Alignable*> (inputAlign2a->getAlignableMuon());
+    auto inputGeometry1 = inputAlign1->getAlignableMuon();
+    auto inputGeometry2 = inputAlign2->getAlignableMuon();
+    auto inputGeometry2Copy2 = inputAlign2a->getAlignableMuon();
     
     //compare the goemetries
-    compare(inputGeometry1, inputGeometry2, inputGeometry2Copy2);
+    compare(inputGeometry1.get(), inputGeometry2.get(), inputGeometry2Copy2.get());
     
     //write out ntuple
     //might be better to do within output module

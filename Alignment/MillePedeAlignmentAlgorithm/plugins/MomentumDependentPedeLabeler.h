@@ -82,7 +82,7 @@ class MomentumDependentPedeLabeler : public PedeLabelerBase
   std::vector<std::string> decompose(const std::string &s, std::string::value_type delimiter) const;
   std::vector<unsigned int> convertParamSel(const std::string &selString) const;
   unsigned int buildMomentumDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
-                                          AlignableMuon* aliMuon,
+                                          std::shared_ptr<AlignableMuon> aliMuon,
                                           AlignableExtras *extras,
                                           const edm::ParameterSet &config);
 

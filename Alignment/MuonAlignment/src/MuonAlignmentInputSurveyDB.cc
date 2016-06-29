@@ -62,7 +62,8 @@ MuonAlignmentInputSurveyDB::~MuonAlignmentInputSurveyDB() {}
 // member functions
 //
 
-AlignableMuon *MuonAlignmentInputSurveyDB::newAlignableMuon(const edm::EventSetup& iSetup) const {
+std::shared_ptr<AlignableMuon>
+MuonAlignmentInputSurveyDB::newAlignableMuon(const edm::EventSetup& iSetup) const {
    std::shared_ptr<DTGeometry> dtGeometry = idealDTGeometry(iSetup);
    std::shared_ptr<CSCGeometry> cscGeometry = idealCSCGeometry(iSetup);
 
@@ -75,7 +76,8 @@ AlignableMuon *MuonAlignmentInputSurveyDB::newAlignableMuon(const edm::EventSetu
    iSetup.get<CSCSurveyRcd>().get(m_cscLabel, cscSurvey);
    iSetup.get<CSCSurveyErrorExtendedRcd>().get(m_cscLabel, cscSurveyError);
 
-   AlignableMuon *output = new AlignableMuon(&(*dtGeometry), &(*cscGeometry));
+   auto output =
+     std::make_shared<AlignableMuon>(dtGeometry.get(), cscGeometry.get());
 
    unsigned int theSurveyIndex  = 0;
    const Alignments *theSurveyValues = &*dtSurvey;

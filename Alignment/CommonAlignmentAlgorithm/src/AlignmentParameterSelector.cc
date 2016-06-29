@@ -8,8 +8,6 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentParameterSelector.h"
 #include "Alignment/CommonAlignment/interface/AlignableExtras.h"
-#include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
-#include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 #include "Alignment/TrackerAlignment/interface/TrackerAlignableId.h"
 
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
@@ -22,7 +20,7 @@
 
 //________________________________________________________________________________
 AlignmentParameterSelector::AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
-                                                       AlignableMuon* aliMuon,
+                                                       std::shared_ptr<AlignableMuon> aliMuon,
                                                        AlignableExtras *aliExtras) :
   theTracker(aliTracker), theMuon(aliMuon), theExtras(aliExtras), theSelectedAlignables(), 
   theRangesEta(), theRangesPhi(), theRangesR(), theRangesX(), theRangesY(), theRangesZ()

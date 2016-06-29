@@ -22,14 +22,12 @@
 #include "DataFormats/MuonDetId/interface/CSCTriggerNumbering.h" 
 
 //__________________________________________________________________________________________________
-MuonScenarioBuilder::MuonScenarioBuilder( Alignable* alignable )
+MuonScenarioBuilder::MuonScenarioBuilder(std::shared_ptr<AlignableMuon> alignable) :
+  theAlignableMuon(alignable)
 {
-
-  theAlignableMuon = dynamic_cast<AlignableMuon*>( alignable );
-
-  if ( !theAlignableMuon )
-    throw cms::Exception("TypeMismatch") << "Argument is not an AlignableMuon";
-
+  if (!theAlignableMuon) {
+    throw cms::Exception("TypeMismatch") << "Pointer to AlignableMuon is empty.\n";
+  }
 }
 
 

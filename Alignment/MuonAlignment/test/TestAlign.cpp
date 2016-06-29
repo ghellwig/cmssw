@@ -71,7 +71,7 @@ TestAlign::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
   MuonAlignment align( iSetup );
   
   // Get the AlignableMuon pointer
-  AlignableMuon* theAlignableMuon = align.getAlignableMuon();
+  auto theAlignableMuon = align.getAlignableMuon();
   
   // Apply  alignment
   std::vector<double> displacement;

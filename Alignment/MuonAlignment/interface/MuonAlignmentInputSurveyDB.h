@@ -40,7 +40,7 @@ class MuonAlignmentInputSurveyDB: public MuonAlignmentInputMethod {
 
       // ---------- member functions ---------------------------
 
-      virtual AlignableMuon *newAlignableMuon(const edm::EventSetup &iSetup) const;
+      virtual std::shared_ptr<AlignableMuon> newAlignableMuon(const edm::EventSetup &iSetup) const;
 
    private:
       MuonAlignmentInputSurveyDB(const MuonAlignmentInputSurveyDB&); // stop default

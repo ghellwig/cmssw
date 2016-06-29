@@ -31,7 +31,7 @@ RunRangeDependentPedeLabeler::RunRangeDependentPedeLabeler(const PedeLabelerBase
 {
   std::vector<Alignable*> alis;
   alis.push_back(alignables.aliTracker_.get());
-  alis.push_back(alignables.aliMuon_);
+  alis.push_back(alignables.aliMuon_.get());
 
   if (alignables.aliExtras_) {
     align::Alignables allExtras = alignables.aliExtras_->components();
@@ -342,9 +342,9 @@ std::vector<unsigned int> RunRangeDependentPedeLabeler::convertParamSel(const st
 }
 
 unsigned int RunRangeDependentPedeLabeler::buildRunRangeDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
-								      AlignableMuon* aliMuon,
-								      AlignableExtras *aliExtras,
-								      const edm::ParameterSet &config)
+                                                                      std::shared_ptr<AlignableMuon> aliMuon,
+                                                                      AlignableExtras *aliExtras,
+                                                                      const edm::ParameterSet &config)
 {
   static bool oldRunRangeSelectionWarning = false;
 

@@ -243,16 +243,19 @@ void MuonAlignmentInputXML::fillAliToIdeal(std::map<Alignable*, Alignable*> &ali
    }
 }
 
-AlignableMuon *MuonAlignmentInputXML::newAlignableMuon(const edm::EventSetup& iSetup) const {
+std::shared_ptr<AlignableMuon>
+MuonAlignmentInputXML::newAlignableMuon(const edm::EventSetup& iSetup) const {
    std::shared_ptr<DTGeometry> dtGeometry = idealDTGeometry(iSetup);
    std::shared_ptr<CSCGeometry> cscGeometry = idealCSCGeometry(iSetup);
 
-   AlignableMuon *alignableMuon = new AlignableMuon(&(*dtGeometry), &(*cscGeometry));
+   auto alignableMuon =
+     std::make_shared<AlignableMuon>(dtGeometry.get(), cscGeometry.get());
    std::map<unsigned int, Alignable*> alignableNavigator;  // real AlignableNavigators don't have const methods
    recursiveGetId(alignableNavigator, alignableMuon->DTBarrel());
    recursiveGetId(alignableNavigator, alignableMuon->CSCEndcaps());
 
-   AlignableMuon *ideal_alignableMuon = new AlignableMuon(&(*dtGeometry), &(*cscGeometry));
+   auto ideal_alignableMuon =
+     std::make_shared<AlignableMuon>(dtGeometry.get(), cscGeometry.get());
    std::map<unsigned int, Alignable*> ideal_alignableNavigator;  // real AlignableNavigators don't have const methods
    recursiveGetId(ideal_alignableNavigator, ideal_alignableMuon->DTBarrel());
    recursiveGetId(ideal_alignableNavigator, ideal_alignableMuon->CSCEndcaps());
@@ -434,7 +437,6 @@ AlignableMuon *MuonAlignmentInputXML::newAlignableMuon(const edm::EventSetup& iS
 
    cms::concurrency::xercesTerminate();
 
-   delete ideal_alignableMuon;
    return alignableMuon;
 }
 
@@ -450,7 +452,7 @@ Alignable *MuonAlignmentInputXML::getNode(std::map<unsigned int, Alignable*> &al
    else if (XMLString::equals(node->getNodeName(), str_CSCRing)) return getCSCnode(align::AlignableCSCRing, alignableNavigator, node);
    else if (XMLString::equals(node->getNodeName(), str_CSCChamber)) return getCSCnode(align::AlignableCSCChamber, alignableNavigator, node);
    else if (XMLString::equals(node->getNodeName(), str_CSCLayer)) return getCSCnode(align::AlignableDetUnit, alignableNavigator, node);
-   else return NULL;
+   else return nullptr;
 }
 
 Alignable *MuonAlignmentInputXML::getDTnode(align::StructureType structureType, std::map<unsigned int, Alignable*> &alignableNavigator, const XERCES_CPP_NAMESPACE::DOMElement *node) const {

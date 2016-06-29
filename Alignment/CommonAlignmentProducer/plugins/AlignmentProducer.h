@@ -162,7 +162,7 @@ class AlignmentProducer : public edm::ESProducerLooper
 
   AlignableExtras* theAlignableExtras;
   std::shared_ptr<AlignableTracker> theAlignableTracker;
-  AlignableMuon* theAlignableMuon;
+  std::shared_ptr<AlignableMuon> theAlignableMuon;
 
   std::shared_ptr<TrackerGeometry> theTracker;
   std::shared_ptr<DTGeometry> theMuonDT;

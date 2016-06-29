@@ -22,9 +22,9 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
+#include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
 class Alignable;
-class AlignableMuon;
 class AlignableExtras;
 class AlignmentParameterStore;
 class PedeLabelerBase;
@@ -36,7 +36,7 @@ class PedeSteerer
 {
  public:
   /// constructor from AlignableTracker/AlignableMuon, their AlignmentParameterStore and the labeler
-  /// (NOTE: The latter two must live longer than the constructed PedeSteerer!)
+  /// (NOTE: The last one must live longer than the constructed PedeSteerer!)
   PedeSteerer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras,
 	      std::shared_ptr<const AlignmentParameterStore> store,
 	      const PedeLabelerBase *labels, const edm::ParameterSet &config,
@@ -49,7 +49,8 @@ class PedeSteerer
 
   /// construct steering files about hierarchy, fixing etc. an keep track of their names
   void buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
-                     AlignableMuon *aliMuon, AlignableExtras *aliExtras);
+                     std::shared_ptr<AlignableMuon> aliMuon,
+                     AlignableExtras *aliExtras);
   /// construct (and return name of) master steering file from config, binaryFiles etc.
   std::string buildMasterSteer(const std::vector<std::string> &binaryFiles);
   /// run pede, masterSteer should be as returned from buildMasterSteer(...)
@@ -104,7 +105,8 @@ class PedeSteerer
   unsigned int presigmas(const std::vector<edm::ParameterSet> &cffPresi,
                          const std::string &fileName, const std::vector<Alignable*> &alis,
                          std::shared_ptr<AlignableTracker> aliTracker,
-                         AlignableMuon *aliMuon, AlignableExtras *aliExtras);
+                         std::shared_ptr<AlignableMuon> aliMuon,
+                         AlignableExtras *aliExtras);
   /// look for active 'alis' in map of presigma values and create steering file 
   unsigned int presigmasFile(const std::string &fileName, const std::vector<Alignable*> &alis,
 			     const AlignablePresigmasMap &aliPresisMap); 
