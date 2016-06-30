@@ -142,8 +142,7 @@ private:
   struct DirectoryWrapper{
     DirectoryWrapper(const DirectoryWrapper& upDir,const std::string& newDir,
 		     const std::string& basedir,bool useDqmMode)
-      : tfd(0),
-	dqmMode(useDqmMode),
+      : dqmMode(useDqmMode),
 	theDbe(0) {
       if (newDir.length()!=0){
         if(upDir.directoryString.length()!=0)directoryString=upDir.directoryString+"/"+newDir;
@@ -153,8 +152,14 @@ private:
 	directoryString=upDir.directoryString;
 
       if (!dqmMode){
-	if (newDir.length()==0) tfd.reset(&(*upDir.tfd));
-	else
+	if (newDir.length()==0) {
+	  // FIXME: if this constructor is called with newDir = "", it would cause a double delete
+	  //        -> temporary "solution": adding an exception to catch this misuse
+	  //        -> long term solution: keep the temporary solution?
+	  throw cms::Exception("LogicError")
+	    << "[TrackerOfflineValidation] Trying to create a subdirectory with empty name";
+	  tfd.reset(&(*upDir.tfd)); // leaving the original code here to document the issue
+	} else
 	  tfd.reset(new TFileDirectory(upDir.tfd->mkdir(newDir)));
       }
       else {
@@ -163,8 +168,7 @@ private:
     }
     
     DirectoryWrapper(const std::string& newDir,const std::string& basedir,bool useDqmMode)
-      : tfd(0),
-	dqmMode(useDqmMode),
+      : dqmMode(useDqmMode),
 	theDbe(0) {
       if (!dqmMode){
 	edm::Service<TFileService> fs;
@@ -191,7 +195,7 @@ private:
     template <typename T> TH1* make(const char* name,const char* title,int nBinX,double minBinX,double maxBinX,int nBinY,double minBinY,double maxBinY);
     template <typename T> TH1* make(const char* name,const char* title,int nBinX,double minBinX,double maxBinX,double minBinY,double maxBinY);  // at present not used
     
-    std::auto_ptr<TFileDirectory> tfd;
+    std::unique_ptr<TFileDirectory> tfd;
     std::string directoryString;
     const bool dqmMode;
     DQMStore* theDbe;

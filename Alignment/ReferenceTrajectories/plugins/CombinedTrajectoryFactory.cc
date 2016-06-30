@@ -60,8 +60,8 @@ CombinedTrajectoryFactory::CombinedTrajectoryFactory( const edm::ParameterSet & 
   vector<string>::iterator itFactoryName;
   for ( itFactoryName = factoryNames.begin(); itFactoryName != factoryNames.end(); ++itFactoryName )
   {
-    // auto_ptr to avoid missing a delete due to throw...
-    std::auto_ptr<TObjArray> namePset(TString((*itFactoryName).c_str()).Tokenize(","));
+    // unique_ptr to avoid missing a delete due to throw...
+    std::unique_ptr<TObjArray> namePset(TString((*itFactoryName).c_str()).Tokenize(","));
     if (namePset->GetEntriesFast() != 2) {
       throw cms::Exception("BadConfig") << "@SUB=CombinedTrajectoryFactory"
                                         << "TrajectoryFactoryNames must contain 2 comma "

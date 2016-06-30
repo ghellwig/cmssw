@@ -59,8 +59,8 @@ TestMuonHierarchy::analyze( const edm::Event&, const edm::EventSetup& setup )
   setup.get<MuonGeometryRecord>().get( dtGeometry );
   setup.get<MuonGeometryRecord>().get( cscGeometry );
   
-  std::auto_ptr<AlignableMuon> 
-    theAlignableMuon( new AlignableMuon(&(*dtGeometry),&(*cscGeometry)) );
+  auto theAlignableMuon =
+    std::make_unique<AlignableMuon>(&(*dtGeometry),&(*cscGeometry));
 
   leaders_ = "";
   blank_ = "   ";  // These two...
