@@ -837,11 +837,12 @@ void AlignmentProducer::writeForRunRange(cond::Time_t time)
 						     DetId(DetId::Tracker));
     }
 	
-    Alignments *alignments = theAlignableTracker->alignments();
-    AlignmentErrorsExtended *alignmentErrors = theAlignableTracker->alignmentErrors();
-    this->writeDB(alignments, "TrackerAlignmentRcd",
-		  alignmentErrors, "TrackerAlignmentErrorExtendedRcd", trackerGlobal,
-		  time);	
+    std::unique_ptr<Alignments> alignments(theAlignableTracker->alignments());
+    std::unique_ptr<AlignmentErrorsExtended> alignmentErrors
+      (theAlignableTracker->alignmentErrors());
+    this->writeDB(std::move(alignments), "TrackerAlignmentRcd",
+                  std::move(alignmentErrors), "TrackerAlignmentErrorExtendedRcd",
+                  trackerGlobal, time);
   }
       
   if ( doMuon_ ) { // now muon
@@ -850,103 +851,101 @@ void AlignmentProducer::writeForRunRange(cond::Time_t time)
       muonGlobal = &align::DetectorGlobalPosition(*globalPositions_,
 						  DetId(DetId::Muon));
     }
-    // Get alignments+errors, first DT - ownership taken over by writeDB(..), so no delete
-    Alignments      *alignments       = theAlignableMuon->dtAlignments();
-    AlignmentErrorsExtended *alignmentErrors  = theAlignableMuon->dtAlignmentErrorsExtended();
-    this->writeDB(alignments, "DTAlignmentRcd",
-		  alignmentErrors, "DTAlignmentErrorExtendedRcd", muonGlobal,
-		  time);
+
+    // Get alignments+errors, first DT
+    std::unique_ptr<Alignments> alignments(theAlignableMuon->dtAlignments());
+    std::unique_ptr<AlignmentErrorsExtended> alignmentErrors
+      (theAlignableMuon->dtAlignmentErrorsExtended());
+    this->writeDB(std::move(alignments), "DTAlignmentRcd",
+                  std::move(alignmentErrors), "DTAlignmentErrorExtendedRcd",
+                  muonGlobal, time);
     
-    // Get alignments+errors, now CSC - ownership taken over by writeDB(..), so no delete
-    alignments       = theAlignableMuon->cscAlignments();
-    alignmentErrors  = theAlignableMuon->cscAlignmentErrorsExtended();
-    this->writeDB(alignments, "CSCAlignmentRcd",
-		  alignmentErrors, "CSCAlignmentErrorExtendedRcd", muonGlobal,
-		  time);
+    // Get alignments+errors, now CSC
+    alignments.reset(theAlignableMuon->cscAlignments());
+    alignmentErrors.reset(theAlignableMuon->cscAlignmentErrorsExtended());
+    this->writeDB(std::move(alignments), "CSCAlignmentRcd",
+                  std::move(alignmentErrors), "CSCAlignmentErrorExtendedRcd",
+                  muonGlobal, time);
   }
       
   // Save surface deformations to database
   if (saveDeformationsToDB_ && doTracker_) {
-    AlignmentSurfaceDeformations *alignmentSurfaceDeformations = theAlignableTracker->surfaceDeformations();
-    this->writeDB(alignmentSurfaceDeformations, "TrackerSurfaceDeformationRcd", time);
+    std::unique_ptr<AlignmentSurfaceDeformations> alignmentSurfaceDeformations
+      (theAlignableTracker->surfaceDeformations());
+    this->writeDB(std::move(alignmentSurfaceDeformations),
+                  "TrackerSurfaceDeformationRcd",
+                  time);
   }
 }
 
 //////////////////////////////////////////////////
-void AlignmentProducer::writeDB(Alignments *alignments,
-				const std::string &alignRcd,
-				AlignmentErrorsExtended *alignmentErrors,
-				const std::string &errRcd,
-				const AlignTransform *globalCoordinates,
-				cond::Time_t time) const
+void AlignmentProducer::writeDB(std::unique_ptr<Alignments> alignments,
+                                const std::string &alignRcd,
+                                std::unique_ptr<AlignmentErrorsExtended> alignmentErrors,
+                                const std::string &errRcd,
+                                const AlignTransform* globalCoordinates,
+                                cond::Time_t time) const
 {
-  Alignments * tempAlignments = alignments;
-  AlignmentErrorsExtended * tempAlignmentErrorsExtended = alignmentErrors;
+  decltype(alignments) tempAlignments;
+  decltype(alignmentErrors) tempAlignmentErrorsExtended;
 
   // Call service
   edm::Service<cond::service::PoolDBOutputService> poolDb;
   if (!poolDb.isAvailable()) { // Die if not available
-    delete tempAlignments;      // promised to take over ownership...
-    delete tempAlignmentErrorsExtended; // dito
     throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
   }
 
   if (globalCoordinates  // happens only if (applyDbAlignment_ == true)
       && globalCoordinates->transform() != AlignTransform::Transform::Identity) {
 
-    tempAlignments = new Alignments();            // temporary storage for
-    tempAlignmentErrorsExtended = new AlignmentErrorsExtended();  // final alignments and errors
+    // temporary storage for final alignments and errors:
+    tempAlignments = std::make_unique<Alignments>();
+    tempAlignmentErrorsExtended = std::make_unique<AlignmentErrorsExtended>();
 
     GeometryAligner aligner;
-    aligner.removeGlobalTransform(alignments, alignmentErrors,
+    aligner.removeGlobalTransform(alignments.get(), alignmentErrors.get(),
                                   *globalCoordinates,
-                                  tempAlignments, tempAlignmentErrorsExtended);
-    
-    delete alignments;       // have to delete original alignments
-    delete alignmentErrors;  // same thing for the errors
+                                  tempAlignments.get(),
+                                  tempAlignmentErrorsExtended.get());
 
     edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::writeDB"
-			      << "globalCoordinates removed from alignments (" << alignRcd
-			      << ") and errors (" << alignRcd << ").";
+                              << "globalCoordinates removed from alignments (" << alignRcd
+                              << ") and errors (" << alignRcd << ").";
+  } else {
+    tempAlignments = std::move(alignments);
+    tempAlignmentErrorsExtended = std::move(alignmentErrors);
   }
   
   if (saveToDB_) {
     edm::LogInfo("Alignment") << "Writing Alignments for run " << time
                               << " to " << alignRcd << ".";
-    poolDb->writeOne<Alignments>(tempAlignments, time, alignRcd);
-  } else { // poolDb->writeOne(..) takes over 'alignments' ownership,...
-    delete tempAlignments; // ...otherwise we have to delete, as promised!
+    poolDb->writeOne(tempAlignments.get(), time, alignRcd);
   }
 
   if (saveApeToDB_) {
     edm::LogInfo("Alignment") << "Writing AlignmentErrorsExtended for run " << time
                               << " to " << errRcd << ".";
-    poolDb->writeOne<AlignmentErrorsExtended>(tempAlignmentErrorsExtended, time, errRcd);
-  } else { // poolDb->writeOne(..) takes over 'alignmentErrors' ownership,...
-    delete tempAlignmentErrorsExtended; // ...otherwise we have to delete, as promised!
+    poolDb->writeOne(tempAlignmentErrorsExtended.get(), time, errRcd);
   }
 }
 
 
 //////////////////////////////////////////////////
-void AlignmentProducer::writeDB(AlignmentSurfaceDeformations *alignmentSurfaceDeformations,
-				const std::string &surfaceDeformationRcd,
-				cond::Time_t time) const
+void AlignmentProducer::writeDB(std::unique_ptr<AlignmentSurfaceDeformations> alignmentSurfaceDeformations,
+                                const std::string &surfaceDeformationRcd,
+                                cond::Time_t time) const
 {
   // Call service
   edm::Service<cond::service::PoolDBOutputService> poolDb;
   if (!poolDb.isAvailable()) { // Die if not available
-    delete alignmentSurfaceDeformations; // promised to take over ownership...
     throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
   }
   
   if (saveDeformationsToDB_) {
     edm::LogInfo("Alignment") << "Writing AlignmentSurfaceDeformations for run " << time
                               << " to " << surfaceDeformationRcd  << ".";
-    poolDb->writeOne<AlignmentSurfaceDeformations>(alignmentSurfaceDeformations, time,
-						   surfaceDeformationRcd);
-  } else { // poolDb->writeOne(..) takes over 'surfaceDeformation' ownership,...
-    delete alignmentSurfaceDeformations; // ...otherwise we have to delete, as promised!
+    poolDb->writeOne(alignmentSurfaceDeformations.get(), time,
+                     surfaceDeformationRcd);
   }
 }
 

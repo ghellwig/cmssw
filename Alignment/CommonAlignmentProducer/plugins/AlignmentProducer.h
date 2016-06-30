@@ -130,16 +130,17 @@ class AlignmentProducer : public edm::ESProducerLooper
 
   /// Write alignment and/or errors to DB for record names
   /// (removes *globalCoordinates before writing if non-null...).
-  /// Takes over ownership of alignments and alignmentErrrors.
-  void writeDB(Alignments *alignments, const std::string &alignRcd,
-	       AlignmentErrorsExtended *alignmentErrors, const std::string &errRcd,
-	       const AlignTransform *globalCoordinates,
-	       cond::Time_t time) const;
+  void writeDB(std::unique_ptr<Alignments> alignments,
+               const std::string &alignRcd,
+               std::unique_ptr<AlignmentErrorsExtended> alignmentErrors,
+               const std::string& errRcd,
+               const AlignTransform* globalCoordinates,
+               cond::Time_t time) const;
+
   /// Write surface deformations (bows & kinks) to DB for given record name
-  /// Takes over ownership of alignmentsurfaceDeformations.
-  void writeDB(AlignmentSurfaceDeformations *alignmentSurfaceDeformations,
-	       const std::string &surfaceDeformationRcd,
-	       cond::Time_t time) const;
+  void writeDB(std::unique_ptr<AlignmentSurfaceDeformations> alignmentSurfaceDeformations,
+               const std::string &surfaceDeformationRcd,
+               cond::Time_t time) const;
 
   /// Add survey info to an alignable
   void addSurveyInfo_(Alignable*);

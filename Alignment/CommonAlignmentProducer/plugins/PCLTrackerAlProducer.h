@@ -202,13 +202,12 @@ class PCLTrackerAlProducer :
 
     /// Writes Alignments and/or AlignmentErrors to DB for record names
     /// (removes *globalCoordinates before writing if non-null...).
-    /// Takes over ownership of Alignments and AlignmentErrors.
-    void writeDB(Alignments*, const std::string&, AlignmentErrorsExtended*,
-                 const std::string&, const AlignTransform*, cond::Time_t) const;
+    void writeDB(std::unique_ptr<Alignments>, const std::string&,
+                 std::unique_ptr<AlignmentErrorsExtended>, const std::string&,
+                 const AlignTransform*, cond::Time_t) const;
 
     /// Writes SurfaceDeformations (bows & kinks) to DB for given record name
-    /// Takes over ownership of AlignmentSurfaceDeformations.
-    void writeDB(AlignmentSurfaceDeformations*,
+    void writeDB(std::unique_ptr<AlignmentSurfaceDeformations>,
                  const std::string&, cond::Time_t) const;
 
 
