@@ -22,7 +22,7 @@
 #include "DataFormats/MuonDetId/interface/CSCTriggerNumbering.h" 
 
 //__________________________________________________________________________________________________
-MuonScenarioBuilder::MuonScenarioBuilder(std::shared_ptr<AlignableMuon> alignable) :
+MuonScenarioBuilder::MuonScenarioBuilder(const std::shared_ptr<AlignableMuon>& alignable) :
   theAlignableMuon(alignable)
 {
   if (!theAlignableMuon) {

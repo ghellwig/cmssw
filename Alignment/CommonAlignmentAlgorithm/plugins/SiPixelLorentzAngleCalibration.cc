@@ -96,9 +96,9 @@ public:
   virtual double getParameterError(unsigned int index) const override;
 
   // /// Call at beginning of job:
-  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
-                          std::shared_ptr<AlignableMuon> muon,
-                          std::shared_ptr<AlignableExtras> extras) override;
+  virtual void beginOfJob(const std::shared_ptr<AlignableTracker>& tracker,
+                          const std::shared_ptr<AlignableMuon>& muon,
+                          const std::shared_ptr<AlignableExtras>& extras) override;
 
 
 
@@ -248,9 +248,9 @@ double SiPixelLorentzAngleCalibration::getParameterError(unsigned int index) con
 
 
 //======================================================================
-void SiPixelLorentzAngleCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
-                                                std::shared_ptr<AlignableMuon> /*aliMuon*/,
-                                                std::shared_ptr<AlignableExtras> /*aliExtras*/)
+void SiPixelLorentzAngleCalibration::beginOfJob(const std::shared_ptr<AlignableTracker>& aliTracker,
+                                                const std::shared_ptr<AlignableMuon>& /*aliMuon*/,
+                                                const std::shared_ptr<AlignableExtras>& /*aliExtras*/)
 {
   //specify the sub-detectors for which the LA is determined
   const std::vector<int> sdets = {PixelSubdetector::PixelBarrel,

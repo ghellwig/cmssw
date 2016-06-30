@@ -340,9 +340,9 @@ std::vector<unsigned int> RunRangeDependentPedeLabeler::convertParamSel(const st
 }
 
 unsigned int
-RunRangeDependentPedeLabeler::buildRunRangeDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
-                                                         std::shared_ptr<AlignableMuon> aliMuon,
-                                                         std::shared_ptr<AlignableExtras> aliExtras,
+RunRangeDependentPedeLabeler::buildRunRangeDependencyMap(const std::shared_ptr<AlignableTracker>& aliTracker,
+                                                         const std::shared_ptr<AlignableMuon>& aliMuon,
+                                                         const std::shared_ptr<AlignableExtras>& aliExtras,
                                                          const edm::ParameterSet &config)
 {
   static bool oldRunRangeSelectionWarning = false;

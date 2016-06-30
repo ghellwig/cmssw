@@ -20,7 +20,7 @@
 
 
 //__________________________________________________________________________________________________
-TrackerScenarioBuilder::TrackerScenarioBuilder(std::shared_ptr<AlignableTracker> alignable)
+TrackerScenarioBuilder::TrackerScenarioBuilder(const std::shared_ptr<AlignableTracker>& alignable)
   : theAlignableTracker(alignable)
 {
 

@@ -13,10 +13,10 @@ SurveyAlignmentAlgorithm::SurveyAlignmentAlgorithm(const edm::ParameterSet& cfg)
 }
 
 void SurveyAlignmentAlgorithm::initialize(const edm::EventSetup&,
-                                          std::shared_ptr<AlignableTracker>,
-                                          std::shared_ptr<AlignableMuon>,
-                                          std::shared_ptr<AlignableExtras>,
-                                          std::shared_ptr<AlignmentParameterStore> store)
+                                          const std::shared_ptr<AlignableTracker>&,
+                                          const std::shared_ptr<AlignableMuon>&,
+                                          const std::shared_ptr<AlignableExtras>&,
+                                          const std::shared_ptr<AlignmentParameterStore>& store)
 {
   std::vector<align::StructureType> levels;
 

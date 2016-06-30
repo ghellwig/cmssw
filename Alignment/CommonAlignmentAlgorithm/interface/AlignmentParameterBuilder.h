@@ -28,24 +28,24 @@ class AlignmentParameterBuilder
 {
 public:
   /// Constructor from tracker only
-  explicit AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                     std::shared_ptr<AlignableExtras> alignableExtras);
+  explicit AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                     const std::shared_ptr<AlignableExtras>& alignableExtras);
 
   /// Constructor from tracker and muon
-  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            std::shared_ptr<AlignableMuon> alignableMuon,
-                            std::shared_ptr<AlignableExtras> alignableExtras);
+  AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                            const std::shared_ptr<AlignableMuon>& alignableMuon,
+                            const std::shared_ptr<AlignableExtras>& alignableExtras);
 
   /// Constructor adding selections by passing the ParameterSet named 'AlignmentParameterSelector'
   /// (expected in pSet) to addSelections(..)
-  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            std::shared_ptr<AlignableExtras> alignableExtras,
+  AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                            const std::shared_ptr<AlignableExtras>& alignableExtras,
                             const edm::ParameterSet &pSet );
 
   /// Constructor from tracker and muon, plus selection
-  AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            std::shared_ptr<AlignableMuon> alignableMuon,
-                            std::shared_ptr<AlignableExtras> alignableExtras,
+  AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                            const std::shared_ptr<AlignableMuon>& alignableMuon,
+                            const std::shared_ptr<AlignableExtras>& alignableExtras,
                             const edm::ParameterSet &pSet);
 
 

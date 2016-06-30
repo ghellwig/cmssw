@@ -227,7 +227,7 @@ Alignable* PedeReader::setParameter(unsigned int paramLabel,
 }
 
 //__________________________________________________________________________________________________
-bool PedeReader::setCalibrationParameter(std::shared_ptr<IntegratedCalibrationBase> calib,
+bool PedeReader::setCalibrationParameter(const std::shared_ptr<IntegratedCalibrationBase>& calib,
 					 unsigned int paramNum, unsigned int bufLength,
 					 const float *buf) const
 {

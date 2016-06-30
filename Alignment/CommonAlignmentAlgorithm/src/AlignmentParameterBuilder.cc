@@ -25,8 +25,8 @@
 using namespace AlignmentParametersFactory;
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     std::shared_ptr<AlignableExtras> alignableExtras) :
+AlignmentParameterBuilder::AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                                     const std::shared_ptr<AlignableExtras>& alignableExtras) :
   theAlignables(),
   theAlignableTracker(alignableTracker),
   theAlignableExtras(alignableExtras)
@@ -34,9 +34,9 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
 }
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     std::shared_ptr<AlignableMuon> alignableMuon,
-                                                     std::shared_ptr<AlignableExtras> alignableExtras) :
+AlignmentParameterBuilder::AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                                     const std::shared_ptr<AlignableMuon>& alignableMuon,
+                                                     const std::shared_ptr<AlignableExtras>& alignableExtras) :
   theAlignables(), 
   theAlignableTracker(alignableTracker),
   theAlignableMuon(alignableMuon),
@@ -46,8 +46,8 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
 
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     std::shared_ptr<AlignableExtras> alignableExtras,
+AlignmentParameterBuilder::AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                                     const std::shared_ptr<AlignableExtras>& alignableExtras,
                                                      const edm::ParameterSet &pSet) :
   theAlignables(), 
   theAlignableTracker(alignableTracker),
@@ -57,9 +57,9 @@ AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTr
 }
 
 //__________________________________________________________________________________________________
-AlignmentParameterBuilder::AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                                     std::shared_ptr<AlignableMuon> alignableMuon,
-                                                     std::shared_ptr<AlignableExtras> alignableExtras,
+AlignmentParameterBuilder::AlignmentParameterBuilder(const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                                     const std::shared_ptr<AlignableMuon>& alignableMuon,
+                                                     const std::shared_ptr<AlignableExtras>& alignableExtras,
                                                      const edm::ParameterSet &pSet) :
   theAlignables(), 
   theAlignableTracker(alignableTracker),

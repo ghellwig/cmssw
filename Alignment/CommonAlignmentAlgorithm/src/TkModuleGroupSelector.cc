@@ -19,7 +19,7 @@
 #include <set>
 
 //============================================================================
-TkModuleGroupSelector::TkModuleGroupSelector(std::shared_ptr<AlignableTracker> aliTracker,
+TkModuleGroupSelector::TkModuleGroupSelector(const std::shared_ptr<AlignableTracker>& aliTracker,
                                              const edm::ParameterSet &cfg,
                                              const std::vector<int> &sdets
                                              ) : nparameters_(0),
@@ -136,7 +136,7 @@ void TkModuleGroupSelector::verifyParameterNames(const edm::ParameterSet &pset, 
 
 
 //============================================================================
-void TkModuleGroupSelector::createModuleGroups(std::shared_ptr<AlignableTracker> aliTracker,
+void TkModuleGroupSelector::createModuleGroups(const std::shared_ptr<AlignableTracker>& aliTracker,
                                                const edm::VParameterSet &granularityConfig,
                                                const std::vector<edm::RunNumber_t> &defaultRunRange,
                                                edm::RunNumber_t defaultReferenceRun)

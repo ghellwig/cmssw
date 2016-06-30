@@ -27,7 +27,7 @@ class TrackerScenarioBuilder : public MisalignmentScenarioBuilder
 public:
  
   /// Constructor
-  explicit TrackerScenarioBuilder(std::shared_ptr<AlignableTracker> alignable);
+  explicit TrackerScenarioBuilder(const std::shared_ptr<AlignableTracker>& alignable);
 
   /// Destructor
   ~TrackerScenarioBuilder() {};

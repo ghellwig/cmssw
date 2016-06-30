@@ -40,9 +40,9 @@ class PedeLabelerBase
   class TopLevelAlignables
   {
   public:
-    TopLevelAlignables(std::shared_ptr<AlignableTracker> aliTracker,
-                       std::shared_ptr<AlignableMuon> aliMuon,
-                       std::shared_ptr<AlignableExtras> extras)
+    TopLevelAlignables(const std::shared_ptr<AlignableTracker>& aliTracker,
+                       const std::shared_ptr<AlignableMuon>& aliMuon,
+                       const std::shared_ptr<AlignableExtras>& extras)
       :aliTracker_(aliTracker), aliMuon_(aliMuon), aliExtras_(extras) {}
     std::shared_ptr<AlignableTracker> aliTracker_;
     std::shared_ptr<AlignableMuon> aliMuon_;
@@ -108,7 +108,7 @@ class PedeLabelerBase
   virtual unsigned int firstFreeLabel() const;
 
   /// label for parameter 'paramNum' (counted from 0) of an integrated calibration
-  virtual unsigned int calibrationLabel(std::shared_ptr<const IntegratedCalibrationBase> calib,
+  virtual unsigned int calibrationLabel(const std::shared_ptr<const IntegratedCalibrationBase>& calib,
                                         unsigned int paramNum) const;
 
   static const unsigned int theMaxNumParam;

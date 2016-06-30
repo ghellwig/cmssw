@@ -38,7 +38,7 @@ class PedeSteerer
   /// constructor from AlignableTracker/AlignableMuon, their AlignmentParameterStore and the labeler
   /// (NOTE: The last one must live longer than the constructed PedeSteerer!)
   PedeSteerer(AlignableTracker *aliTracker, AlignableMuon *aliMuon, AlignableExtras *aliExtras,
-	      std::shared_ptr<const AlignmentParameterStore> store,
+	      const std::shared_ptr<const AlignmentParameterStore>& store,
 	      const PedeLabelerBase *labels, const edm::ParameterSet &config,
 	      const std::string &defaultDir, bool noSteerFiles);
   /** non-virtual destructor: do not inherit from this class **/
@@ -48,9 +48,9 @@ class PedeSteerer
   bool isNoHiera(const Alignable* ali) const;
 
   /// construct steering files about hierarchy, fixing etc. an keep track of their names
-  void buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
-                     std::shared_ptr<AlignableMuon> aliMuon,
-                     std::shared_ptr<AlignableExtras> aliExtras);
+  void buildSubSteer(const std::shared_ptr<AlignableTracker>& aliTracker,
+                     const std::shared_ptr<AlignableMuon>& aliMuon,
+                     const std::shared_ptr<AlignableExtras>& aliExtras);
   /// construct (and return name of) master steering file from config, binaryFiles etc.
   std::string buildMasterSteer(const std::vector<std::string> &binaryFiles);
   /// run pede, masterSteer should be as returned from buildMasterSteer(...)
@@ -104,9 +104,9 @@ class PedeSteerer
   /// interprete content of presigma VPSet 'cffPresi' and call presigmasFile
   unsigned int presigmas(const std::vector<edm::ParameterSet> &cffPresi,
                          const std::string &fileName, const std::vector<Alignable*> &alis,
-                         std::shared_ptr<AlignableTracker> aliTracker,
-                         std::shared_ptr<AlignableMuon> aliMuon,
-                         std::shared_ptr<AlignableExtras> aliExtras);
+                         const std::shared_ptr<AlignableTracker>& aliTracker,
+                         const std::shared_ptr<AlignableMuon>& aliMuon,
+                         const std::shared_ptr<AlignableExtras>& aliExtras);
   /// look for active 'alis' in map of presigma values and create steering file 
   unsigned int presigmasFile(const std::string &fileName, const std::vector<Alignable*> &alis,
 			     const AlignablePresigmasMap &aliPresisMap); 

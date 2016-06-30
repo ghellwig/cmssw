@@ -19,9 +19,9 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 //________________________________________________________________________________
-AlignmentParameterSelector::AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
-                                                       std::shared_ptr<AlignableMuon> aliMuon,
-                                                       std::shared_ptr<AlignableExtras> aliExtras) :
+AlignmentParameterSelector::AlignmentParameterSelector(const std::shared_ptr<AlignableTracker>& aliTracker,
+                                                       const std::shared_ptr<AlignableMuon>& aliMuon,
+                                                       const std::shared_ptr<AlignableExtras>& aliExtras) :
   theTracker(aliTracker), theMuon(aliMuon), theExtras(aliExtras), theSelectedAlignables(), 
   theRangesEta(), theRangesPhi(), theRangesR(), theRangesX(), theRangesY(), theRangesZ()
 {

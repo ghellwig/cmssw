@@ -68,10 +68,10 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
 
   /// Call at beginning of job
   virtual void initialize(const edm::EventSetup &setup, 
-                          std::shared_ptr<AlignableTracker> tracker,
-                          std::shared_ptr<AlignableMuon> muon,
-                          std::shared_ptr<AlignableExtras> extras,
-                          std::shared_ptr<AlignmentParameterStore> store) override;
+                          const std::shared_ptr<AlignableTracker>& tracker,
+                          const std::shared_ptr<AlignableMuon>& muon,
+                          const std::shared_ptr<AlignableExtras>& extras,
+                          const std::shared_ptr<AlignmentParameterStore>& store) override;
 
   /// Call at end of job
   virtual void terminate(const edm::EventSetup& iSetup) override;
@@ -121,10 +121,10 @@ ApeSettingAlgorithm::~ApeSettingAlgorithm()
 // Call at beginning of job ---------------------------------------------------
 //____________________________________________________
 void ApeSettingAlgorithm::initialize(const edm::EventSetup &setup, 
-                                     std::shared_ptr<AlignableTracker> tracker,
-                                     std::shared_ptr<AlignableMuon> muon,
-                                     std::shared_ptr<AlignableExtras>,
-                                     std::shared_ptr<AlignmentParameterStore> store)
+                                     const std::shared_ptr<AlignableTracker>& tracker,
+                                     const std::shared_ptr<AlignableMuon>& muon,
+                                     const std::shared_ptr<AlignableExtras>&,
+                                     const std::shared_ptr<AlignmentParameterStore>& store)
 {
  theAlignableNavigator = new AlignableNavigator(tracker.get(), muon.get());
  theTracker = tracker;

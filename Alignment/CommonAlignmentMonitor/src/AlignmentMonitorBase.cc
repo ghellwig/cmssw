@@ -27,9 +27,9 @@ AlignmentMonitorBase::AlignmentMonitorBase(const edm::ParameterSet& cfg, std::st
 }
 
 
-void AlignmentMonitorBase::beginOfJob(std::shared_ptr<AlignableTracker> pTracker,
-                                      std::shared_ptr<AlignableMuon> pMuon,
-                                      std::shared_ptr<AlignmentParameterStore> pStore)
+void AlignmentMonitorBase::beginOfJob(const std::shared_ptr<AlignableTracker>& pTracker,
+                                      const std::shared_ptr<AlignableMuon>& pMuon,
+                                      const std::shared_ptr<AlignmentParameterStore>& pStore)
 {
    mp_tracker = pTracker;
    mp_muon = pMuon;

@@ -55,7 +55,8 @@ class PedeReader
   Alignable* setParameter(unsigned int paramLabel, unsigned int bufLength, const float *buf,
 			  bool setUserVars) const;
   /// Set pede results stored in 'buf' to parameter 'paramNum' of IntegratedCalibrationBase.
-  bool setCalibrationParameter(std::shared_ptr<IntegratedCalibrationBase> calib, unsigned int paramNum,
+  bool setCalibrationParameter(const std::shared_ptr<IntegratedCalibrationBase>& calib,
+                               unsigned int paramNum,
                                unsigned int bufLength, const float *buf) const;
 
   /// returns parameters of alignable (creates if not yet existing, but MillePedeVariables

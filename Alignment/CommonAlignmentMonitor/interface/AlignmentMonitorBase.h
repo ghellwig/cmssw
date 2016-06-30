@@ -55,9 +55,9 @@ class AlignmentMonitorBase
       virtual ~AlignmentMonitorBase() {}
 
       /// Called at beginning of job: don't reimplement
-      void beginOfJob(std::shared_ptr<AlignableTracker> pTracker,
-                      std::shared_ptr<AlignableMuon> pMuon,
-                      std::shared_ptr<AlignmentParameterStore> pStore);
+      void beginOfJob(const std::shared_ptr<AlignableTracker>& pTracker,
+                      const std::shared_ptr<AlignableMuon>& pMuon,
+                      const std::shared_ptr<AlignmentParameterStore>& pStore);
 
       /// Called at beginning of loop: don't reimplement
       void startingNewLoop();

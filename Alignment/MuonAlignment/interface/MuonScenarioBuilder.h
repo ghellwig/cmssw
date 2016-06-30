@@ -24,7 +24,7 @@ class MuonScenarioBuilder : public MisalignmentScenarioBuilder
 public:
 
   /// Constructor
-  explicit MuonScenarioBuilder(std::shared_ptr<AlignableMuon> alignable);
+  explicit MuonScenarioBuilder(const std::shared_ptr<AlignableMuon>& alignable);
 
   /// Destructor
   ~MuonScenarioBuilder() {};

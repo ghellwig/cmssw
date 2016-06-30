@@ -72,7 +72,7 @@ unsigned int PedeLabelerBase::firstNonAlignableLabel() const
 }
 
 //___________________________________________________________________________
-unsigned int PedeLabelerBase::calibrationLabel(std::shared_ptr<const IntegratedCalibrationBase> calib,
+unsigned int PedeLabelerBase::calibrationLabel(const std::shared_ptr<const IntegratedCalibrationBase>& calib,
                                                unsigned int paramNum) const
 {
   if (!calib) {

@@ -31,10 +31,10 @@ class HIPAlignmentAlgorithm : public AlignmentAlgorithmBase
 
   /// Call at beginning of job
   void initialize(const edm::EventSetup& setup,
-                  std::shared_ptr<AlignableTracker> tracker,
-                  std::shared_ptr<AlignableMuon> muon,
-                  std::shared_ptr<AlignableExtras> extras,
-                  std::shared_ptr<AlignmentParameterStore> store);
+                  const std::shared_ptr<AlignableTracker>& tracker,
+                  const std::shared_ptr<AlignableMuon>& muon,
+                  const std::shared_ptr<AlignableExtras>& extras,
+                  const std::shared_ptr<AlignmentParameterStore>& store);
 
   /// Call at end of job
   void terminate(const edm::EventSetup& setup);

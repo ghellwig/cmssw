@@ -34,7 +34,7 @@ class TkModuleGroupSelector
 {
 public:
   /// Constructor
-  explicit TkModuleGroupSelector(std::shared_ptr<AlignableTracker> aliTracker,
+  explicit TkModuleGroupSelector(const std::shared_ptr<AlignableTracker>& aliTracker,
                                  const edm::ParameterSet &cfg,
                                  const std::vector<int> &sdets);
   
@@ -56,7 +56,7 @@ public:
   
  private:
   // Constructs the run-dependent module groups from configuration parameters.
-  void createModuleGroups(std::shared_ptr<AlignableTracker> aliTracker,
+  void createModuleGroups(const std::shared_ptr<AlignableTracker>& aliTracker,
                           const edm::VParameterSet &granularityConfig,
                           const std::vector<edm::RunNumber_t> &defaultRunRange,
                           edm::RunNumber_t defaultReferenceRun);

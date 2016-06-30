@@ -57,10 +57,10 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
 
   /// Called at beginning of job
   virtual void initialize(const edm::EventSetup &setup,
-                          std::shared_ptr<AlignableTracker> tracker,
-                          std::shared_ptr<AlignableMuon> muon,
-                          std::shared_ptr<AlignableExtras> extras,
-                          std::shared_ptr<AlignmentParameterStore> store) override;
+                          const std::shared_ptr<AlignableTracker>& tracker,
+                          const std::shared_ptr<AlignableMuon>& muon,
+                          const std::shared_ptr<AlignableExtras>& extras,
+                          const std::shared_ptr<AlignmentParameterStore>& store) override;
 
   /// Returns whether MP supports calibrations
   virtual bool supportsCalibrations() override;

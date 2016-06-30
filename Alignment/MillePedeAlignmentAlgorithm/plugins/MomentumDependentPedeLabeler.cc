@@ -313,9 +313,9 @@ std::vector<unsigned int> MomentumDependentPedeLabeler::convertParamSel(const st
 }
 
 unsigned int
-MomentumDependentPedeLabeler::buildMomentumDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
-                                                         std::shared_ptr<AlignableMuon> aliMuon,
-                                                         std::shared_ptr<AlignableExtras> aliExtras,
+MomentumDependentPedeLabeler::buildMomentumDependencyMap(const std::shared_ptr<AlignableTracker>& aliTracker,
+                                                         const std::shared_ptr<AlignableMuon>& aliMuon,
+                                                         const std::shared_ptr<AlignableExtras>& aliExtras,
                                                          const edm::ParameterSet &config)
 {
   theAlignableToMomentumRangeMap.clear();

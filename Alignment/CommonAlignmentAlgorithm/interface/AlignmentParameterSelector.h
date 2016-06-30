@@ -28,9 +28,9 @@ namespace edm {
 class AlignmentParameterSelector {
  public:
   /// Constructor from tracker only or from tracker and muon
-  explicit AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
-                                      std::shared_ptr<AlignableMuon> aliMuon = nullptr,
-                                      std::shared_ptr<AlignableExtras> aliExtras = nullptr);
+  explicit AlignmentParameterSelector(const std::shared_ptr<AlignableTracker>& aliTracker,
+                                      const std::shared_ptr<AlignableMuon>& aliMuon = nullptr,
+                                      const std::shared_ptr<AlignableExtras>& aliExtras = nullptr);
 
   /// Destructor
   virtual ~AlignmentParameterSelector() {}

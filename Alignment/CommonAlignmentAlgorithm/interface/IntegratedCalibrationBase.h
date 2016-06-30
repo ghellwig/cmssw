@@ -88,9 +88,9 @@ public:
 
   /// Call at beginning of job:
   /// default implementation is dummy, to be overwritten in derived class if useful.
-  virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
-			  std::shared_ptr<AlignableMuon> muon,
-			  std::shared_ptr<AlignableExtras> extras) {};
+  virtual void beginOfJob(const std::shared_ptr<AlignableTracker>& tracker,
+			  const std::shared_ptr<AlignableMuon>& muon,
+			  const std::shared_ptr<AlignableExtras>& extras) {};
 
   /// Called at beginning of a loop of the AlignmentProducer,
   /// to be used for iterative algorithms, default does nothing.
