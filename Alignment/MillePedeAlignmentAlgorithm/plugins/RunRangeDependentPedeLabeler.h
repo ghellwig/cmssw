@@ -92,7 +92,7 @@ class RunRangeDependentPedeLabeler : public PedeLabelerBase
   std::vector<unsigned int> convertParamSel(const std::string &selString) const;
   unsigned int buildRunRangeDependencyMap(std::shared_ptr<AlignableTracker> aliTracker,
                                           std::shared_ptr<AlignableMuon> aliMuon,
-                                          AlignableExtras *extras,
+                                          std::shared_ptr<AlignableExtras> extras,
                                           const edm::ParameterSet &config);
 
   /// returns size of map

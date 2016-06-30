@@ -14,14 +14,13 @@
 
 #include "Alignment/CommonAlignment/interface/Utilities.h"
 #include "Alignment/CommonAlignmentParametrization/interface/AlignmentParametersFactory.h"
+#include "Alignment/CommonAlignment/interface/AlignableExtras.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
 namespace edm {
   class ParameterSet;
 }
-class AlignableExtras;
-class AlignableMuon;
 class AlignmentParameters;
 class TrackerTopology;
 
@@ -30,23 +29,23 @@ class AlignmentParameterBuilder
 public:
   /// Constructor from tracker only
   explicit AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                                     AlignableExtras *alignableExtras );
+                                     std::shared_ptr<AlignableExtras> alignableExtras);
 
   /// Constructor from tracker and muon
   AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
                             std::shared_ptr<AlignableMuon> alignableMuon,
-                            AlignableExtras *alignableExtras );
+                            std::shared_ptr<AlignableExtras> alignableExtras);
 
   /// Constructor adding selections by passing the ParameterSet named 'AlignmentParameterSelector'
   /// (expected in pSet) to addSelections(..)
   AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
-                            AlignableExtras *alignableExtras,
+                            std::shared_ptr<AlignableExtras> alignableExtras,
                             const edm::ParameterSet &pSet );
 
   /// Constructor from tracker and muon, plus selection
   AlignmentParameterBuilder(std::shared_ptr<AlignableTracker> alignableTracker,
                             std::shared_ptr<AlignableMuon> alignableMuon,
-                            AlignableExtras *alignableExtras,
+                            std::shared_ptr<AlignableExtras> alignableExtras,
                             const edm::ParameterSet &pSet);
 
 
@@ -101,7 +100,7 @@ private:
   std::shared_ptr<AlignableMuon> theAlignableMuon;
   
   /// extra Alignables
-  AlignableExtras* theAlignableExtras;
+  std::shared_ptr<AlignableExtras> theAlignableExtras;
 };
 
 #endif

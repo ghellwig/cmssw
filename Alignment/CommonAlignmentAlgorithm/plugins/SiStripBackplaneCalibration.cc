@@ -98,8 +98,8 @@ public:
 
   // /// Call at beginning of job:
   virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
-  			  std::shared_ptr<AlignableMuon> muon,
-  			  AlignableExtras *extras);
+                          std::shared_ptr<AlignableMuon> muon,
+                          std::shared_ptr<AlignableExtras> extras);
 
   /// Called at end of a the job of the AlignmentProducer.
   /// Write out determined parameters.
@@ -294,7 +294,7 @@ double SiStripBackplaneCalibration::getParameterError(unsigned int index) const
 //======================================================================
 void SiStripBackplaneCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
                                              std::shared_ptr<AlignableMuon> /*aliMuon*/,
-                                             AlignableExtras */*aliExtras*/)
+                                             std::shared_ptr<AlignableExtras> /*aliExtras*/)
 {
   //specify the sub-detectors for which the back plane correction is determined: all strips
   const std::vector<int> sdets = {SiStripDetId::TIB,

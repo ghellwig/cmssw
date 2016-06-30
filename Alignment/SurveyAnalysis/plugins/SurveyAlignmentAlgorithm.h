@@ -27,7 +27,7 @@ class SurveyAlignmentAlgorithm : public AlignmentAlgorithmBase
   virtual void initialize(const edm::EventSetup&,
                           std::shared_ptr<AlignableTracker>,
                           std::shared_ptr<AlignableMuon>,
-                          AlignableExtras*,
+                          std::shared_ptr<AlignableExtras>,
                           std::shared_ptr<AlignmentParameterStore>) override;
 
   /// call at end of job

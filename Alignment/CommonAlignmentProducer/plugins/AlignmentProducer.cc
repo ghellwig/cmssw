@@ -78,7 +78,6 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  theAlignableExtras(0),
   globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
   theMaxLoops( iConfig.getUntrackedParameter<unsigned int>("maxLoops") ),
@@ -158,8 +157,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 // Delete new objects
 AlignmentProducer::~AlignmentProducer()
 {
-  delete theAlignableExtras;
-
   delete globalPositions_;
 }
 
@@ -243,7 +240,7 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
   }
 
   if (useExtras_) {
-    theAlignableExtras = new AlignableExtras();
+    theAlignableExtras = std::make_shared<AlignableExtras>();
   }
 
   // Create alignment parameter builder
@@ -301,7 +298,9 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
 
   // Initialize alignment algorithm and integrated calibration and pass the latter to algorithm
   theAlignmentAlgo->initialize(iSetup,
-                               theAlignableTracker, theAlignableMuon, theAlignableExtras,
+                               theAlignableTracker,
+                               theAlignableMuon,
+                               theAlignableExtras,
                                theAlignmentParameterStore);
   for (const auto& iCal: theCalibrations) {
     iCal->beginOfJob(theAlignableTracker, theAlignableMuon, theAlignableExtras);

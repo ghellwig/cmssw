@@ -21,7 +21,7 @@
 //________________________________________________________________________________
 AlignmentParameterSelector::AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
                                                        std::shared_ptr<AlignableMuon> aliMuon,
-                                                       AlignableExtras *aliExtras) :
+                                                       std::shared_ptr<AlignableExtras> aliExtras) :
   theTracker(aliTracker), theMuon(aliMuon), theExtras(aliExtras), theSelectedAlignables(), 
   theRangesEta(), theRangesPhi(), theRangesR(), theRangesX(), theRangesY(), theRangesZ()
 {

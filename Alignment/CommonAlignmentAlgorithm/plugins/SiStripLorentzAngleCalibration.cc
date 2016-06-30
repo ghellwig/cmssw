@@ -96,8 +96,8 @@ public:
 
   // /// Call at beginning of job:
   virtual void beginOfJob(std::shared_ptr<AlignableTracker> tracker,
-  			  std::shared_ptr<AlignableMuon> muon,
-  			  AlignableExtras *extras) override;
+                          std::shared_ptr<AlignableMuon> muon,
+                          std::shared_ptr<AlignableExtras> extras) override;
   
 
   /// Called at end of a the job of the AlignmentProducer.
@@ -281,7 +281,7 @@ double SiStripLorentzAngleCalibration::getParameterError(unsigned int index) con
 //======================================================================
 void SiStripLorentzAngleCalibration::beginOfJob(std::shared_ptr<AlignableTracker> aliTracker,
                                                 std::shared_ptr<AlignableMuon> /*aliMuon*/,
-                                                AlignableExtras * /*aliExtras*/)
+                                                std::shared_ptr<AlignableExtras> /*aliExtras*/)
 {
   //specify the sub-detectors for which the LA is determined
   const std::vector<int> sdets = {SiStripDetId::TIB,

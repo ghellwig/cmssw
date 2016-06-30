@@ -16,10 +16,10 @@
 #include <memory>
 
 #include "Alignment/CommonAlignment/interface/Utilities.h"
+#include "Alignment/CommonAlignment/interface/AlignableExtras.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
-class AlignableExtras;
 
 namespace edm {
   class ParameterSet;
@@ -30,7 +30,7 @@ class AlignmentParameterSelector {
   /// Constructor from tracker only or from tracker and muon
   explicit AlignmentParameterSelector(std::shared_ptr<AlignableTracker> aliTracker,
                                       std::shared_ptr<AlignableMuon> aliMuon = nullptr,
-                                      AlignableExtras *aliExtras = nullptr);
+                                      std::shared_ptr<AlignableExtras> aliExtras = nullptr);
 
   /// Destructor
   virtual ~AlignmentParameterSelector() {}
@@ -105,7 +105,7 @@ class AlignmentParameterSelector {
  private:
   std::shared_ptr<AlignableTracker> theTracker;
   std::shared_ptr<AlignableMuon>    theMuon;
-  AlignableExtras*  theExtras;
+  std::shared_ptr<AlignableExtras>  theExtras;
   align::Alignables theSelectedAlignables;
   std::vector<std::vector<char> > theSelectedParameters;
 

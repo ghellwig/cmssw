@@ -22,11 +22,11 @@
 #include <memory>
 #include <utility>
 
+#include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentParameterStore.h"
+#include "Alignment/CommonAlignment/interface/AlignableExtras.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
-class AlignableExtras;
-class AlignmentParameterStore;
 class IntegratedCalibrationBase;
 class Trajectory;
 // These data formats cannot be forward declared since they are typedef's,
@@ -120,7 +120,7 @@ public:
   virtual void initialize(const edm::EventSetup& setup,
                           std::shared_ptr<AlignableTracker> tracker,
                           std::shared_ptr<AlignableMuon> muon,
-                          AlignableExtras* extras,
+                          std::shared_ptr<AlignableExtras> extras,
                           std::shared_ptr<AlignmentParameterStore> store) = 0;
 
   /// Returns whether calibrations is supported by algorithm,

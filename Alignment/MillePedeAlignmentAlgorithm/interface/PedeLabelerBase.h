@@ -16,6 +16,7 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/IntegratedCalibrationBase.h"
+#include "Alignment/CommonAlignment/interface/AlignableExtras.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
@@ -25,7 +26,6 @@
 #include <vector>
 
 class Alignable;
-class AlignableExtras;
 
 /***************************************
 ****************************************/
@@ -41,12 +41,12 @@ class PedeLabelerBase
   {
   public:
     TopLevelAlignables(std::shared_ptr<AlignableTracker> aliTracker,
-		       std::shared_ptr<AlignableMuon> aliMuon,
-		       AlignableExtras *extras)
+                       std::shared_ptr<AlignableMuon> aliMuon,
+                       std::shared_ptr<AlignableExtras> extras)
       :aliTracker_(aliTracker), aliMuon_(aliMuon), aliExtras_(extras) {}
     std::shared_ptr<AlignableTracker> aliTracker_;
     std::shared_ptr<AlignableMuon> aliMuon_;
-    AlignableExtras *aliExtras_;
+    std::shared_ptr<AlignableExtras> aliExtras_;
   };
 
   /// constructor from three Alignables (null pointers allowed )

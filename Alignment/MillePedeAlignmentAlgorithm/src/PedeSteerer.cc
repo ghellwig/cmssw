@@ -551,7 +551,7 @@ unsigned int PedeSteerer::presigmas(const std::vector<edm::ParameterSet> &cffPre
                                     const std::vector<Alignable*> &alis,
                                     std::shared_ptr<AlignableTracker> aliTracker,
                                     std::shared_ptr<AlignableMuon> aliMuon,
-                                    AlignableExtras *aliExtras)
+                                    std::shared_ptr<AlignableExtras> aliExtras)
 {
   // We loop on given PSet's, each containing a parameter selection and the presigma value
   // The resulting presigmas are stored in a map with Alignable* as key.
@@ -675,7 +675,7 @@ std::string PedeSteerer::fileName(const std::string &addendum) const
 //___________________________________________________________________________
 void PedeSteerer::buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
                                 std::shared_ptr<AlignableMuon> aliMuon,
-                                AlignableExtras *aliExtras)
+                                std::shared_ptr<AlignableExtras> aliExtras)
 {
   const std::vector<Alignable*> &alis = myParameterStore->alignables();
 

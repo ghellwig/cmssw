@@ -30,16 +30,11 @@
 #include <TMatrixF.h>
 
 class Alignable;
-class AlignableExtras;
 
 class AlignmentParameters;
 class AlignableNavigator;
 class AlignableDetOrUnitPtr;
 class AlignmentUserVariables;
-
-class AlignmentParameterStore;
-
-class IntegratedCalibrationBase;
 
 class MillePedeMonitor;
 class PedeSteerer;
@@ -64,7 +59,7 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
   virtual void initialize(const edm::EventSetup &setup,
                           std::shared_ptr<AlignableTracker> tracker,
                           std::shared_ptr<AlignableMuon> muon,
-                          AlignableExtras *extras,
+                          std::shared_ptr<AlignableExtras> extras,
                           std::shared_ptr<AlignmentParameterStore> store) override;
 
   /// Returns whether MP supports calibrations

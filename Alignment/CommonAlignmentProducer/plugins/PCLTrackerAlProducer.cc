@@ -62,7 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  theExtraAlignables(0),
   globalPositions_(0),
 
   /* Steering parameters */
@@ -107,7 +106,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  delete theExtraAlignables;
   delete globalPositions_;
 }
 
@@ -547,7 +545,7 @@ void PCLTrackerAlProducer
   }
 
   if (useExtras_) {
-    theExtraAlignables = new AlignableExtras();
+    theExtraAlignables = std::make_shared<AlignableExtras>();
   }
 }
 

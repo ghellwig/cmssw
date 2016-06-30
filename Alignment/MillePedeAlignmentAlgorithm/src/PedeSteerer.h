@@ -21,12 +21,12 @@
 #include <iosfwd> 
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentParameterStore.h"
+#include "Alignment/CommonAlignment/interface/AlignableExtras.h"
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 #include "Alignment/MuonAlignment/interface/AlignableMuon.h"
 
 class Alignable;
-class AlignableExtras;
-class AlignmentParameterStore;
 class PedeLabelerBase;
 class PedeSteererWeakModeConstraints;
 
@@ -50,7 +50,7 @@ class PedeSteerer
   /// construct steering files about hierarchy, fixing etc. an keep track of their names
   void buildSubSteer(std::shared_ptr<AlignableTracker> aliTracker,
                      std::shared_ptr<AlignableMuon> aliMuon,
-                     AlignableExtras *aliExtras);
+                     std::shared_ptr<AlignableExtras> aliExtras);
   /// construct (and return name of) master steering file from config, binaryFiles etc.
   std::string buildMasterSteer(const std::vector<std::string> &binaryFiles);
   /// run pede, masterSteer should be as returned from buildMasterSteer(...)
@@ -106,7 +106,7 @@ class PedeSteerer
                          const std::string &fileName, const std::vector<Alignable*> &alis,
                          std::shared_ptr<AlignableTracker> aliTracker,
                          std::shared_ptr<AlignableMuon> aliMuon,
-                         AlignableExtras *aliExtras);
+                         std::shared_ptr<AlignableExtras> aliExtras);
   /// look for active 'alis' in map of presigma values and create steering file 
   unsigned int presigmasFile(const std::string &fileName, const std::vector<Alignable*> &alis,
 			     const AlignablePresigmasMap &aliPresisMap); 
