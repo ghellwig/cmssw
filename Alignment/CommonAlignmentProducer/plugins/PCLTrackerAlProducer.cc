@@ -62,8 +62,6 @@
 //_____________________________________________________________________________
 PCLTrackerAlProducer
 ::PCLTrackerAlProducer(const edm::ParameterSet& config) :
-  globalPositions_(0),
-
   /* Steering parameters */
   theParameterSet(config),
   stNFixAlignables_        (config.getParameter<int>          ("nFixAlignables")),
@@ -106,7 +104,6 @@ PCLTrackerAlProducer
 PCLTrackerAlProducer
 ::~PCLTrackerAlProducer()
 {
-  delete globalPositions_;
 }
 
 
@@ -500,7 +497,7 @@ void PCLTrackerAlProducer
 
     edm::ESHandle<Alignments> globalAlignments;
     setup.get<GlobalPositionRcd>().get(globalAlignments);
-    globalPositions_ = new Alignments(*globalAlignments);
+    globalPositions_ = std::make_unique<Alignments>(*globalAlignments);
 
     if (doTracker_) {
       applyDB<TrackerGeometry,

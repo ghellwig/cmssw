@@ -78,7 +78,6 @@
 
 //_____________________________________________________________________________
 AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
-  globalPositions_(0),
   nevent_(0), theParameterSet(iConfig),
   theMaxLoops( iConfig.getUntrackedParameter<unsigned int>("maxLoops") ),
   stNFixAlignables_(iConfig.getParameter<int>("nFixAlignables") ),
@@ -157,7 +156,6 @@ AlignmentProducer::AlignmentProducer(const edm::ParameterSet& iConfig) :
 // Delete new objects
 AlignmentProducer::~AlignmentProducer()
 {
-  delete globalPositions_;
 }
 
 
@@ -209,7 +207,7 @@ void AlignmentProducer::beginOfJob( const edm::EventSetup& iSetup )
     // before writing again to DB...
     edm::ESHandle<Alignments> globalPositionRcd;
     iSetup.get<GlobalPositionRcd>().get(globalPositionRcd);
-    globalPositions_ = new Alignments(*globalPositionRcd);
+    globalPositions_ = std::make_unique<Alignments>(*globalPositionRcd);
 
     if ( doTracker_ ) {     // apply to tracker
       this->applyDB<TrackerGeometry,TrackerAlignmentRcd,TrackerAlignmentErrorExtendedRcd>

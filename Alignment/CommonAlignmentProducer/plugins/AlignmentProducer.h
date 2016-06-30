@@ -167,8 +167,8 @@ class AlignmentProducer : public edm::ESProducerLooper
   std::shared_ptr<TrackerGeometry> theTracker;
   std::shared_ptr<DTGeometry> theMuonDT;
   std::shared_ptr<CSCGeometry> theMuonCSC;
-  /// GlobalPositions that might be read from DB, NULL otherwise
-  const Alignments *globalPositions_;
+  /// GlobalPositions that might be read from DB, nullptr otherwise
+  std::unique_ptr<const Alignments> globalPositions_;
 
   int nevent_;
   edm::ParameterSet theParameterSet;

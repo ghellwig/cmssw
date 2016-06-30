@@ -228,8 +228,8 @@ class PCLTrackerAlProducer :
     std::shared_ptr<AlignableExtras>         theExtraAlignables;
 
     edm::Handle<reco::BeamSpot> theBeamSpot;
-    /// GlobalPositions that might be read from DB, NULL otherwise
-    const Alignments* globalPositions_;
+    /// GlobalPositions that might be read from DB, nullptr otherwise
+    std::unique_ptr<const Alignments> globalPositions_;
 
     std::shared_ptr<TrackerGeometry> theTrackerGeometry;
     std::shared_ptr<DTGeometry>      theMuonDTGeometry;
