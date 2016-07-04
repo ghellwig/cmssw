@@ -30,9 +30,10 @@ class MuonMillepedeAlgorithm : public AlignmentAlgorithmBase
 
   /// Call at beginning of job
   void initialize( const edm::EventSetup& setup, 
-                   AlignableTracker* tracker, AlignableMuon* muon,
-		   AlignableExtras* extras,
-                   AlignmentParameterStore* store);
+                   const std::shared_ptr<AlignableTracker>& tracker,
+                   const std::shared_ptr<AlignableMuon>& muon,
+                   const std::shared_ptr<AlignableExtras>& extras,
+                   const std::shared_ptr<AlignmentParameterStore>& store);
 
   /// Call at end of job
   void terminate(const edm::EventSetup& setup);
@@ -54,9 +55,9 @@ class MuonMillepedeAlgorithm : public AlignmentAlgorithmBase
  
   void printM(const AlgebraicMatrix& ); 
   
-  AlignmentParameterStore* theAlignmentParameterStore;
-  std::vector<Alignable*> theAlignables;
-  AlignableNavigator* theAlignableDetAccessor;
+  std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
+  Alignables theAlignables;
+  std::unique_ptr<AlignableNavigator> theAlignableDetAccessor;
 
   // verbosity flag
   bool verbose;

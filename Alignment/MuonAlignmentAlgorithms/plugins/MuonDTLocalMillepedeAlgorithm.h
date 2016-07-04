@@ -39,9 +39,10 @@ class MuonDTLocalMillepedeAlgorithm : public AlignmentAlgorithmBase
   ~MuonDTLocalMillepedeAlgorithm() {};
 
   /// Call at beginning of job
-  void initialize( const edm::EventSetup& setup, 
-                   AlignableTracker* tracker, AlignableMuon* muon, 
-                   AlignmentParameterStore* store);
+  void initialize( const edm::EventSetup& setup,
+                   const std::shared_ptr<AlignableTracker> tracker,
+                   const std::shared_ptr<AlignableMuon>& muon,
+                   const std::shared_ptr<AlignmentParameterStore>& store);
 
   /// Call at end of job
   void terminate(void);
@@ -124,9 +125,9 @@ class MuonDTLocalMillepedeAlgorithm : public AlignmentAlgorithmBase
   TChain *tali;
 
 
-  AlignmentParameterStore* theAlignmentParameterStore;
-  std::vector<Alignable*> theAlignables;
-  AlignableNavigator* theAlignableDetAccessor;
+  std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
+  Alignables theAlignables;
+  std::unique_ptr<AlignableNavigator> theAlignableDetAccessor;
   
   //Service for histograms
   edm::Service<TFileService> fs;

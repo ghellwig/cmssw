@@ -25,11 +25,11 @@ class MuonAlignment {
 
       MuonAlignment( const edm::EventSetup& iSetup, const MuonAlignmentInputMethod& input );
 
-     ~MuonAlignment() { delete theAlignableNavigator; }
+      ~MuonAlignment() = default;
       
       std::shared_ptr<AlignableMuon> getAlignableMuon() { return theAlignableMuon; }
 
-      AlignableNavigator* getAlignableNavigator() { return theAlignableNavigator; }
+      std::shared_ptr<AlignableNavigator> getAlignableNavigator() { return theAlignableNavigator; }
 
 
       void moveAlignableLocalCoord( DetId& , align::Scalars& , align::Scalars& );
@@ -69,7 +69,7 @@ class MuonAlignment {
 
       std::shared_ptr<AlignableMuon> theAlignableMuon;
 
-      AlignableNavigator* theAlignableNavigator;
+      std::shared_ptr<AlignableNavigator> theAlignableNavigator;
 };
 
 #endif //MuonAlignment_H

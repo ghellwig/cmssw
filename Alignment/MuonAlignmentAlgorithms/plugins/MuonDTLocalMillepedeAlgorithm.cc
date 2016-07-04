@@ -84,17 +84,18 @@ MuonDTLocalMillepedeAlgorithm::MuonDTLocalMillepedeAlgorithm(const edm::Paramete
 // Call at beginning of job ---------------------------------------------------
 void 
 MuonDTLocalMillepedeAlgorithm::initialize( const edm::EventSetup& setup, 
-				    AlignableTracker* tracker, AlignableMuon* muon, 
-				    AlignmentParameterStore* store )
+                                           const std::shared_ptr<AlignableTracker>& tracker,
+                                           const std::shared_ptr<AlignableMuon>& muon,
+                                           const std::shared_ptr<AlignmentParameterStore>& store )
 {
   
   // accessor Det->AlignableDet
   if ( !muon )
-    theAlignableDetAccessor = new AlignableNavigator(tracker);
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(tracker);
   else if ( !tracker )
-    theAlignableDetAccessor = new AlignableNavigator(muon);
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(muon);
   else 
-    theAlignableDetAccessor = new AlignableNavigator(tracker,muon);
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(tracker,muon);
   
   // set alignmentParameterStore
   theAlignmentParameterStore=store;

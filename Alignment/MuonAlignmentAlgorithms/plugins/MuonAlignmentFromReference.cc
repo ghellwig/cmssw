@@ -79,10 +79,10 @@ class MuonAlignmentFromReference : public AlignmentAlgorithmBase
         virtual ~MuonAlignmentFromReference();
 
         void initialize(const edm::EventSetup& iSetup,
-                AlignableTracker* alignableTracker,
-                AlignableMuon* alignableMuon,
-                AlignableExtras* extras,
-                AlignmentParameterStore* alignmentParameterStore) override;
+                        const std::shared_ptr<AlignableTracker>& alignableTracker,
+                        const std::shared_ptr<AlignableMuon>& alignableMuon,
+                        const std::shared_ptr<AlignableExtras>& extras,
+                        const std::shared_ptr<AlignmentParameterStore>& alignmentParameterStore) override;
 
         void startNewLoop() override {};
 
@@ -97,9 +97,9 @@ class MuonAlignmentFromReference : public AlignmentAlgorithmBase
         int number(std::string s);
         std::string chamberPrettyNameFromId(unsigned int idx);
 
-        void parseReference(std::vector<Alignable*> &reference, 
-                std::vector<Alignable*> &all_DT_chambers, 
-                std::vector<Alignable*> &all_CSC_chambers);
+        void parseReference(Alignables &reference,
+                            Alignables &all_DT_chambers,
+                            Alignables &all_CSC_chambers);
 
         void fitAndAlign();
         void readTmpFiles();
@@ -146,9 +146,9 @@ class MuonAlignmentFromReference : public AlignmentAlgorithmBase
         std::string m_useResiduals; 
 
         // utility objects
-        AlignableNavigator *m_alignableNavigator;
-        AlignmentParameterStore *m_alignmentParameterStore;
-        std::vector<Alignable*> m_alignables;
+        std::unique_ptr<AlignableNavigator> m_alignableNavigator;
+        std::shared_ptr<AlignmentParameterStore> m_alignmentParameterStore;
+        Alignables m_alignables;
         std::map<Alignable*,Alignable*> m_me11map;
         std::map<Alignable*,MuonResidualsTwoBin*> m_fitters;
         std::vector<unsigned int> m_indexes;
@@ -264,7 +264,6 @@ class MuonAlignmentFromReference : public AlignmentAlgorithmBase
 
 MuonAlignmentFromReference::~MuonAlignmentFromReference()
 {
-    delete m_alignableNavigator;
 }
 
 
@@ -308,15 +307,15 @@ int MuonAlignmentFromReference::number(std::string s)
 
 
 void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
-        AlignableTracker* alignableTracker,
-        AlignableMuon* alignableMuon,
-        AlignableExtras* extras,
-        AlignmentParameterStore* alignmentParameterStore)
+        const std::shared_ptr<AlignableTracker>& alignableTracker,
+        const std::shared_ptr<AlignableMuon>& alignableMuon,
+        const std::shared_ptr<AlignableExtras>& extras,
+        const std::shared_ptr<AlignmentParameterStore>& alignmentParameterStore)
 {
-    if (alignableMuon == NULL)
+    if (!alignableMuon)
         throw cms::Exception("MuonAlignmentFromReference") << "doMuon must be set to True" << std::endl;
 
-    m_alignableNavigator = new AlignableNavigator(alignableMuon);
+    m_alignableNavigator = std::make_unique<AlignableNavigator>(alignableMuon.get());
     m_alignmentParameterStore = alignmentParameterStore;
     m_alignables = m_alignmentParameterStore->alignables();
 
@@ -346,25 +345,25 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
     m_indexes.clear();
     m_fitterOrder.clear();
 
-    for (std::vector<Alignable*>::const_iterator ali = m_alignables.begin();  ali != m_alignables.end();  ++ali)
+    for (const auto& ali: m_alignables)
     {
         bool made_fitter = false;
 
         // fitters for DT
-        if ((*ali)->alignableObjectId() == align::AlignableDTChamber)
+        if (ali->alignableObjectId() == align::AlignableDTChamber)
         {
-            DTChamberId id( (*ali)->geomDetId().rawId() );
+            DTChamberId id( ali->geomDetId().rawId() );
 
             if (id.station() == 4)
             {
-                m_fitters[*ali] =
+                m_fitters[ali] =
                     new MuonResidualsTwoBin(m_twoBin, new MuonResiduals5DOFFitter(residualsModel, m_minAlignmentHits, useResiduals, m_weightAlignment),
                             new MuonResiduals5DOFFitter(residualsModel, m_minAlignmentHits, useResiduals, m_weightAlignment));
                 made_fitter = true;
             }
             else
             {
-                m_fitters[*ali] =
+                m_fitters[ali] =
                     new MuonResidualsTwoBin(m_twoBin, new MuonResiduals6DOFFitter(residualsModel, m_minAlignmentHits, useResiduals, m_weightAlignment),
                             new MuonResiduals6DOFFitter(residualsModel, m_minAlignmentHits, useResiduals, m_weightAlignment));
                 made_fitter = true;
@@ -372,30 +371,30 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
         }
 
         // fitters for CSC
-        else if ((*ali)->alignableObjectId() == align::AlignableCSCChamber)
+        else if (ali->alignableObjectId() == align::AlignableCSCChamber)
         {
-            Alignable *thisali = *ali;
-            CSCDetId id( (*ali)->geomDetId().rawId() );
+            Alignable *thisali = ali;
+            CSCDetId id( ali->geomDetId().rawId() );
 
             // take care of ME1/1a
             if (m_combineME11  &&  id.station() == 1  &&  id.ring() == 4)
             {
                 CSCDetId pairid(id.endcap(), 1, 1, id.chamber());
 
-                for (std::vector<Alignable*>::const_iterator ali2 = m_alignables.begin();  ali2 != m_alignables.end();  ++ali2)
+                for (const auto& ali2: m_alignables)
                 {
-                    if ((*ali2)->alignableObjectId() == align::AlignableCSCChamber  &&  (*ali2)->geomDetId().rawId() == pairid.rawId())
+                    if (ali2->alignableObjectId() == align::AlignableCSCChamber  &&  ali2->geomDetId().rawId() == pairid.rawId())
                     {
-                        thisali = *ali2;
+                        thisali = ali2;
                         break;
                     }
                 }
-                m_me11map[*ali] = thisali;  // points from each ME1/4 chamber to the corresponding ME1/1 chamber
+                m_me11map[ali] = thisali;  // points from each ME1/4 chamber to the corresponding ME1/1 chamber
             }
 
-            if (thisali == *ali)   // don't make fitters for ME1/4; they get taken care of in ME1/1
+            if (thisali == ali)   // don't make fitters for ME1/4; they get taken care of in ME1/1
             {
-                m_fitters[*ali] =
+                m_fitters[ali] =
                     new MuonResidualsTwoBin(m_twoBin, new MuonResiduals6DOFrphiFitter(residualsModel, m_minAlignmentHits, useResiduals, &(*cscGeometry), m_weightAlignment),
                             new MuonResiduals6DOFrphiFitter(residualsModel, m_minAlignmentHits, useResiduals, &(*cscGeometry), m_weightAlignment));
                 made_fitter = true;
@@ -407,11 +406,11 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
         }
 
         if (made_fitter) {
-            m_fitters[*ali]->setStrategy(m_strategy);
+            m_fitters[ali]->setStrategy(m_strategy);
 
-            int index = (*ali)->geomDetId().rawId();
+            int index = ali->geomDetId().rawId();
             m_indexes.push_back(index);
-            m_fitterOrder[index] = m_fitters[*ali];
+            m_fitterOrder[index] = m_fitters[ali];
         }
     } // end loop over chambers chosen for alignment
 
@@ -419,9 +418,9 @@ void MuonAlignmentFromReference::initialize(const edm::EventSetup& iSetup,
     std::sort(m_indexes.begin(), m_indexes.end());
 
     // de-weight all chambers but the reference
-    std::vector<Alignable*> all_DT_chambers = alignableMuon->DTChambers();
-    std::vector<Alignable*> all_CSC_chambers = alignableMuon->CSCChambers();
-    std::vector<Alignable*> reference;
+    Alignables all_DT_chambers = alignableMuon->DTChambers();
+    Alignables all_CSC_chambers = alignableMuon->CSCChambers();
+    Alignables reference;
     if (m_reference.size()) parseReference(reference, all_DT_chambers, all_CSC_chambers);
 
     alignmentParameterStore->setAlignmentPositionError(all_DT_chambers, 100000000., 0.);
@@ -468,7 +467,7 @@ void MuonAlignmentFromReference::run(const edm::EventSetup& iSetup, const EventI
                 {
                     m_counter_trackdxy++;
                     if (m_debug) std::cout << "JUST BEFORE muonResidualsFromTrack" << std::endl;
-                    MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry, muonDetIdAssociator_, prop, traj, track, m_alignableNavigator, 1000.);
+                    MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry, muonDetIdAssociator_, prop, traj, track, m_alignableNavigator.get(), 1000.);
                     if (m_debug) std::cout << "JUST AFTER muonResidualsFromTrack" << std::endl;
 
                     if (m_debug) std::cout << "JUST BEFORE PROCESS" << std::endl;
@@ -862,11 +861,11 @@ void MuonAlignmentFromReference::fitAndAlign()
 
     if (m_debug) std::cout << "***** just after report.open" << std::endl;
 
-    for (std::vector<Alignable*>::const_iterator ali = m_alignables.begin(); ali != m_alignables.end(); ++ali)
+    for (const auto& ali: m_alignables)
     {
         if (m_debug) std::cout << "***** Start loop over alignables" << std::endl;
 
-        std::vector<bool> selector = (*ali)->alignmentParameters()->selector();
+        std::vector<bool> selector = ali->alignmentParameters()->selector();
         bool align_x = selector[0];
         bool align_y = selector[1];
         bool align_z = selector[2];
@@ -891,13 +890,13 @@ void MuonAlignmentFromReference::fitAndAlign()
         if (align_phiz) paramIndex_counter++;
         paramIndex.push_back(paramIndex_counter);
 
-        DetId id = (*ali)->geomDetId();
+        DetId id = ali->geomDetId();
 
-        Alignable *thisali = *ali;
+        Alignable *thisali = ali;
         if (m_combineME11 && id.subdetId() == MuonSubdetId::CSC)
         {
             CSCDetId cscid(id.rawId());
-            if (cscid.station() == 1 && cscid.ring() == 4)   thisali = m_me11map[*ali];
+            if (cscid.station() == 1 && cscid.ring() == 4)   thisali = m_me11map[ali];
         }
 
         if (m_debug) std::cout << "***** loop over alignables 1" << std::endl;
@@ -1379,9 +1378,9 @@ void MuonAlignmentFromReference::fitAndAlign()
 
                 if (successful_fit)
                 {
-                    std::vector<Alignable*> oneortwo;
-                    oneortwo.push_back(*ali);
-                    if (thisali != *ali) oneortwo.push_back(thisali);
+                    Alignables oneortwo;
+                    oneortwo.push_back(ali);
+                    if (thisali != ali) oneortwo.push_back(thisali);
                     m_alignmentParameterStore->setAlignmentPositionError(oneortwo, 0., 0.);
                 }
                 else
@@ -1394,9 +1393,9 @@ void MuonAlignmentFromReference::fitAndAlign()
 
                     for (int i = 0; i < numParams; i++)  cov[i][i] = 1000.;
 
-                    std::vector<Alignable*> oneortwo;
-                    oneortwo.push_back(*ali);
-                    if (thisali != *ali) oneortwo.push_back(thisali);
+                    Alignables oneortwo;
+                    oneortwo.push_back(ali);
+                    if (thisali != ali) oneortwo.push_back(thisali);
                     m_alignmentParameterStore->setAlignmentPositionError(oneortwo, 1000., 0.);
                 }
             }
@@ -1410,16 +1409,16 @@ void MuonAlignmentFromReference::fitAndAlign()
 
                 for (int i = 0; i < numParams; i++)  cov[i][i] = 1000.;
 
-                std::vector<Alignable*> oneortwo;
-                oneortwo.push_back(*ali);
-                if (thisali != *ali) oneortwo.push_back(thisali);
+                Alignables oneortwo;
+                oneortwo.push_back(ali);
+                if (thisali != ali) oneortwo.push_back(thisali);
                 m_alignmentParameterStore->setAlignmentPositionError(oneortwo, 1000., 0.);
             }
 
-            AlignmentParameters *parnew = (*ali)->alignmentParameters()->cloneFromSelected(params, cov);
-            (*ali)->setAlignmentParameters(parnew);
-            m_alignmentParameterStore->applyParameters(*ali);
-            (*ali)->alignmentParameters()->setValid(true);
+            AlignmentParameters *parnew = ali->alignmentParameters()->cloneFromSelected(params, cov);
+            ali->setAlignmentParameters(parnew);
+            m_alignmentParameterStore->applyParameters(ali);
+            ali->alignmentParameters()->setValid(true);
 
             if (m_debug) std::cout << cname<<" fittime= "<< stop_watch.CpuTime() << " sec" << std::endl;
         } // end we have a fitter for this alignable
@@ -1687,10 +1686,9 @@ void MuonAlignmentFromReference::fillNtuple()
     }
 }
 
-void MuonAlignmentFromReference::parseReference(
-        std::vector<Alignable*> &reference, 
-        std::vector<Alignable*> &all_DT_chambers, 
-        std::vector<Alignable*> &all_CSC_chambers)
+void MuonAlignmentFromReference::parseReference(Alignables &reference,
+                                                Alignables &all_DT_chambers,
+                                                Alignables &all_CSC_chambers)
 {
     std::map<Alignable*,bool> already_seen;
 
@@ -1774,15 +1772,15 @@ void MuonAlignmentFromReference::parseReference(
                     throw cms::Exception("MuonAlignmentFromReference") << "reference chamber doesn't exist: " << (*name) << std::endl;
 
                 DTChamberId id(wheel, station, sector);
-                for (std::vector<Alignable*>::const_iterator ali = all_DT_chambers.begin();  ali != all_DT_chambers.end();  ++ali)
+                for (const auto& ali: all_DT_chambers)
                 {
-                    if ((*ali)->geomDetId().rawId() == id.rawId())
+                    if (ali->geomDetId().rawId() == id.rawId())
                     {
-                        std::map<Alignable*,bool>::const_iterator trial = already_seen.find(*ali);
+                        std::map<Alignable*,bool>::const_iterator trial = already_seen.find(ali);
                         if (trial == already_seen.end())
                         {
-                            reference.push_back(*ali);
-                            already_seen[*ali] = true;
+                            reference.push_back(ali);
+                            already_seen[ali] = true;
                         }
                     }
                 }
@@ -1865,15 +1863,15 @@ void MuonAlignmentFromReference::parseReference(
                     throw cms::Exception("MuonAlignmentFromReference") << "reference chamber doesn't exist: " << (*name) << std::endl;
 
                 CSCDetId id(endcap, station, ring, chamber);
-                for (std::vector<Alignable*>::const_iterator ali = all_CSC_chambers.begin();  ali != all_CSC_chambers.end();  ++ali)
+                for (const auto& ali: all_CSC_chambers)
                 {
-                    if ((*ali)->geomDetId().rawId() == id.rawId())
+                    if (ali->geomDetId().rawId() == id.rawId())
                     {
-                        std::map<Alignable*,bool>::const_iterator trial = already_seen.find(*ali);
+                        std::map<Alignable*,bool>::const_iterator trial = already_seen.find(ali);
                         if (trial == already_seen.end()) 
                         {
-                            reference.push_back(*ali);
-                            already_seen[*ali] = true;
+                            reference.push_back(ali);
+                            already_seen[ali] = true;
                         }
                     }
                 }

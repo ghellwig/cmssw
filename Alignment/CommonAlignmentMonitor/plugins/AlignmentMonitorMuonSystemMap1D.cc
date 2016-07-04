@@ -290,7 +290,7 @@ void AlignmentMonitorMuonSystemMap1D::event(const edm::Event &iEvent, const edm:
         {
           m_counter_trackdxy++;
 
-          MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry, muonDetIdAssociator_, prop, traj, track, pNavigator(), 1000.);
+          MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry, muonDetIdAssociator_, prop, traj, track, pNavigator().get(), 1000.);
           processMuonResidualsFromTrack(muonResidualsFromTrack, iEvent);
         }
       } // end if track has acceptable momentum
@@ -314,7 +314,7 @@ void AlignmentMonitorMuonSystemMap1D::event(const edm::Event &iEvent, const edm:
         {
           m_counter_trackdxy++;
 
-          MuonResidualsFromTrack muonResidualsFromTrack(globalGeometry, &(*muon), pNavigator(), 100.);
+          MuonResidualsFromTrack muonResidualsFromTrack(globalGeometry, &(*muon), pNavigator().get(), 100.);
           processMuonResidualsFromTrack(muonResidualsFromTrack, iEvent);
         }
       }

@@ -183,12 +183,16 @@ CSCOverlapsAlignmentAlgorithm::CSCOverlapsAlignmentAlgorithm(const edm::Paramete
 
 CSCOverlapsAlignmentAlgorithm::~CSCOverlapsAlignmentAlgorithm() {}
 
-void CSCOverlapsAlignmentAlgorithm::initialize(const edm::EventSetup& iSetup, AlignableTracker* alignableTracker, AlignableMuon* alignableMuon, AlignableExtras* alignableExtras, AlignmentParameterStore* alignmentParameterStore) {
+void CSCOverlapsAlignmentAlgorithm::initialize(const edm::EventSetup& iSetup,
+                                               const std::shared_ptr<AlignableTracker>& alignableTracker,
+                                               const std::shared_ptr<AlignableMuon>& alignableMuon,
+                                               const std::shared_ptr<AlignableExtras>& alignableExtras,
+                                               const std::shared_ptr<AlignmentParameterStore>& alignmentParameterStore) {
   m_alignmentParameterStore = alignmentParameterStore;
   m_alignables = m_alignmentParameterStore->alignables();
 
-  if (alignableTracker == NULL) m_alignableNavigator = new AlignableNavigator(alignableMuon);
-  else m_alignableNavigator = new AlignableNavigator(alignableTracker, alignableMuon);
+  if (!alignableTracker) m_alignableNavigator = std::make_unique<AlignableNavigator>(alignableMuon.get());
+  else m_alignableNavigator = std::make_unique<AlignableNavigator>(alignableTracker.get(), alignableMuon.get());
 
   for (std::vector<Alignable*>::const_iterator alignable = m_alignables.begin();  alignable != m_alignables.end();  ++alignable) {
     DetId id = (*alignable)->geomDetId();
@@ -366,7 +370,7 @@ void CSCOverlapsAlignmentAlgorithm::terminate(const edm::EventSetup& iSetup) {
 
     for (std::vector<CSCChamberFitter>::const_iterator fitter = m_fitters.begin();  fitter != m_fitters.end();  ++fitter) {
       if (m_mode == CSCPairResidualsConstraint::kModeRadius) {
-	fitter->radiusCorrection(m_alignableNavigator, m_alignmentParameterStore, m_combineME11);
+	fitter->radiusCorrection(m_alignableNavigator.get(), m_alignmentParameterStore.get(), m_combineME11);
 	
 
 
@@ -378,7 +382,7 @@ void CSCOverlapsAlignmentAlgorithm::terminate(const edm::EventSetup& iSetup) {
 	// corrections only exist if the fit was successful
 	for (std::vector<CSCAlignmentCorrections*>::iterator correction = corrections.begin();  correction != corrections.end();  ++correction) {
 	   
-	   (*correction)->applyAlignment(m_alignableNavigator, m_alignmentParameterStore, m_mode, m_combineME11);
+	   (*correction)->applyAlignment(m_alignableNavigator.get(), m_alignmentParameterStore.get(), m_mode, m_combineME11);
 	   if (m_makeHistograms) (*correction)->plot();
 	   if (writeReport) (*correction)->report(report);
 	}

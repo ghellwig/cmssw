@@ -3,6 +3,7 @@
 
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentAlgorithmBase.h"
 #include "Alignment/CommonAlignment/interface/AlignableDetOrUnitPtr.h"
+#include "Alignment/CommonAlignment/interface/AlignableNavigator.h"
 #include "Alignment/CommonAlignmentAlgorithm/interface/AlignmentIORoot.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "Riostream.h"
@@ -14,7 +15,6 @@
 #include "DataFormats/TrackerRecHit2D/interface/SiStripRecHit2D.h" 	 
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHit.h" 	 
 
-class AlignableNavigator;
 class TFile;
 class TTree;
 
@@ -73,8 +73,8 @@ class HIPAlignmentAlgorithm : public AlignmentAlgorithmBase
   // private data members
 
   std::shared_ptr<AlignmentParameterStore> theAlignmentParameterStore;
-  std::vector<Alignable*> theAlignables;
-  AlignableNavigator* theAlignableDetAccessor;
+  Alignables theAlignables;
+  std::unique_ptr<AlignableNavigator> theAlignableDetAccessor;
 
   AlignmentIORoot theIO;
   int ioerr;

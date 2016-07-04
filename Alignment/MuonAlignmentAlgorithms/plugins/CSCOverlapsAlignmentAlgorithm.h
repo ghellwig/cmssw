@@ -63,8 +63,11 @@ public:
   CSCOverlapsAlignmentAlgorithm(const edm::ParameterSet& iConfig);
   ~CSCOverlapsAlignmentAlgorithm();
   
-  void initialize(const edm::EventSetup& iSetup, AlignableTracker* alignableTracker, AlignableMuon* alignableMuon,
-		  AlignableExtras* alignableExtras, AlignmentParameterStore* alignmentParameterStore);
+  void initialize(const edm::EventSetup& iSetup,
+                  const std::shared_ptr<AlignableTracker>& alignableTracker,
+                  const std::shared_ptr<AlignableMuon>& alignableMuon,
+                  const std::shared_ptr<AlignableExtras>& alignableExtras,
+                  const std::shared_ptr<AlignmentParameterStore>& alignmentParameterStore);
   void run(const edm::EventSetup& iSetup, const EventInfo &eventInfo);
 
   void terminate(const edm::EventSetup& iSetup);
@@ -138,9 +141,9 @@ private:
   std::vector<std::string> m_readTemporaryFiles;
   bool m_doAlignment;
 
-  AlignmentParameterStore* m_alignmentParameterStore;
-  std::vector<Alignable*> m_alignables;
-  AlignableNavigator *m_alignableNavigator;
+  std::shared_ptr<AlignmentParameterStore> m_alignmentParameterStore;
+  Alignables m_alignables;
+  std::unique_ptr<AlignableNavigator> m_alignableNavigator;
   std::vector<CSCChamberFitter> m_fitters;
   std::vector<CSCPairResidualsConstraint*> m_residualsConstraints;
   std::map<std::pair<CSCDetId,CSCDetId>,CSCPairResidualsConstraint*> m_quickChamberLookup;

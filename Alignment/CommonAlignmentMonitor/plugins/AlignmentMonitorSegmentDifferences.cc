@@ -368,7 +368,7 @@ void AlignmentMonitorSegmentDifferences::event(const edm::Event &iEvent, const e
 
       if (track->pt() > m_minTrackPt && track->p() > m_minTrackP && fabs(track->dxy(beamSpot->position())) < m_maxDxy )
       {
-        MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry,muonDetIdAssociator_, prop, traj, track, pNavigator(), 1000.);
+        MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry,muonDetIdAssociator_, prop, traj, track, pNavigator().get(), 1000.);
         processMuonResidualsFromTrack(muonResidualsFromTrack);
       }
     } // end loop over tracks
@@ -384,7 +384,7 @@ void AlignmentMonitorSegmentDifferences::event(const edm::Event &iEvent, const e
 
       if (m_minTrackPt < muon->pt()  &&  m_minTrackP < muon->p() && fabs(muon->innerTrack()->dxy(beamSpot->position())) < m_maxDxy)
       {
-        MuonResidualsFromTrack muonResidualsFromTrack(globalGeometry, &(*muon), pNavigator(), 100.);
+        MuonResidualsFromTrack muonResidualsFromTrack(globalGeometry, &(*muon), pNavigator().get(), 100.);
         processMuonResidualsFromTrack(muonResidualsFromTrack);
       }
     }

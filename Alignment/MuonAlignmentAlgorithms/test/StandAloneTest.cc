@@ -169,7 +169,7 @@ StandAloneTest::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (track->pt() > 20.  &&  traj != NULL  &&  traj->isValid()) {
 
 	 // calculate all residuals on this track
-	MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry,  muonDetIdAssociator_, prop, traj, &(*track), m_muonAlignment->getAlignableNavigator(), 1000.);
+	MuonResidualsFromTrack muonResidualsFromTrack(iSetup, magneticField, globalGeometry,  muonDetIdAssociator_, prop, traj, &(*track), m_muonAlignment->getAlignableNavigator().get(), 1000.);
 	 std::vector<DetId> chamberIds = muonResidualsFromTrack.chamberIds();
 
 	 // if the tracker part of refit is okay

@@ -95,8 +95,8 @@ class AlignmentMonitorBase
       int                     iteration()    { return m_iteration; }
       std::shared_ptr<AlignableTracker>        pTracker()    { return mp_tracker; }
       std::shared_ptr<AlignableMuon>           pMuon()       { return mp_muon; }
-      std::shared_ptr<AlignmentParameterStore> pStore() { return mp_store; }
-      AlignableNavigator      *pNavigator()  { return mp_navigator; }
+      std::shared_ptr<AlignmentParameterStore> pStore()      { return mp_store; }
+      std::shared_ptr<AlignableNavigator>      pNavigator()  { return mp_navigator; }
 
       const edm::InputTag m_beamSpotTag;
 
@@ -107,7 +107,7 @@ class AlignmentMonitorBase
       std::shared_ptr<AlignableTracker>        mp_tracker;
       std::shared_ptr<AlignableMuon>           mp_muon;
       std::shared_ptr<AlignmentParameterStore> mp_store;
-      AlignableNavigator       *mp_navigator;
+      std::shared_ptr<AlignableNavigator>      mp_navigator;
 
       std::map<std::vector<std::string>, TFileDirectory*> m_baseDirMap, m_iterDirMap;
 };

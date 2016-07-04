@@ -148,15 +148,16 @@ void SurveyInputCSCfromPins::analyze(const edm::Event&, const edm::EventSetup& i
  	iSetup.get<MuonGeometryRecord>().get( dtGeometry );     
  	iSetup.get<MuonGeometryRecord>().get( cscGeometry );
  
- 	AlignableMuon* theAlignableMuon = new AlignableMuon( &(*dtGeometry) , &(*cscGeometry) );
- 	AlignableNavigator* theAlignableNavigator = new AlignableNavigator( theAlignableMuon );
+        auto theAlignableMuon =
+          std::make_unique<AlignableMuon>( &(*dtGeometry) , &(*cscGeometry) );
+        auto theAlignableNavigator =
+          std::make_unique<AlignableNavigator>(theAlignableMuon.get());
  
-  	std::vector<Alignable*> theEndcaps = theAlignableMuon->CSCEndcaps();
+        Alignables theEndcaps = theAlignableMuon->CSCEndcaps();
  
-	for (std::vector<Alignable*>::const_iterator aliiter = theEndcaps.begin();  aliiter != theEndcaps.end();  ++aliiter) {
-     
- 		addComponent(*aliiter);
-    	}
+        for (const auto& aliiter: theEndcaps) {
+          addComponent(aliiter);
+        }
     
 	
 	while (in.good())
@@ -264,13 +265,9 @@ void SurveyInputCSCfromPins::analyze(const edm::Event&, const edm::EventSetup& i
 
 	file1->Close();
    
-	for (std::vector<Alignable*>::const_iterator aliiter = theEndcaps.begin();  aliiter != theEndcaps.end();  ++aliiter) {
-     
- 		fillAllRecords(*aliiter);
-    	} 
-
-	delete theAlignableMuon;
-	delete theAlignableNavigator;
+        for (const auto& aliiter: theEndcaps) {
+          fillAllRecords(aliiter);
+        }
 
 	edm::LogInfo("SurveyInputCSCfromPins") << "*************END INITIALIZATION***************" << "  \n";
 
@@ -343,11 +340,10 @@ void SurveyInputCSCfromPins::fillAllRecords(Alignable *ali) {
 	   }
    	}
 
-   	std::vector<Alignable*> components = ali->components();
-   	for (std::vector<Alignable*>::const_iterator iter = components.begin();  iter != components.end();  ++iter) {
-	
-      		fillAllRecords(*iter);
-   	}
+        Alignables components = ali->components();
+        for (const auto& iter: components) {
+          fillAllRecords(iter);
+        }
 }
 
 

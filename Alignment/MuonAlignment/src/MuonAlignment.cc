@@ -38,8 +38,6 @@ void MuonAlignment::init()
    theDTSurveyErrorRecordName = "DTSurveyErrorExtendedRcd";
    theCSCSurveyRecordName = "CSCSurveyRcd";
    theCSCSurveyErrorRecordName = "CSCSurveyErrorExtendedRcd";
-   theAlignableMuon = NULL;
-   theAlignableNavigator = NULL;
 }
 
 MuonAlignment::MuonAlignment( const edm::EventSetup& iSetup )
@@ -53,7 +51,8 @@ MuonAlignment::MuonAlignment( const edm::EventSetup& iSetup )
 
    theAlignableMuon =
      std::make_shared<AlignableMuon>(&(*dtGeometry) , &(*cscGeometry));
-   theAlignableNavigator = new AlignableNavigator(theAlignableMuon.get());
+   theAlignableNavigator =
+     std::make_shared<AlignableNavigator>(theAlignableMuon.get());
 }
 
 MuonAlignment::MuonAlignment( const edm::EventSetup& iSetup, const MuonAlignmentInputMethod& input )
@@ -61,7 +60,8 @@ MuonAlignment::MuonAlignment( const edm::EventSetup& iSetup, const MuonAlignment
    init();
 
    theAlignableMuon = input.newAlignableMuon( iSetup );
-   theAlignableNavigator = new AlignableNavigator(theAlignableMuon.get());
+   theAlignableNavigator =
+     std::make_shared<AlignableNavigator>(theAlignableMuon.get());
 }
 
 //____________________________________________________________________________________

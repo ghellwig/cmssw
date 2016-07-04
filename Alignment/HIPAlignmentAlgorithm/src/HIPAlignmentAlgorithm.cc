@@ -165,11 +165,11 @@ HIPAlignmentAlgorithm::initialize(const edm::EventSetup& setup,
 	
   // accessor Det->AlignableDet
   if ( !muon )
-    theAlignableDetAccessor = new AlignableNavigator(tracker.get());
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(tracker.get());
   else if ( !tracker )
-    theAlignableDetAccessor = new AlignableNavigator(muon.get());
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(muon.get());
   else 
-    theAlignableDetAccessor = new AlignableNavigator(tracker.get(), muon.get());
+    theAlignableDetAccessor = std::make_unique<AlignableNavigator>(tracker.get(), muon.get());
   
   // set alignmentParameterStore
   theAlignmentParameterStore=store;

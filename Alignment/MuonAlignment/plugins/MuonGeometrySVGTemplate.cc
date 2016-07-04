@@ -83,7 +83,7 @@ MuonGeometrySVGTemplate::analyze(const edm::Event &iEvent, const edm::EventSetup
    // loads ideal geometry
    MuonAlignmentInputMethod inputMethod;
    MuonAlignment muonAlignment(iSetup, inputMethod);
-   AlignableNavigator *alignableNavigator = muonAlignment.getAlignableNavigator();
+   auto alignableNavigator = muonAlignment.getAlignableNavigator();
 
    edm::FileInPath fip_BEGINNING("Alignment/MuonAlignment/data/wheel_template.svg_BEGINNING");
    std::ifstream in_BEGINNING(fip_BEGINNING.fullPath().c_str());

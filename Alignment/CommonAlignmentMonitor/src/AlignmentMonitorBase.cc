@@ -35,9 +35,9 @@ void AlignmentMonitorBase::beginOfJob(const std::shared_ptr<AlignableTracker>& p
    mp_muon = pMuon;
    mp_store = pStore;
 
-   if (!pMuon)          mp_navigator = new AlignableNavigator(pTracker.get());
-   else if (!pTracker)  mp_navigator = new AlignableNavigator(pMuon.get());
-   else                 mp_navigator = new AlignableNavigator(pTracker.get(), pMuon.get());
+   if (!pMuon)          mp_navigator = std::make_shared<AlignableNavigator>(pTracker.get());
+   else if (!pTracker)  mp_navigator = std::make_shared<AlignableNavigator>(pMuon.get());
+   else                 mp_navigator = std::make_shared<AlignableNavigator>(pTracker.get(), pMuon.get());
 }
 
 

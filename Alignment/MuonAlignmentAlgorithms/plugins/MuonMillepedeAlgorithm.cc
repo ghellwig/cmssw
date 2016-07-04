@@ -61,17 +61,19 @@
 
 	// Call at beginning of job ---------------------------------------------------
 
-	void 
-	MuonMillepedeAlgorithm::initialize( const edm::EventSetup& setup, 
-					    AlignableTracker* tracker, AlignableMuon* muon, 
-					    AlignableExtras* extras,
-					    AlignmentParameterStore* store )
+        void
+        MuonMillepedeAlgorithm::initialize( const edm::EventSetup& setup,
+                                            const std::shared_ptr<AlignableTracker>& tracker,
+                                            const std::shared_ptr<AlignableMuon>& muon,
+                                            const std::shared_ptr<AlignableExtras>& extras,
+                                            const std::shared_ptr<AlignmentParameterStore>& store )
 	{
 	  
 	  edm::LogWarning("Alignment") << "[MuonMillepedeAlgorithm] Initializing...";
 
 	  // accessor Det->AlignableDet
-	  theAlignableDetAccessor = new AlignableNavigator(tracker, muon);
+          theAlignableDetAccessor =
+            std::make_unique<AlignableNavigator>(tracker.get(), muon.get());
 
 	  // set alignmentParameterStore
 	  theAlignmentParameterStore=store;
@@ -176,9 +178,8 @@
 	  edm::LogWarning("Alignment") << "[MuonMillepedeAlgorithm] Terminating";
 
 	  // iterate over alignment parameters
-	  for(std::vector<Alignable*>::const_iterator
-	    it=theAlignables.begin(); it!=theAlignables.end(); it++) {
-	    Alignable* ali=(*it);
+	  for(const auto& it: theAlignables) {
+	    Alignable* ali = it;
 	    // Alignment parameters
 	    // AlignmentParameters* par = ali->alignmentParameters();
 	    edm::LogInfo("Alignment") << "now apply params";

@@ -81,7 +81,7 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
 
  private:
   edm::ParameterSet         theConfig;
-  AlignableNavigator       *theAlignableNavigator;
+  std::unique_ptr<AlignableNavigator> theAlignableNavigator;
   std::shared_ptr<AlignableTracker> theTracker;
   bool                     saveApeToAscii_,readApeFromAscii_,readFullLocalMatrix_;
   bool                     readLocalNotGlobal_,saveLocalNotGlobal_;
@@ -97,8 +97,7 @@ class ApeSettingAlgorithm : public AlignmentAlgorithmBase
 // Constructor ----------------------------------------------------------------
 //____________________________________________________
 ApeSettingAlgorithm::ApeSettingAlgorithm(const edm::ParameterSet &cfg) :
-  AlignmentAlgorithmBase(cfg), theConfig(cfg),
-  theAlignableNavigator(0)
+  AlignmentAlgorithmBase(cfg), theConfig(cfg)
 {
   edm::LogInfo("Alignment") << "@SUB=ApeSettingAlgorithm" << "Start.";
   saveApeToAscii_ = theConfig.getUntrackedParameter<bool>("saveApeToASCII");
@@ -115,7 +114,6 @@ ApeSettingAlgorithm::ApeSettingAlgorithm(const edm::ParameterSet &cfg) :
 //____________________________________________________
 ApeSettingAlgorithm::~ApeSettingAlgorithm()
 {
-  delete theAlignableNavigator;
 }
 
 // Call at beginning of job ---------------------------------------------------
@@ -126,7 +124,8 @@ void ApeSettingAlgorithm::initialize(const edm::EventSetup &setup,
                                      const std::shared_ptr<AlignableExtras>&,
                                      const std::shared_ptr<AlignmentParameterStore>& store)
 {
- theAlignableNavigator = new AlignableNavigator(tracker.get(), muon.get());
+ theAlignableNavigator =
+   std::make_unique<AlignableNavigator>(tracker.get(), muon.get());
  theTracker = tracker;
  
  if (readApeFromAscii_)
@@ -225,9 +224,6 @@ void ApeSettingAlgorithm::terminate(const edm::EventSetup& iSetup)
     delete aliErr;
     apeSaveFile.close();
     }
-  // clean up at end:  // FIXME: should we delete here or in destructor?
-  delete theAlignableNavigator;
-  theAlignableNavigator = 0;
 }
 
 // Run the algorithm on trajectories and tracks -------------------------------
