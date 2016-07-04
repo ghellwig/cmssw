@@ -104,12 +104,12 @@ MisalignedTrackerESProducer::produce( const TrackerDigiGeometryRecord& iRecord )
   // Create misalignment scenario, apply to geometry
   TrackerScenarioBuilder scenarioBuilder(theAlignableTracker);
   scenarioBuilder.applyScenario( theScenario );
-  Alignments* alignments =  theAlignableTracker->alignments();
-  AlignmentErrorsExtended* alignmentErrors = theAlignableTracker->alignmentErrors();
+  std::unique_ptr<Alignments> alignments{theAlignableTracker->alignments()};
+  std::unique_ptr<AlignmentErrorsExtended> alignmentErrors{theAlignableTracker->alignmentErrors()};
   
   // Store result to EventSetup
   GeometryAligner aligner;
-  aligner.applyAlignments<TrackerGeometry>( &(*theTracker), alignments, alignmentErrors, 
+  aligner.applyAlignments<TrackerGeometry>( &(*theTracker), alignments.get(), alignmentErrors.get(),
                                             AlignTransform()); // dummy global position
 
   // Write alignments to DB: have to sort beforhand!
@@ -123,15 +123,10 @@ MisalignedTrackerESProducer::produce( const TrackerDigiGeometryRecord& iRecord )
         alignments->clear();
         alignmentErrors->clear();
       }      
-      poolDbService->writeOne<Alignments>(alignments, poolDbService->currentTime(),
-                                          theAlignRecordName);
-      poolDbService->writeOne<AlignmentErrorsExtended>(alignmentErrors, poolDbService->currentTime(),
-                                               theErrorRecordName);
-  } else {
-    // poolDbService::writeOne takes over ownership
-    // we have to delete in the case that containers are not written
-    delete alignments;
-    delete alignmentErrors;
+      poolDbService->writeOne(alignments.get(), poolDbService->currentTime(),
+                              theAlignRecordName);
+      poolDbService->writeOne(alignmentErrors.get(), poolDbService->currentTime(),
+                              theErrorRecordName);
   }
   
 

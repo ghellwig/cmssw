@@ -137,7 +137,7 @@ private:
   std::vector<double> parameters_;
   std::vector<double> paramUncertainties_;
 
-  TkModuleGroupSelector *moduleGroupSelector_;
+  std::unique_ptr<TkModuleGroupSelector> moduleGroupSelector_;
   const edm::ParameterSet moduleGroupSelCfg_;
 };
 
@@ -153,7 +153,6 @@ SiStripLorentzAngleCalibration::SiStripLorentzAngleCalibration(const edm::Parame
     outFileName_(cfg.getParameter<std::string>("treeFile")),
     mergeFileNames_(cfg.getParameter<std::vector<std::string> >("mergeTreeFiles")),
     siStripLorentzAngleInput_(0),
-    moduleGroupSelector_(0),
     moduleGroupSelCfg_(cfg.getParameter<edm::ParameterSet>("LorentzAngleModuleGroups"))
 {
 
@@ -175,8 +174,6 @@ SiStripLorentzAngleCalibration::SiStripLorentzAngleCalibration(const edm::Parame
 //======================================================================
 SiStripLorentzAngleCalibration::~SiStripLorentzAngleCalibration()
 {
-  delete moduleGroupSelector_;
-  //  std::cout << "Destroy SiStripLorentzAngleCalibration named " << this->name() << std::endl;
   delete siStripLorentzAngleInput_;
 }
 
@@ -286,7 +283,8 @@ void SiStripLorentzAngleCalibration::beginOfJob(const std::shared_ptr<AlignableT
   //specify the sub-detectors for which the LA is determined
   const std::vector<int> sdets = {SiStripDetId::TIB,
 				  SiStripDetId::TOB}; //no TEC,TID
-  moduleGroupSelector_ = new TkModuleGroupSelector(aliTracker, moduleGroupSelCfg_, sdets);
+  moduleGroupSelector_ =
+    std::make_unique<TkModuleGroupSelector>(aliTracker, moduleGroupSelCfg_, sdets);
  
   parameters_.resize(moduleGroupSelector_->getNumberOfParameters(), 0.);
   paramUncertainties_.resize(moduleGroupSelector_->getNumberOfParameters(), 0.);
@@ -338,7 +336,7 @@ void SiStripLorentzAngleCalibration::endOfJob()
 
   for (unsigned int iIOV = 0; iIOV < moduleGroupSelector_->numIovs(); ++iIOV) {
     cond::Time_t firstRunOfIOV = moduleGroupSelector_->firstRunOfIOV(iIOV);
-    SiStripLorentzAngle *output = new SiStripLorentzAngle;
+    SiStripLorentzAngle output;
     // Loop on map of values from input and add (possible) parameter results
     for (auto iterIdValue = input->getLorentzAngles().begin();
 	 iterIdValue != input->getLorentzAngles().end(); ++iterIdValue) {
@@ -354,27 +352,23 @@ void SiStripLorentzAngleCalibration::endOfJob()
       // }
       const double param = this->getParameterForDetId(detId, firstRunOfIOV);
       // put result in output, i.e. sum of input and determined parameter:
-      output->putLorentzAngle(detId, iterIdValue->second + param);
+      output.putLorentzAngle(detId, iterIdValue->second + param);
       const int paramIndex = moduleGroupSelector_->getParameterIndexFromDetId(detId,firstRunOfIOV);
       treeInfo[detId] = TreeStruct(param, this->getParameterError(paramIndex), paramIndex);
     }
 
     if (saveToDB_ || nonZeroParamsOrErrors != 0) { // Skip writing mille jobs...
-      this->writeTree(output, treeInfo, (treeName + Form("result_%lld", firstRunOfIOV)).c_str());
+      this->writeTree(&output, treeInfo, (treeName + Form("result_%lld", firstRunOfIOV)).c_str());
     }
 
     if (saveToDB_) { // If requested, write out to DB 
       edm::Service<cond::service::PoolDBOutputService> dbService;
       if (dbService.isAvailable()) {
-	dbService->writeOne(output, firstRunOfIOV, recordNameDBwrite_.c_str());
-	// no 'delete output;': writeOne(..) took over ownership
+	dbService->writeOne(&output, firstRunOfIOV, recordNameDBwrite_.c_str());
       } else {
-	delete output;
 	edm::LogError("BadConfig") << "@SUB=SiStripLorentzAngleCalibration::endOfJob"
 				   << "No PoolDBOutputService available, but saveToDB true!";
       }
-    } else {
-      delete output;
     }
   } // end loop on IOVs
 }

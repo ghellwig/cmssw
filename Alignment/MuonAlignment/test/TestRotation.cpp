@@ -118,7 +118,8 @@ TestRotation::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
   iSetup.get<MuonGeometryRecord>().get( dtGeometry );
   iSetup.get<MuonGeometryRecord>().get( cscGeometry );
 
-  AlignableMuon* theAlignableMuon = new AlignableMuon( &(*dtGeometry), &(*cscGeometry) );
+  auto theAlignableMuon =
+    std::make_unique<AlignableMuon>( &(*dtGeometry), &(*cscGeometry) );
 
   // Apply alignment
  
@@ -160,8 +161,6 @@ TestRotation::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup )
     std::cout << "xz=" << dir_f.xz() << ",  yz=" << dir_f.yz() << ",  zz=" << dir_f.zz()   << std::endl ;
     std::cout << "------------------------" << std::endl;
   }
-
-  //  delete theAlignableMuon ;
 
   edm::LogInfo("MuonAlignment") << "Done!";
 

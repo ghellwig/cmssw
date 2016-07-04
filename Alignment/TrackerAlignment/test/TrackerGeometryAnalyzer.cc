@@ -103,21 +103,19 @@ void TrackerGeometryAnalyzer
     << "@SUB=TrackerGeometryAnalyzer::analyzeTrackerAlignables"
     << "Building and analyzing TrackerAlignables aka AlignableTracker";
 
-  AlignableTracker* trackerAlignables = new AlignableTracker(
-                                          trackerGeometry,
-                                          trackerTopology
-                                        );
+  auto trackerAlignables =
+    std::make_unique<AlignableTracker>(trackerGeometry, trackerTopology);
 
   if (trackerAlignables) {
-    analyzeAlignableDetUnits  (trackerAlignables);
-    analyzeCompositeAlignables(trackerAlignables);
+    analyzeAlignableDetUnits  (trackerAlignables.get());
+    analyzeCompositeAlignables(trackerAlignables.get());
 
     if (printTrackerStructure_) {
       std::ostringstream ss;
 
       ss << "\n\n===========================================================\n";
       ss << "TrackerAlignable-structure:\n\n";
-      printAlignableStructure(trackerAlignables, ss, 0);
+      printAlignableStructure(trackerAlignables.get(), ss, 0);
       ss << "\n===========================================================\n\n";
 
       edm::LogInfo("TrackerGeometryAnalyzer")
@@ -129,8 +127,6 @@ void TrackerGeometryAnalyzer
       << "@SUB=TrackerGeometryAnalyzer::analyzeTrackerAlignables"
       << "Failed to built AlignableTracker";
   }
-
-  delete trackerAlignables;
 }
 
 //_____________________________________________________________________________

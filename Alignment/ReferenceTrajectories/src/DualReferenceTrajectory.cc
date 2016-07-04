@@ -46,15 +46,15 @@ bool DualReferenceTrajectory::construct(const TrajectoryStateOnSurface &refTsos,
   if (materialEffects_ >= breakPoints)  throw cms::Exception("BadConfig")
     << "[DualReferenceTrajectory::construct] Wrong MaterialEffects: " << materialEffects_;
     
-  ReferenceTrajectoryBase* fwdTraj = construct(refTsos, forwardRecHits, magField, beamSpot);
+  std::unique_ptr<ReferenceTrajectoryBase> fwdTraj
+    (construct(refTsos, forwardRecHits, magField, beamSpot));
 
   // set flag for opposite direction to true
-  ReferenceTrajectoryBase* bwdTraj = construct(refTsos, backwardRecHits, magField, beamSpot, true);
+  std::unique_ptr<ReferenceTrajectoryBase> bwdTraj
+    (construct(refTsos, backwardRecHits, magField, beamSpot, true));
 
   if ( !( fwdTraj->isValid() && bwdTraj->isValid() ) )
   {
-    delete fwdTraj;
-    delete bwdTraj;
     return false;
   }
 
@@ -112,9 +112,6 @@ bool DualReferenceTrajectory::construct(const TrajectoryStateOnSurface &refTsos,
     theDerivatives.sub( nFwdMeas+1, nParam+nFwdBP+1, bwdTraj->derivatives().sub( nMeasPerHit+1, nBwdMeas, nParam+1, nParam+nBwdBP ) );
     theDerivatives.sub( nMeas+nFwdBP+1, nParam+nFwdBP+1, bwdTraj->derivatives().sub( nBwdMeas+1, nBwdMeas+nBwdBP, nParam+1, nParam+nBwdBP ) );
   }
-    
-  delete fwdTraj;
-  delete bwdTraj;
 
   return true; 
 }

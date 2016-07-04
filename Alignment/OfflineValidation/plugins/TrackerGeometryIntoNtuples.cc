@@ -30,6 +30,7 @@
 #include "Alignment/TrackerAlignment/interface/AlignableTracker.h"
 
 #include <algorithm>
+#include <memory>
 #include "TTree.h"
 #include "TFile.h"
 
@@ -85,7 +86,7 @@ private:
 	
 	// ----------member data ---------------------------
 	//std::vector<AlignTransform> m_align;
-	AlignableTracker* theCurrentTracker ;
+        std::unique_ptr<AlignableTracker> theCurrentTracker ;
 	
 	uint32_t m_rawid;
 	double m_x, m_y, m_z;
@@ -123,7 +124,6 @@ private:
 // constructors and destructor
 //
 TrackerGeometryIntoNtuples::TrackerGeometryIntoNtuples(const edm::ParameterSet& iConfig) :
-  theCurrentTracker(0),
   m_rawid(0),
   m_x(0.), m_y(0.), m_z(0.),
   m_alpha(0.), m_beta(0.), m_gamma(0.),
@@ -149,7 +149,6 @@ TrackerGeometryIntoNtuples::TrackerGeometryIntoNtuples(const edm::ParameterSet& 
 
 TrackerGeometryIntoNtuples::~TrackerGeometryIntoNtuples()
 {
-  delete theCurrentTracker;
 }
 
 
@@ -195,23 +194,23 @@ void TrackerGeometryIntoNtuples::analyze(const edm::Event& iEvent, const edm::Ev
 	aligner.attachSurfaceDeformations<TrackerGeometry>( &(*theCurTracker), &(*surfaceDeformations)) ; 
 	
 	
-	theCurrentTracker = new AlignableTracker(&(*theCurTracker), tTopo);
+        theCurrentTracker = std::make_unique<AlignableTracker>(&(*theCurTracker), tTopo);
 
-	Alignments* theAlignments = theCurrentTracker->alignments();
+	std::unique_ptr<Alignments> theAlignments{theCurrentTracker->alignments()};
 	//AlignmentErrorsExtended* theAlignmentErrorsExtended = theCurrentTracker->alignmentErrors();	
 	
 	//alignments
 	addBranches();
-	for (std::vector<AlignTransform>::const_iterator i = theAlignments->m_align.begin(); i != theAlignments->m_align.end(); ++i){
+	for (const auto& i: theAlignments->m_align){
 		
-		m_rawid = i->rawId();
-		CLHEP::Hep3Vector translation = i->translation();
+		m_rawid = i.rawId();
+		CLHEP::Hep3Vector translation = i.translation();
 		m_x = translation.x();
 		m_y = translation.y();
 		m_z = translation.z();
 		
 	
-		CLHEP::HepRotation rotation = i->rotation();
+		CLHEP::HepRotation rotation = i.rotation();
 		m_alpha = rotation.getPhi();
 		m_beta = rotation.getTheta();
 		m_gamma = rotation.getPsi();
@@ -227,8 +226,6 @@ void TrackerGeometryIntoNtuples::analyze(const edm::Event& iEvent, const edm::Ev
 		//}
 		
 	}
-	
-	delete theAlignments;
 
 	std::vector<AlignTransformErrorExtended> alignErrors = alignmentErrors->m_alignError;
 	for (std::vector<AlignTransformErrorExtended>::const_iterator i = alignErrors.begin(); i != alignErrors.end(); ++i){

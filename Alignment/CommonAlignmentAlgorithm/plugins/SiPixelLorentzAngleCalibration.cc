@@ -134,7 +134,7 @@ private:
   std::vector<double> parameters_;
   std::vector<double> paramUncertainties_;
 
-  TkModuleGroupSelector *moduleGroupSelector_;
+  std::unique_ptr<TkModuleGroupSelector> moduleGroupSelector_;
   const edm::ParameterSet moduleGroupSelCfg_;
 };
 
@@ -149,7 +149,6 @@ SiPixelLorentzAngleCalibration::SiPixelLorentzAngleCalibration(const edm::Parame
     outFileName_(cfg.getParameter<std::string>("treeFile")),
     mergeFileNames_(cfg.getParameter<std::vector<std::string> >("mergeTreeFiles")),
     siPixelLorentzAngleInput_(0),
-    moduleGroupSelector_(0),
     moduleGroupSelCfg_(cfg.getParameter<edm::ParameterSet>("LorentzAngleModuleGroups"))
 {
 
@@ -158,8 +157,6 @@ SiPixelLorentzAngleCalibration::SiPixelLorentzAngleCalibration(const edm::Parame
 //======================================================================
 SiPixelLorentzAngleCalibration::~SiPixelLorentzAngleCalibration()
 {
-  delete moduleGroupSelector_;
-  //  std::cout << "Destroy SiPixelLorentzAngleCalibration named " << this->name() << std::endl;
   delete siPixelLorentzAngleInput_;
 }
 
@@ -256,7 +253,8 @@ void SiPixelLorentzAngleCalibration::beginOfJob(const std::shared_ptr<AlignableT
   const std::vector<int> sdets = {PixelSubdetector::PixelBarrel,
 				  PixelSubdetector::PixelEndcap};
   
-  moduleGroupSelector_ = new TkModuleGroupSelector(aliTracker, moduleGroupSelCfg_, sdets);
+  moduleGroupSelector_ =
+    std::make_unique<TkModuleGroupSelector>(aliTracker, moduleGroupSelCfg_, sdets);
 
   parameters_.resize(moduleGroupSelector_->getNumberOfParameters(), 0.);
   paramUncertainties_.resize(moduleGroupSelector_->getNumberOfParameters(), 0.);
@@ -307,7 +305,7 @@ void SiPixelLorentzAngleCalibration::endOfJob()
   for (unsigned int iIOV = 0; iIOV < moduleGroupSelector_->numIovs(); ++iIOV) {
     //  for (unsigned int iIOV = 0; iIOV < 1; ++iIOV) {   // For writing out the modified values
     cond::Time_t firstRunOfIOV = moduleGroupSelector_->firstRunOfIOV(iIOV);
-    SiPixelLorentzAngle *output = new SiPixelLorentzAngle;
+    SiPixelLorentzAngle output;
     // Loop on map of values from input and add (possible) parameter results
     for (auto iterIdValue = input->getLorentzAngles().begin();
 	 iterIdValue != input->getLorentzAngles().end(); ++iterIdValue) {
@@ -317,27 +315,23 @@ void SiPixelLorentzAngleCalibration::endOfJob()
       // put result in output, i.e. sum of input and determined parameter, but the nasty
       // putLorentzAngle(..) takes float by reference - not even const reference:
       float value = iterIdValue->second + param;
-      output->putLorentzAngle(detId, value);
+      output.putLorentzAngle(detId, value);
       const int paramIndex = moduleGroupSelector_->getParameterIndexFromDetId(detId,firstRunOfIOV);
       treeInfo[detId] = TreeStruct(param, this->getParameterError(paramIndex), paramIndex);
     }
 
     if (saveToDB_ || nonZeroParamsOrErrors != 0) { // Skip writing mille jobs...
-      this->writeTree(output, treeInfo, (treeName + Form("result_%lld", firstRunOfIOV)).c_str());
+      this->writeTree(&output, treeInfo, (treeName + Form("result_%lld", firstRunOfIOV)).c_str());
     }
 
     if (saveToDB_) { // If requested, write out to DB 
       edm::Service<cond::service::PoolDBOutputService> dbService;
       if (dbService.isAvailable()) {
-	dbService->writeOne(output, firstRunOfIOV, recordNameDBwrite_.c_str());
-	// no 'delete output;': writeOne(..) took over ownership
+	dbService->writeOne(&output, firstRunOfIOV, recordNameDBwrite_.c_str());
       } else {
-	delete output;
 	edm::LogError("BadConfig") << "@SUB=SiPixelLorentzAngleCalibration::endOfJob"
 				   << "No PoolDBOutputService available, but saveToDB true!";
       }
-    } else {
-      delete output;
     }
   } // end loop on IOVs
 

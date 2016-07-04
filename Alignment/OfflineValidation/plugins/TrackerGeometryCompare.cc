@@ -304,8 +304,8 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 	} 
 	
 	//declare alignments
-	Alignments* alignments1 = new Alignments();
-	AlignmentErrorsExtended* alignmentErrors1 = new AlignmentErrorsExtended();	
+	Alignments alignments1;
+	AlignmentErrorsExtended alignmentErrors1;
 	if (_inputFilename1 != "IDEAL"){
 		_inputRootFile1 = new TFile(_inputFilename1.c_str());
 		TTree* _inputTree01 = (TTree*) _inputRootFile1->Get(_inputTreenameAlign.c_str());
@@ -326,21 +326,21 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 			CLHEP::HepEulerAngles eulerangles1(inputAlpha1,inputBeta1,inputGamma1);
 			uint32_t detid1 = inputRawId1;
 			AlignTransform transform1(translation1, eulerangles1, detid1);
-			alignments1->m_align.push_back(transform1);
+			alignments1.m_align.push_back(transform1);
 			
 			//dummy errors
 			CLHEP::HepSymMatrix clhepSymMatrix(3,0);
 			AlignTransformErrorExtended transformError(clhepSymMatrix, detid1);
-			alignmentErrors1->m_alignError.push_back(transformError);
+			alignmentErrors1.m_alignError.push_back(transformError);
 		}		
 		
 		// to get the right order
-		std::sort( alignments1->m_align.begin(), alignments1->m_align.end(), lessAlignmentDetId<AlignTransform>() );
-		std::sort( alignmentErrors1->m_alignError.begin(), alignmentErrors1->m_alignError.end(), lessAlignmentDetId<AlignTransformErrorExtended>() );
+		std::sort( alignments1.m_align.begin(), alignments1.m_align.end(), lessAlignmentDetId<AlignTransform>() );
+		std::sort( alignmentErrors1.m_alignError.begin(), alignmentErrors1.m_alignError.end(), lessAlignmentDetId<AlignTransformErrorExtended>() );
 	}
 	//------------------
-	Alignments* alignments2 = new Alignments();
-	AlignmentErrorsExtended* alignmentErrors2 = new AlignmentErrorsExtended();
+	Alignments alignments2;
+	AlignmentErrorsExtended alignmentErrors2;
 	if (_inputFilename2 != "IDEAL"){	
 		_inputRootFile2 = new TFile(_inputFilename2.c_str());
 		TTree* _inputTree02 = (TTree*) _inputRootFile2->Get(_inputTreenameAlign.c_str());
@@ -361,17 +361,17 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 			CLHEP::HepEulerAngles eulerangles2(inputAlpha2,inputBeta2,inputGamma2);
 			uint32_t detid2 = inputRawId2;
 			AlignTransform transform2(translation2, eulerangles2, detid2);
-			alignments2->m_align.push_back(transform2);
+			alignments2.m_align.push_back(transform2);
 			
 			//dummy errors
 			CLHEP::HepSymMatrix clhepSymMatrix(3,0);
 			AlignTransformErrorExtended transformError(clhepSymMatrix, detid2);
-			alignmentErrors2->m_alignError.push_back(transformError); 
+			alignmentErrors2.m_alignError.push_back(transformError); 
 		}			
 		
 		//to get the right order
-		std::sort( alignments2->m_align.begin(), alignments2->m_align.end(), lessAlignmentDetId<AlignTransform>() );
-		std::sort( alignmentErrors2->m_alignError.begin(), alignmentErrors2->m_alignError.end(), lessAlignmentDetId<AlignTransformErrorExtended>() );
+		std::sort( alignments2.m_align.begin(), alignments2.m_align.end(), lessAlignmentDetId<AlignTransform>() );
+		std::sort( alignmentErrors2.m_alignError.begin(), alignmentErrors2.m_alignError.end(), lessAlignmentDetId<AlignTransformErrorExtended>() );
 	}
 	
 	//accessing the initial geometry
@@ -390,8 +390,8 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 	TrackerGeometry* theRefTracker = trackerBuilder.build(&*theGeometricDet, *ptp, tTopo ); 
 	if (_inputFilename1 != "IDEAL"){
 		GeometryAligner aligner1;
-		aligner1.applyAlignments<TrackerGeometry>( &(*theRefTracker), &(*alignments1), &(*alignmentErrors1),
-												  align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
+                aligner1.applyAlignments<TrackerGeometry>( &(*theRefTracker), &alignments1, &alignmentErrors1,
+                                                           align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
 	}
 	referenceTracker = new AlignableTracker(&(*theRefTracker), tTopo);
 	//referenceTracker->setSurfaceDeformation(surfDef1, true) ; 
@@ -431,8 +431,8 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 	TrackerGeometry* theCurTracker = trackerBuilder.build(&*theGeometricDet, *ptp, tTopo); 
 	if (_inputFilename2 != "IDEAL"){
 		GeometryAligner aligner2;
-		aligner2.applyAlignments<TrackerGeometry>( &(*theCurTracker), &(*alignments2), &(*alignmentErrors2),
-												  align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
+                aligner2.applyAlignments<TrackerGeometry>( &(*theCurTracker), &alignments2, &alignmentErrors2,
+                                                           align::DetectorGlobalPosition(*globalPositionRcd, DetId(DetId::Tracker)));
 	}
 	currentTracker = new AlignableTracker(&(*theCurTracker), tTopo);
 	
@@ -458,11 +458,6 @@ void TrackerGeometryCompare::createROOTGeometry(const edm::EventSetup& iSetup){
 
 	  }
 	}
-		
-	delete alignments1;
-	delete alignmentErrors1;
-	delete alignments2;
-	delete alignmentErrors2;
 
 }
 

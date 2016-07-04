@@ -267,7 +267,7 @@ MuonAlignmentInputXML::newAlignableMuon(const edm::EventSetup& iSetup) const {
       throw cms::Exception("XMLException") << "Xerces XML parser threw an exception on initialization." << std::endl;
    }
 
-   XercesDOMParser *parser = new XercesDOMParser();
+   auto parser = std::make_unique<XercesDOMParser>();
    parser->setValidationScheme(XercesDOMParser::Val_Always);
 
    ErrorHandler *errHandler = (ErrorHandler*)(new HandlerBase());
@@ -432,7 +432,6 @@ MuonAlignmentInputXML::newAlignableMuon(const edm::EventSetup& iSetup) const {
       } // end second loop over operation's children
    } // end loop over operations
 
-   delete parser;
    delete errHandler;
 
    cms::concurrency::xercesTerminate();

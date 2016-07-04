@@ -127,7 +127,8 @@ TestTranslation::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetu
   iSetup.get<MuonGeometryRecord>().get( dtGeometry );
   iSetup.get<MuonGeometryRecord>().get( cscGeometry );
 
-  AlignableMuon* theAlignableMuon = new AlignableMuon( &(*dtGeometry), &(*cscGeometry) );
+  auto theAlignableMuon =
+    std::make_unique<AlignableMuon>( &(*dtGeometry), &(*cscGeometry) );
 
 
 
@@ -185,9 +186,6 @@ void TestTranslation::apply( Alignable* it )
 	  std::cout << "------------------------" << std::endl;
 
 }
-  
-
-//  delete theAlignableMuon ;
 
 
 //define this as a plug-in

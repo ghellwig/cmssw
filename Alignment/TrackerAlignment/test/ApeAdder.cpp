@@ -10,6 +10,7 @@
 
 
 // system include files
+#include <memory>
 
 // user include files
 //#include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -78,7 +79,8 @@ void ApeAdder::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup 
   iSetup.get<TrackerDigiGeometryRecord>().get( trackerGeometry );
     
   // Create the alignable hierarchy
-  AlignableTracker* theAlignableTracker = new AlignableTracker( &(*trackerGeometry), tTopo );
+  auto theAlignableTracker =
+    std::make_unique<AlignableTracker>( &(*trackerGeometry), tTopo );
   
   // Now loop on alignable dets and add alignment error
   if ( theAlignableTracker->barrelGeomDets().size() ) 
@@ -93,7 +95,8 @@ void ApeAdder::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup 
     this->addApe(theAlignableTracker->pixelEndcapGeomDets());
   
   // Store to DB
-  AlignmentErrorsExtended* alignmentErrors = theAlignableTracker->alignmentErrors();
+  std::unique_ptr<AlignmentErrorsExtended> alignmentErrors
+    (theAlignableTracker->alignmentErrors());
 
   // Call service
   edm::Service<cond::service::PoolDBOutputService> poolDbService;
@@ -101,12 +104,8 @@ void ApeAdder::analyze( const edm::Event& iEvent, const edm::EventSetup& iSetup 
     throw cms::Exception("NotAvailable") << "PoolDBOutputService not available";
 
   // Save to DB
-  poolDbService->writeOne<AlignmentErrorsExtended>(alignmentErrors, poolDbService->beginOfTime(),
-                                           theErrorRecordName);
-
-
-  delete theAlignableTracker;
-
+  poolDbService->writeOne(alignmentErrors.get(), poolDbService->beginOfTime(),
+                          theErrorRecordName);
 }
 
 void ApeAdder::addApe( std::vector<Alignable*> alignables )
