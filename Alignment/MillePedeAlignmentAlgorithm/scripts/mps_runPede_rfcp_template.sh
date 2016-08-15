@@ -150,7 +150,7 @@ if [ $? -eq 0 ]; then
     rm $RUNDIR/../job???/millePedeMonitor*.root
 fi
 
-# Macro creating chi2ndfperbinary.eps with pede chi2/ndf information hists:
+# Macro creating chi2ndfperbinary.pdf with pede chi2/ndf information hists:
 if [ -e $CMSSW_BASE/src/Alignment/MillePedeAlignmentAlgorithm/macros/createChi2ndfplot.C ] ; then
     # Checked out version if existing:
     cp $CMSSW_BASE/src/Alignment/MillePedeAlignmentAlgorithm/macros/createChi2ndfplot.C .
@@ -158,7 +158,7 @@ else
     # If nothing checked out, take from release:
     cp $CMSSW_RELEASE_BASE/src/Alignment/MillePedeAlignmentAlgorithm/macros/createChi2ndfplot.C .
 fi
-mps_parse_pedechi2hist.pl $RUNDIR/../../mps.db millepede.his the.cfg
+mps_parse_pedechi2hist.py -d $RUNDIR/../../mps.db --his millepede.his -c the.cfg
 if [ -f chi2pedehis.txt ]; then
     root -l -x -b -q 'createChi2ndfplot.C+("chi2pedehis.txt")'
 fi
@@ -199,13 +199,3 @@ cp -p *.root $RUNDIR
 cp -p *.gz $RUNDIR
 cp -p *.db $RUNDIR
 cp -p *.end $RUNDIR
-
-if [ -f chi2ndfperbinary.eps ]; then
-    gzip -f chi2ndfperbinary.eps
-    cp -p chi2ndfperbinary.eps.gz $RUNDIR
-fi
-
-if [ -f chi2ndfperbinary.C ]; then
-    gzip -f chi2ndfperbinary.C
-    cp -p chi2ndfperbinary.C.gz $RUNDIR
-fi
