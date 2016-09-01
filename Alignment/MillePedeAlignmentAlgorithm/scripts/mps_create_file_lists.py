@@ -8,6 +8,7 @@ import math
 import bisect
 import random
 import signal
+import difflib
 import argparse
 import subprocess
 import multiprocessing
@@ -51,8 +52,14 @@ class FileListCreator(object):
         parser = self._define_parser()
         self._args = parser.parse_args(argv)
         self._validate_input()
-        self._formatted_dataset = re.sub(self._dataset_regex, r"\1_\2_\3",
-                                         self._args.dataset)
+        self._datasets = sorted([dataset
+                                 for pattern in self._args.datasets
+                                 for dataset in get_datasets(pattern)])
+
+        self._formatted_dataset = merge_strings(
+            [re.sub(self._dataset_regex, r"\1_\2_\3", dataset)
+             for dataset in self._datasets])
+        self._formatted_dataset = self._formatted_dataset.replace("*", "%")
         self._prepare_iov_datastructures()
         self._prepare_run_datastructures()
 
@@ -87,9 +94,10 @@ class FileListCreator(object):
             epilog = ("The tool will create a directory containing all file "
                       "lists and a log file with all relevant event counts "
                       "('{}').".format(FileListCreator._event_count_log)))
-        parser.add_argument("-i", "--input", dest = "dataset",
-                            metavar = "DATASET", required = True,
-                            help = "CMS dataset name")
+        parser.add_argument("-i", "--input", dest = "datasets", required = True,
+                            metavar = "DATASET", action = "append",
+                            help = ("CMS dataset name; supports wildcards; "
+                                    "use multiple times for multiple datasets"))
         parser.add_argument("-j", "--json", dest = "json", metavar = "PATH",
                             help = "path to JSON file (optional)")
         parser.add_argument("-f", "--fraction", dest = "fraction",
@@ -155,10 +163,10 @@ class FileListCreator(object):
                       .format(self._args.tracks, self._args.rate,
                               self._args.events))
 
-        if not re.match(self._dataset_regex, self._args.dataset):
-            print_msg("Dataset name '"+self._args.dataset+
-                      "' is not in CMS format.")
-            sys.exit(1)
+        for dataset in self._args.datasets:
+            if not re.match(self._dataset_regex, dataset):
+                print_msg("Dataset pattern '"+dataset+"' is not in CMS format.")
+                sys.exit(1)
 
         nonzero_events_per_iov = (self._args.minimum_events_in_iov > 0)
         if nonzero_events_per_iov and self._args.fraction <= 0:
@@ -245,14 +253,17 @@ class FileListCreator(object):
     def _request_dataset_information(self):
         """Retrieve general dataset information and create file list."""
 
-        print_msg("Requesting information for dataset '{0:s}'."
-                  .format(self._args.dataset))
-        self._events_in_dataset = get_events_per_dataset(self._args.dataset)
-        self._files = get_files(self._args.dataset)
+        self._events_in_dataset = 0
+        self._files = []
+        for dataset in self._datasets:
+            print_msg("Requesting information for dataset '{0:s}'."
+                      .format(dataset))
+            self._events_in_dataset += get_events_per_dataset(dataset)
+            self._files.extend(get_files(dataset))
         if self._args.random: random.shuffle(self._files)
 
-        result = print_msg("Counting events in dataset files. "
-                           "This may take several minutes...")
+        result = print_msg("Counting events in {0:d} dataset files. This may "
+                           "take several minutes...".format(len(self._files)))
         # workaround to deal with KeyboardInterrupts in the worker processes:
         # - ignore interrupt signals in workers (see initializer)
         # - use a timeout of size sys.maxint to avoid a bug in multiprocessing
@@ -551,6 +562,18 @@ def get_files(dataset_name):
     return [find_key(f["file"], "name") for f in data]
 
 
+def get_datasets(dataset_pattern):
+    """Retrieve list of dataset matching `dataset_pattern`.
+
+    Arguments:
+    - `dataset_pattern`: pattern of dataset names
+    """
+
+    data = das_client("dataset dataset={0:s} | grep dataset.name"
+                      .format(dataset_pattern))
+    return [find_key(f["dataset"], "name") for f in data]
+
+
 def get_events_per_dataset(dataset_name):
     """Retrieve the number of a events in `dataset_name`.
 
@@ -607,6 +630,39 @@ def check_proxy():
     except subprocess.CalledProcessError:
         return False
     return True
+
+
+def merge_strings(strings):
+    """Merge strings in `strings` into a common string.
+
+    Arguments:
+    - `strings`: list of strings
+    """
+
+    if type(strings) == str:
+        return strings
+    elif len(strings) == 0:
+        return ""
+    elif len(strings) == 1:
+        return strings[0]
+    elif len(strings) == 2:
+        first = strings[0]
+        second = strings[1]
+    else:
+        first = merge_strings(strings[:-1])
+        second = strings[-1]
+
+    merged_string = ""
+    blocks = difflib.SequenceMatcher(None, first, second).get_matching_blocks()
+
+    last_i, last_j, last_n = 0, 0, 0
+    for i, j, n in blocks:
+        merged_string += first[last_i+last_n:i]
+        merged_string += second[last_j+last_n:j]
+        merged_string += first[i:i+n]
+        last_i, last_j, last_n = i, j, n
+
+    return str(merged_string)
 
 
 ################################################################################
