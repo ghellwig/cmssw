@@ -267,8 +267,12 @@ class FileListCreator(object):
         # workaround to deal with KeyboardInterrupts in the worker processes:
         # - ignore interrupt signals in workers (see initializer)
         # - use a timeout of size sys.maxint to avoid a bug in multiprocessing
+        number_of_processes = multiprocessing.cpu_count() - 1
+        number_of_processes = (number_of_processes
+                               if number_of_processes > 0
+                               else 1)
         pool = multiprocessing.Pool(
-            processes = 4,      # hard-coded to avoid DAS overload by user
+            processes = number_of_processes,
             initializer = lambda: signal.signal(signal.SIGINT, signal.SIG_IGN))
         count = pool.map_async(get_events_per_file, self._files).get(sys.maxint)
         self._file_info = dict(zip(self._files, count))
