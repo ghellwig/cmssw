@@ -47,9 +47,9 @@ class FileListCreator(object):
         self._args = parser.parse_args(argv)
         self._validate_input()
         self._formatted_dataset = re.sub(self._dataset_regex, r"\1_\2_\3",
-                                   self._args.dataset)
+                                         self._args.dataset)
         self._prepare_iov_datastructures()
-        if self._args.run_by_run: self._prepare_run_datastructures()
+        self._prepare_run_datastructures()
 
         try:
             os.makedirs(self._formatted_dataset)
@@ -95,7 +95,7 @@ class FileListCreator(object):
                             help = ("define IOV by specifying first run; for "
                                     "multiple IOVs use this option multiple "
                                     "times; files from runs before the lowest "
-                                    "IOV are discarded (default: '1')"))
+                                    "IOV are discarded (default: 1)"))
         parser.add_argument("-r", "--random", action = "store_true",
                             default = False, help = "select files randomly")
         parser.add_argument("-n", "--events-for-alignment", dest = "events",
