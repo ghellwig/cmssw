@@ -42,6 +42,11 @@ class FileListCreator(object):
         - `args`: command line arguments
         """
 
+        if not check_proxy():
+            print_msg(
+                "Please create proxy via 'voms-proxy-init -voms cms -rfc'.")
+            sys.exit(1)
+
         self._dataset_regex = re.compile(r"^/([^/]+)/([^/]+)/([^/]+)$")
         parser = self._define_parser()
         self._args = parser.parse_args(argv)
@@ -590,6 +595,18 @@ def get_chunks(long_list, chunk_size):
 
     for i in xrange(0, len(long_list), chunk_size):
         yield long_list[i:i+chunk_size]
+
+
+def check_proxy():
+    """Check if GRID proxy has been initialized."""
+
+    try:
+        with open(os.devnull, "w") as dump:
+            subprocess.check_call(["voms-proxy-info", "--exists"],
+                                  stdout = dump, stderr = dump)
+    except subprocess.CalledProcessError:
+        return False
+    return True
 
 
 ################################################################################
