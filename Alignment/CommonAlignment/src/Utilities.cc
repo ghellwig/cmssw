@@ -4,6 +4,10 @@
 #include "FWCore/Utilities/interface/Parse.h"
 
 #include "Alignment/CommonAlignment/interface/Utilities.h"
+#include "Alignment/CommonAlignment/interface/Alignable.h"
+#include "Alignment/CommonAlignment/interface/AlignableObjectId.h"
+#include "Geometry/CommonTopologies/interface/SurfaceDeformation.h"
+
 
 align::EulerAngles align::toAngles(const RotationType& rot)
 {
@@ -269,4 +273,48 @@ align::makeUniqueRunRanges(const edm::VParameterSet& runRanges,
     uniqueRunRanges.push_back(runRange);
   }
   return uniqueRunRanges;
+}
+
+
+void
+align::deepAlignableDump(const Alignable* ali) {
+  if (!ali) return;
+
+  const auto& position = ali->globalPosition();
+  const auto& rotation = ali->globalRotation();
+
+  std::cerr << "============================================================\n"
+            << "StructureType: "
+            << AlignableObjectId::idToString(ali->alignableObjectId())
+            << ", ID: " << ali->id() << "\n"
+            << "Position: x = " << position.x() << "\n"
+            << "          y = " << position.y() << "\n"
+            << "          z = " << position.z() << "\n"
+            << "Rotation: xx = " << rotation.xx() << "\n"
+            << "          xy = " << rotation.xy() << "\n"
+            << "          xz = " << rotation.xz() << "\n"
+            << "          yx = " << rotation.yx() << "\n"
+            << "          yy = " << rotation.yy() << "\n"
+            << "          yz = " << rotation.yz() << "\n"
+            << "          zx = " << rotation.zx() << "\n"
+            << "          zy = " << rotation.zy() << "\n"
+            << "          zz = " << rotation.zz() << "\n";
+  if (ali->alignableObjectId() == align::AlignableDetUnit) {
+    std::vector<std::pair<int, SurfaceDeformation*> > result;
+    if (ali->surfaceDeformationIdPairs(result) == 1) {
+      std::cerr << "Surface deformation parameters: ";
+      bool firstParam{true};
+      for (const auto& param: result[0].second->parameters()) {
+        if (!firstParam) {
+          std::cerr << "                                ";
+        } else {
+          firstParam = false;
+        };
+        std::cerr << param << "\n";
+      }
+    }
+  }
+  std::cerr << "------------------------------------------------------------\n";
+  for (const auto& comp: ali->components()) align::deepAlignableDump(comp);
+  std::cerr << "============================================================\n";
 }

@@ -312,6 +312,13 @@ void AlignableDetUnit::restoreCachedTransformation(const align::RunNumber& run)
       << "Trying to restore cached transformation for a run (" << run
       << ") that has not been cached.";
   } else {
+    std::cerr << "Restoring cache for run: " << run << std::endl;
+    std::cerr << "Before restoring:" << std::endl;
+    std::cerr
+      << " AlignableDetUnit " << this->id() << " has position = " << this->globalPosition()
+      << ", orientation:" << std::endl << this->globalRotation() << std::endl
+      << " total displacement and rotation: " << this->displacement() << std::endl
+      << this->rotation();
     theSurface = surfacesCache_[run];
     theDisplacement = displacementsCache_[run];
     theRotation = rotationsCache_[run];
@@ -324,5 +331,11 @@ void AlignableDetUnit::restoreCachedTransformation(const align::RunNumber& run)
     if (surfaceDeformationsCache_[run]) {
       this->setSurfaceDeformation(surfaceDeformationsCache_[run], false);
     }
+    std::cerr << "After restoring:" << std::endl;
+    std::cerr
+      << " AlignableDetUnit " << this->id() << " has position = " << this->globalPosition()
+      << ", orientation:" << std::endl << this->globalRotation() << std::endl
+      << " total displacement and rotation: " << this->displacement() << std::endl
+      << this->rotation();
   }
 }
