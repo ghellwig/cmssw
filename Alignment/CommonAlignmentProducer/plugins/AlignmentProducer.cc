@@ -396,14 +396,9 @@ void AlignmentProducer::beginRun(const edm::Run &run, const edm::EventSetup &set
 {
   const auto update = setupChanged(setup) && enableAlignableUpdates_;
   if (update) {
-    std::cerr << "Run " << run.run() << std::endl;
     edm::LogInfo("Alignment") << "@SUB=AlignmentProducer::beginRun"
                               << "EventSetup-Record changed.";
-
-    std::cerr << "################################################################################\n"
-              << "Updating the tracker in run: " << run.run() << "\n";
     initAlignmentAlgorithm(setup, true);
-    std::cerr << "################################################################################\n\n\n\n";
   }
 
   theAlignmentAlgo->beginRun(run, setup, update);
@@ -475,50 +470,41 @@ AlignmentProducer::setupChanged(const edm::EventSetup& setup)
 
   if (watchIdealGeometryRcd.check(setup)) {
     changed = true;
-    std::cerr << "watchIdealGeometryRcd.check(setup) = true; ";
   }
 
   if (watchGlobalPositionRcd.check(setup)) {
     changed = true;
-    std::cerr << "watchGlobalPositionRcd.check(setup) = true; ";
   }
 
   if (doTracker_) {
     if (watchTrackerAlRcd.check(setup)) {
         changed = true;
-	std::cerr << "watchTrackerAlRcd.check(setup) = true; ";
     }
 
     if (watchTrackerAlErrorExtRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchTrackerAlErrorExtRcd.check(setup) = true; ";
     }
 
     if (watchTrackerSurDeRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchTrackerSurDeRcd.check(setup) = true; ";
     }
   }
 
   if (doMuon_) {
     if (watchDTAlRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchDTAlRcd.check(setup) = true; ";
     }
 
     if (watchDTAlErrExtRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchDTAlErrExtRcd.check(setup) = true; ";
     }
 
     if (watchCSCAlRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchCSCAlRcd.check(setup) = true; ";
     }
 
     if (watchCSCAlErrExtRcd.check(setup)) {
       changed = true;
-      std::cerr << "watchCSCAlErrExtRcd.check(setup) = true; ";
     }
   }
 
@@ -719,13 +705,7 @@ AlignmentProducer::createAlignables(const TrackerTopology* tTopo, bool update)
 {
   if (doTracker_) {
     if (update) {
-      std::cerr << "\n\nTracker before update:\n";
-      align::deepAlignableDump(theAlignableTracker);
-      theAlignableTracker->dump();
       theAlignableTracker->update(&(*theTracker), tTopo);
-      std::cerr << "\n\nTracker after update:\n";
-      align::deepAlignableDump(theAlignableTracker);
-      theAlignableTracker->dump();
     } else {
       theAlignableTracker = new AlignableTracker(&(*theTracker), tTopo);
     }

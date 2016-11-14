@@ -81,8 +81,6 @@ namespace align
                                         const RunNumber& defaultRun);
   RunRanges makeUniqueRunRanges(const edm::VParameterSet& runRanges,
                                 const RunNumber& defaultRun);
-
-  void deepAlignableDump(const Alignable*);
 }
 
 #endif
