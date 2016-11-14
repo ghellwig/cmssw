@@ -279,6 +279,7 @@ class MillePedeAlignmentAlgorithm : public AlignmentAlgorithmBase
   const align::RunRanges uniqueRunRanges_;
   const bool enforceSingleIOVInput_;
   std::vector<align::RunNumber> cachedRuns_;
+  align::RunNumber lastProcessedRun_;
 };
 
 DEFINE_EDM_PLUGIN(AlignmentAlgorithmPluginFactory,
