@@ -28,8 +28,12 @@ public:
   /// Return alignables of subdet and hierarchy level determined by name
   /// as defined in tracker part of Alignment/CommonAlignment/StructureType.h
   Alignables& subStructures(const std::string &subStructName) {
-    return alignableMap.find(subStructName);
+    return alignableMap_.find(subStructName);
   }
+
+  /// Updater using TrackerGeometry and TrackerTopology.
+  /// The given geometry and topology have to match the current ones.
+  virtual void update(const TrackerGeometry*, const TrackerTopology*);
 
   /// Return TOB half barrels
   Alignables& outerHalfBarrels() {
@@ -159,7 +163,7 @@ private:
   Alignables merge( const Alignables& list1, const Alignables& list2 ) const;
 
   const TrackerTopology* tTopo_;
-  AlignableMap alignableMap;
+  AlignableMap alignableMap_;
 
 };
 
