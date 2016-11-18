@@ -38,14 +38,14 @@ class AlignableCompositeBuilder {
     /// - TPBHalfBarrel (with TPBLayer as children)
     /// - TPBBarrel     (with TPBHalfBarrel as children)
     /// Returns the number of composite Alignables which were built.
-    unsigned int buildAll(AlignableMap&);
+    unsigned int buildAll(AlignableMap&, bool update = false);
 
   //========================= PRIVATE METHODS =================================
   private: //==================================================================
 
     /// Builds the components for a given level in the hierarchy.
     unsigned int buildLevel(unsigned int parentLevel, AlignableMap&,
-                            std::ostringstream&);
+                            std::ostringstream&, bool update = false);
 
     /// Calculates the theoretical max. number of components for a given level
     /// in the hierarchy.
