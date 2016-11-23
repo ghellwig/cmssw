@@ -99,6 +99,7 @@ void MillePedeFileReader
     std::string line;
     getline(resFile, line); // drop first line
 
+    std::cerr << "MillePedeFileReader::read:\n";
     while (getline(resFile, line)) {
       std::istringstream iss(line);
 
@@ -118,6 +119,16 @@ void MillePedeFileReader
         double ObsErr  = std::stof(tokens[4]) * multiplier_[alignableIndex];
 
         auto det = getHLS(alignable);
+        std::cerr << "Label: " << alignableLabel << ", HLS: ";
+        switch (det) {
+        case PclHLS::NotInPCL:                    std::cerr << "PclHLS::NotInPCL\n"; break;
+        case PclHLS::TPBHalfBarrelXplus:          std::cerr << "PclHLS::TPBHalfBarrelXplus\n"; break;
+        case PclHLS::TPBHalfBarrelXminus:         std::cerr << "PclHLS::TPBHalfBarrelXminus\n"; break;
+        case PclHLS::TPEHalfCylinderXplusZplus:   std::cerr << "PclHLS::TPEHalfCylinderXplusZplus\n"; break;
+        case PclHLS::TPEHalfCylinderXminusZplus:  std::cerr << "PclHLS::TPEHalfCylinderXminusZplus\n"; break;
+        case PclHLS::TPEHalfCylinderXplusZminus:  std::cerr << "PclHLS::TPEHalfCylinderXplusZminus\n"; break;
+        case PclHLS::TPEHalfCylinderXminusZminus: std::cerr << "PclHLS::TPEHalfCylinderXminusZminus\n"; break;
+        }
 
         if (det != PclHLS::NotInPCL) {
           switch (alignableIndex) {
@@ -152,13 +163,13 @@ void MillePedeFileReader
 
         if (std::abs(ObsMove) > maxMoveCut_) {
           updateDB_    = false;
-          break;
+          // break;
 
         } else if (std::abs(ObsMove) > cutoffs_[alignableIndex]) {
 
           if (std::abs(ObsErr) > maxErrorCut_) {
             updateDB_    = false;
-            break;
+            // break;
           } else {
             if (std::abs(ObsMove/ObsErr) < sigCut_) {
               continue;
