@@ -6,6 +6,11 @@ ALCARECOEcalCalZElectronHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel
     eventSetupPathsKey='EcalCalZElectron',
     throw = False # tolerate triggers stated above, but not available
 )
+ALCARECOEcalCalWElectronHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
+    andOr = True, # choose logical OR between Triggerbits
+    eventSetupPathsKey='EcalCalWElectron',
+    throw = False # tolerate triggers stated above, but not available
+)
 
 
 #===================================================== removing events with trackerDrivenOnly electrons
@@ -67,7 +72,7 @@ ALCARECOEcalCalElectronSeq = cms.Sequence( ALCARECOEcalCalElectronNonECALSeq+
 # sequences used in AlCaRecoStreams_cff.py
 seqALCARECOEcalCalZElectron   = cms.Sequence(ALCARECOEcalCalZElectronHLT * ZeeSkimFilterSeq  * ALCARECOEcalCalElectronSeq)
 seqALCARECOEcalCalZSCElectron = cms.Sequence(ALCARECOEcalCalZElectronHLT * ZSCSkimFilterSeq  * ALCARECOEcalCalElectronSeq)
-seqALCARECOEcalCalWElectron   = cms.Sequence(WenuSkimFilterSeq * ALCARECOEcalCalElectronSeq)
+seqALCARECOEcalCalWElectron   = cms.Sequence(ALCARECOEcalCalWElectronHLT * WenuSkimFilterSeq * ALCARECOEcalCalElectronSeq)
 
 
 seqALCARECOEcalCalPhoton = cms.Sequence( alCaIsolatedElectrons +
