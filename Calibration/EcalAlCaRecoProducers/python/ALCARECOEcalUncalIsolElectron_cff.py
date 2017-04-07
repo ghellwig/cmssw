@@ -6,6 +6,11 @@ ALCARECOEcalUncalZElectronHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLev
     eventSetupPathsKey = 'EcalUncalZElectron',
     throw = False # tolerate triggers stated above, but not available
 )
+ALCARECOEcalUncalWElectronHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
+    andOr = True, # choose logical OR between Triggerbits
+    eventSetupPathsKey = 'EcalUncalWElectron',
+    throw = False # tolerate triggers stated above, but not available
+)
 
 #restarting from ECAL RAW to reconstruct amplitudes and energies
 # create uncalib recHit collections
@@ -24,4 +29,4 @@ ALCARECOEcalUncalElectronECALSeq = cms.Sequence( uncalibRecHitSeq )
 # sequences used in AlCaRecoStreams_cff.py
 seqALCARECOEcalUncalZElectron   = cms.Sequence(ALCARECOEcalUncalZElectronHLT * ZeeSkimFilterSeq  * ALCARECOEcalUncalElectronECALSeq * ALCARECOEcalCalElectronNonECALSeq)
 seqALCARECOEcalUncalZSCElectron = cms.Sequence(ALCARECOEcalUncalZElectronHLT * ZSCSkimFilterSeq  * ALCARECOEcalUncalElectronECALSeq * ALCARECOEcalCalElectronNonECALSeq)
-seqALCARECOEcalUncalWElectron   = cms.Sequence(WenuSkimFilterSeq * ALCARECOEcalUncalElectronECALSeq* ALCARECOEcalCalElectronNonECALSeq)
+seqALCARECOEcalUncalWElectron   = cms.Sequence(ALCARECOEcalUncalWElectronHLT * WenuSkimFilterSeq * ALCARECOEcalUncalElectronECALSeq* ALCARECOEcalCalElectronNonECALSeq)
