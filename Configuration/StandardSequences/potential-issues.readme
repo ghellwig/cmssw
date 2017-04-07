@@ -1,0 +1,14 @@
+- need to decide on HLT paths for 'SiPixelLorentzAngle'
+- 'SiStripCalMinBiasHI' is defined in a config, but not used in 'AlCaRecoStreams_cff' and 'ALCARECOSiStripCalMinBiasDQMHI_cff'
+- need to add HLT paths for 'HcalCalGammaJet' to trigger bits payload
+- what's the use case of having 'TkAlCosmics[0T]' and 'TkAlCosmics[0T]HLT' ALCARECO streams?
+  why not having the HLT one as a HLT physics before the other and drop the HLT stream?
+- how to handle TkAlLAS ('hltTrackerCalibrationRaw')
+- 'PromptCalibProd*' ALCARECOs seem to be covered by 'TkAlMinBias'
+  -> no action needed for (?):
+     - 'PromptCalibProdSiStripGains'
+     - 'PromptCalibProdSiStripGainsAAG'
+     - 'PromptCalibProdSiPixelAli'
+- what about 'SiStripPCLHistos'?
+- what about 'Hotline'?
+
