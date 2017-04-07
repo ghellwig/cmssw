@@ -496,7 +496,7 @@ ALCARECOStreamHcalCalNoise = cms.FilteredStream(
 
 ALCARECOStreamHcalCalIterativePhiSym = cms.FilteredStream(
     responsible = 'Natalia Lychkovskaya',
-    name = 'ALCARECOHcalCalIterativePhiSym',
+    name = 'HcalCalIterativePhiSym',
     paths  = (pathALCARECOHcalCalIterativePhiSym),
     content = OutALCARECOHcalCalIterativePhiSym.outputCommands,
     selectEvents = OutALCARECOHcalCalIterativePhiSym.SelectEvents,
