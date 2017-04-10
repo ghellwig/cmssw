@@ -39,7 +39,7 @@ from Configuration.EventContent.AlCaRecoOutput_cff import *
 
 ALCARECOStreamEcalCalPi0Calib = cms.FilteredStream(
         responsible = 'Vladimir Litvine',
-        name = 'ALCARECOEcalCalPi0Calib',
+        name = 'EcalCalPi0Calib',
         paths  = (pathALCARECOEcalCalPi0Calib),
         content = OutALCARECOEcalCalPi0Calib.outputCommands,
         selectEvents = OutALCARECOEcalCalPi0Calib.SelectEvents,
