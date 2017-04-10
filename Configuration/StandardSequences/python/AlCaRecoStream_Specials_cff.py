@@ -86,7 +86,7 @@ from Configuration.EventContent.AlCaRecoOutput_cff import *
 
 ALCARECOStreamLumiPixels = cms.FilteredStream(
         responsible = 'Cerminara Gianluca',
-        name = 'ALCARECOLumiPixels',
+        name = 'LumiPixels',
         paths  = (pathALCARECOLumiPixels),
         content = OutALCARECOLumiPixels.outputCommands,
         selectEvents = OutALCARECOLumiPixels.SelectEvents,
