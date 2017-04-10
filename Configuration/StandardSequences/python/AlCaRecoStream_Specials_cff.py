@@ -66,7 +66,7 @@ from Configuration.EventContent.AlCaRecoOutput_cff import *
 
 ALCARECOStreamHcalCalPedestal = cms.FilteredStream(
         responsible = 'Olga Kodolova',
-        name = 'ALCARECOHcalCalPedestal',
+        name = 'HcalCalPedestal',
         paths  = (pathALCARECOHcalCalPedestal),
         content = OutALCARECOHcalCalPedestal.outputCommands,
         selectEvents = OutALCARECOHcalCalPedestal.SelectEvents,
