@@ -57,7 +57,7 @@ from Configuration.EventContent.AlCaRecoOutput_cff import *
 
 ALCARECOStreamHcalCalMinBias = cms.FilteredStream(
         responsible = 'Grigory Safronov',
-        name = 'ALCARECOHcalCalMinBias',
+        name = 'HcalCalMinBias',
         paths  = (pathALCARECOHcalCalMinBias),
         content = OutALCARECOHcalCalMinBiasHI.outputCommands,
         selectEvents = OutALCARECOHcalCalMinBiasHI.SelectEvents,
