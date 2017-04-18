@@ -178,6 +178,7 @@ TrackerTreeGenerator::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       tkTreeVar.module       = tTopo->tibModule(detId);
       tkTreeVar.isDoubleSide = tTopo->tibIsDoubleSide(detId);
       tkTreeVar.isRPhi       = tTopo->tibIsRPhi(detId);
+      tkTreeVar.isStereo     = tTopo->tibIsStereo(detId);
       break;
     case StripSubdetector::TID:
       tkTreeVar.layer        = tTopo->tidWheel(detId);
@@ -187,6 +188,7 @@ TrackerTreeGenerator::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       tkTreeVar.module       = tTopo->tidModuleInfo(detId)[1];
       tkTreeVar.isDoubleSide = tTopo->tidIsDoubleSide(detId);
       tkTreeVar.isRPhi       = tTopo->tidIsRPhi(detId);
+      tkTreeVar.isStereo     = tTopo->tidIsStereo(detId);
       break;
     case StripSubdetector::TOB:
       tkTreeVar.layer        = tTopo->tobLayer(detId);
@@ -195,6 +197,7 @@ TrackerTreeGenerator::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       tkTreeVar.module       = tTopo->tobModule(detId);
       tkTreeVar.isDoubleSide = tTopo->tobIsDoubleSide(detId);
       tkTreeVar.isRPhi       = tTopo->tobIsRPhi(detId);
+      tkTreeVar.isStereo     = tTopo->tobIsStereo(detId);
       break;
     case StripSubdetector::TEC:
       tkTreeVar.layer        = tTopo->tecWheel(detId);
@@ -205,6 +208,7 @@ TrackerTreeGenerator::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       tkTreeVar.module       = tTopo->tecModule(detId);
       tkTreeVar.isDoubleSide = tTopo->tecIsDoubleSide(detId);
       tkTreeVar.isRPhi       = tTopo->tecIsRPhi(detId);
+      tkTreeVar.isStereo     = tTopo->tecIsStereo(detId);
       break;
     }
 
@@ -292,7 +296,7 @@ TrackerTreeGenerator::endJob() {
   UInt_t rawId(999), subdetId(999), layer(999), side(999), half(999), rod(999),
     ring(999), petal(999), blade(999), panel(999), outerInner(999),
     module(999), nStrips(999);
-  Bool_t isDoubleSide(false), isRPhi(false);
+  Bool_t isDoubleSide(false), isRPhi(false), isStereo(false);
   Int_t uDirection(999), vDirection(999), wDirection(999);
   Float_t posR(999.F), posPhi(999.F), posEta(999.F),
     posX(999.F), posY(999.F), posZ(999.F);
@@ -316,6 +320,7 @@ TrackerTreeGenerator::endJob() {
   trackerTree->Branch("NStrips", &nStrips, "NStrips/i");
   trackerTree->Branch("IsDoubleSide", &isDoubleSide, "IsDoubleSide/O");
   trackerTree->Branch("IsRPhi", &isRPhi, "IsRPhi/O");
+  trackerTree->Branch("IsStereo", &isStereo, "IsStereo/O");
   trackerTree->Branch("UDirection", &uDirection, "UDirection/I");
   trackerTree->Branch("VDirection", &vDirection, "VDirection/I");
   trackerTree->Branch("WDirection", &wDirection, "WDirection/I");
@@ -342,6 +347,7 @@ TrackerTreeGenerator::endJob() {
     nStrips      = iTree.nStrips;
     isDoubleSide = iTree.isDoubleSide;
     isRPhi       = iTree.isRPhi;
+    isStereo     = iTree.isStereo;
     uDirection   = iTree.uDirection;
     vDirection   = iTree.vDirection;
     wDirection   = iTree.wDirection;
