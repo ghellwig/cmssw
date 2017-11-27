@@ -634,16 +634,16 @@ void TrackerGeometryCompare::compareGeometries(Alignable* refAli, Alignable* cur
 
 		for (int i = 0; i < 100; i++){
 			AlgebraicVector diff = align::diffAlignables(refAli, curAli, _weightBy, _weightById, _weightByIdVector);
-			CLHEP::Hep3Vector dR(diff[0],diff[1],diff[2]);
+			CLHEP::Hep3Vector dR(-diff[0],-diff[1],-diff[2]); // 'diffAlignables' returns 'refAli - curAli' for translations
 			Rtotal+=dR;
-			CLHEP::Hep3Vector dW(diff[3],diff[4],diff[5]);
+			CLHEP::Hep3Vector dW(diff[3],diff[4],diff[5]); // 'diffAlignables' returns 'curAli - refAli' for rotations
 			CLHEP::HepRotation rot(Wtotal.unit(),Wtotal.mag());
 			CLHEP::HepRotation drot(dW.unit(),dW.mag());
 			rot*=drot;
 			Wtotal.set(rot.axis().x()*rot.delta(), rot.axis().y()*rot.delta(), rot.axis().z()*rot.delta());
 			// local coordinates
-			lRtotal.set(diff[6],diff[7],diff[8]);
-			lWtotal.set(diff[9],diff[10],diff[11]);
+			lRtotal.set(-diff[6],-diff[7],-diff[8]); // 'diffAlignables' returns 'refAli - curAli' for translations
+			lWtotal.set(diff[9],diff[10],diff[11]); // 'diffAlignables' returns 'curAli - refAli' for rotations
 			
 			align::moveAlignable(curAli, diff);
 			float tolerance = 1e-7;
@@ -653,7 +653,7 @@ void TrackerGeometryCompare::compareGeometries(Alignable* refAli, Alignable* cur
 			if ((checkR.mag() > tolerance)||(checkW.mag() > tolerance)){
 				edm::LogInfo("TrackerGeometryCompare") << "Tolerance Exceeded!(alObjId: " << refAli->alignableObjectId()
 				<< ", rawId: " << refAli->geomDetId().rawId()
-				<< ", subdetId: "<< detid.subdetId() << "): " << diff;
+				<< ", subdetId: "<< detid.subdetId() << "): " << diff << check;
 				throw cms::Exception("Tolerance in TrackerGeometryCompare exceeded");
 			}
 			else{
