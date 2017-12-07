@@ -425,7 +425,8 @@ align::Alignables AlignableMuon::CSCEndcaps()
 //__________________________________________________________________________________________________
 void AlignableMuon::recursiveSetMothers( Alignable* alignable )
 {
-  
+  std::cout << "AlignableMuon::recursiveSetMothers: "
+	    << objectIdProvider().typeToName(alignable->alignableObjectId()) << "\n";
   align::Alignables components = alignable->components();
   for ( align::Alignables::iterator iter = components.begin();
 		iter != components.end(); iter++ )

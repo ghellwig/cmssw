@@ -29,7 +29,7 @@ public:
   void addComponent( Alignable* ) override;
 
   /// Returns a null vector (no components here)
-  Alignables components() const override { return Alignables(); }
+  const Alignables& components() const override { return emptyComponents_; }
 
   /// Do nothing (no components here, so no subcomponents either...)
   void recursiveComponents(Alignables &result) const override {}
@@ -94,6 +94,7 @@ public:
 
 private:
 
+  static const Alignables emptyComponents_;
   AlignmentPositionError* theAlignmentPositionError;
   SurfaceDeformation* theSurfaceDeformation;
   SurfaceDeformation* theCachedSurfaceDeformation;
